@@ -74,8 +74,8 @@ options.add_argument("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6)
 # options.add_argument("--homedir=./TMP")
 prefs = {"download.default_directory" : f"./{DATA_FOLDER}{FRA_DOC_FOLDER}"}
 options.add_experimental_option("prefs", prefs)
-options.binary_location = "./chromedriver/chrome"
-chromedriver_path = "./chromedriver/chromedriver"
+options.binary_location = "./chrome-linux64/chrome"
+chromedriver_path = "./chromedriver-linux64/chromedriver"
 service = ChromeService(executable_path=chromedriver_path)
 
 ################################# SCRAPE ALL DOC ########################################

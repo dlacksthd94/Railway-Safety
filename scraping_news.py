@@ -59,8 +59,8 @@ options.add_argument("--window-size=1000x2000")
 # options.add_argument("--single-process")
 # options.add_argument("--ignore-certificate-errors")
 # options.add_argument("--homedir=./TMP")
-options.binary_location = "./chromedriver/chrome"
-chromedriver_path = "./chromedriver/chromedriver"
+options.binary_location = "./chrome-linux64/chrome"
+chromedriver_path = "./chromedriver-linux64/chromedriver"
 service = ChromeService(executable_path=chromedriver_path)
 
 ################################# SEARCH BY STATE ########################################
