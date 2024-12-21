@@ -53,12 +53,12 @@ def make_context_list(qa):
         context_clean = ''
         if current_doc == 'CFR':
             context = re.sub(r'(\d+)?\s?CFR', '', context)
-            idx_text = re.search(r'\d{1,3}\.\d{1,4}(\([a-z]\))?(\(\d+\))?', context)
+            idx_text = re.search(r'\d{1,3}\.\d{1,4}(\(\w{1,5}\))?(\(\w{1,5}\))?', context)
             if idx_text:
                 context_clean = f'49 CFR {idx_text.group()}'
         if current_doc == 'USC':
             context = re.sub(r'(\d+)?\s?USC', '', context)
-            idx_text = re.search(r'\d{1,5}(\([a-z]\))?(\(\d+\))?(\([A-Z]\))?', context)
+            idx_text = re.search(r'\d{1,5}(\(\w{1,5}\))?(\(\w{1,5}\))?(\(\w{1,5}\))?', context)
             if idx_text:
                 context_clean = f'{current_title} USC {idx_text.group()}'
         if context_clean != '':

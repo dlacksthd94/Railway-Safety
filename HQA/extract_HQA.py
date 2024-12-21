@@ -16,4 +16,4 @@ def print_pdf_chunk(n):
     print(doc_qa)
     print(n)
 
-print_pdf_chunk(35)
+print_pdf_chunk(1)

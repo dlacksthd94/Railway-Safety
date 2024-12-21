@@ -1,6 +1,6 @@
 [
     {
-        "file": "2022_12 PTC FAQs_final.pdf",
+        "file": "RCLQAs0811.pdf",
         "qa": [
             {
                 "question": "As a remote control operator (RCO), am I required to be certified the same as a locomotive engineer?",
@@ -900,7 +900,7 @@
                 "answer": "No. Section 11503(b) exempts programs administered by the U.S. Department of Transportation or its operating administrations under Titles 23, 46, and 49 of the United States Code from the requirements and provisions of Title 41 of the FAST Act. In addition, projects subject to 23 U.S.C. 139, which includes all FHWA, FRA, and FTA projects, are not considered 'covered projects' as defined in Title 41 of the FAST Act (Section 41001(6)(B)(i). However, Section 41003(b)(1) requires the maintenance of an online database for posting project information (the 'Permitting Dashboard'). In addition, 23 U.S.C. 139(o) (added by FAST Act Section 1304(j)) requires that the Secretary post FHWA, FRA, and FTA projects evaluated with an environmental impact statement or environmental assessment on the Dashboard within 18 months of enactment of the FAST Act.",
                 "context": [
                     "23 USC 139(o)",
-                    "23 USC 41001(6)(B)",
+                    "23 USC 41001(6)(B)(i)",
                     "23 USC 41003(b)(1)"
                 ]
             }
