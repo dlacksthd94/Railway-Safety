@@ -36,3 +36,6 @@ pip install requests
 pip install timeout-decorator
 pip install undetected-chromedriver
 pip install streamlit
+pip install transformers
+pip install mistral-common
+pip install mistral-inference
