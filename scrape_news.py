@@ -3,7 +3,7 @@ import utils_scrape
 import json
 
 DATA_FOLDER = 'data/'
-DF_NAME = 'df_cal.csv'
+FN_DF = 'df_cal.csv'
 COLUMNS = ['query1', 'query2', 'state', 'county', 'city', 'id', 'url', 'pub_date', 'title', 'content']
 
 path_json_county_city = DATA_FOLDER + 'dict_California_county_city.json'
@@ -45,7 +45,7 @@ for query1 in tqdm(list_query1, leave=False):
     # break
                     
                     scrape = utils_scrape.Scrape(params, COLUMNS)
-                    path_df_cal=DATA_FOLDER + DF_NAME
+                    path_df_cal=DATA_FOLDER + FN_DF
                     scrape.load_df(path_df_cal)
                     # if list(scrape.df.tail(1)[['query1', 'query2', 'state', 'county', 'city']]) != [query1, query2, state, county, city]:
                     #     continue
