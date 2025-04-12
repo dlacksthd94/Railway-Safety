@@ -9,7 +9,7 @@ import gc
 
 DATA_FOLDER = 'data/'
 FN_DF_FILTER = 'df_news_filter.csv'
-FN_DF_LABEL = 'df_news_label.csv'
+FN_DF_LABEL_TEST = 'df_news_label_test.csv'
 DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
 path_df_filter = DATA_FOLDER + FN_DF_FILTER
@@ -102,5 +102,5 @@ for model_path in tqdm(list_model_path):
     torch.cuda.empty_cache()
 
 df = df.round(3)
-path_df_label = DATA_FOLDER + FN_DF_LABEL
-df.to_csv(path_df_label, index=False)
+path_df_label_test = DATA_FOLDER + FN_DF_LABEL_TEST
+df.to_csv(path_df_label_test, index=False)

@@ -1,0 +1,5 @@
+model,max_new_tokens,time,queryA,queryB
+Qwen/Qwen2.5-7B-Instruct-1M,1,411.24,1.0,1.0
+nvidia/Llama-3.1-Nemotron-Nano-8B-v1,1,438.91,0.98,0.9
+deepseek-ai/DeepSeek-R1-Distill-Llama-8B,1,438.79,0.96,0.96
+microsoft/Phi-4-mini-instruct,1,216.74,0.99,0.99
