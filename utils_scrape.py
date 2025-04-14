@@ -18,9 +18,19 @@ import json
 import subprocess
 
 class Scrape():
-    def __init__(self, params, columns):
+    def __init__(self, columns):
         self.driver = None
         self.df = None
+        self.columns = columns
+        self.query1 = None
+        self.query2 = None
+        self.state = None
+        self.county = None
+        self.city = None
+        self.date_from = None
+        self.date_to = None
+    
+    def set_params(self, params):
         self.query1 = params['query1']
         self.query2 = params['query2']
         self.state = params['state']
@@ -28,8 +38,7 @@ class Scrape():
         self.city = params['city']
         self.date_from = params['date_from']
         self.date_to = params['date_to']
-        self.columns = columns
-    
+
     def load_df(self, path_df_cal):
         if os.path.exists(path_df_cal):
             self.df = pd.read_csv(path_df_cal, parse_dates=['pub_date'])

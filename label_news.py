@@ -19,7 +19,7 @@ if os.path.exists(path_df_label):
 else:
     path_df_filter = DATA_FOLDER + FN_DF_FILTER
     df_label = pd.read_csv(path_df_filter)
-    df_label['yes'] = None
+    df_label['yes'] = np.nan
 
 def inference(tokenizer, model, prompt, max_new_tokens=1):
     input = tokenizer(prompt, return_tensors="pt").to(DEVICE)
@@ -54,7 +54,7 @@ _ = model.config.top_p
 max_new_tokens = 1
 
 for i, row in tqdm(df_label.iterrows(), total=len(df_label), desc='Labeling'):
-    if df_label.loc[i, 'yes'] is not None:
+    if not np.isnan(row['yes']):
         continue
     content = row['content']
     query = f"Is this article related to train accident? Answer with YES or NO. Answer:"
@@ -67,3 +67,4 @@ for i, row in tqdm(df_label.iterrows(), total=len(df_label), desc='Labeling'):
     if i % 10 == 0:
         path_df_label = DATA_FOLDER + FN_DF_LABEL
         df_label.to_csv(path_df_label, index=False)
+
