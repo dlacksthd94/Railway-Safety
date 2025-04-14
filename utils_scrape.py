@@ -109,11 +109,11 @@ class Scrape():
                 url = entry['link']
                 pub_date = pd.to_datetime(entry['published'])
                 title = entry['title']
-                if url in self.df['url'].values:
+                if id in self.df['id'].values:
                     continue
 
-                content = self.extract_content(url)
-                row_data = [[self.query1, self.query2, self.state, self.county, self.city, id, url, pub_date, title, content]]
+                content, redirect_url = self.extract_content(url)
+                row_data = [[self.query1, self.query2, self.state, self.county, self.city, id, redirect_url, pub_date, title, content]]
                 df_temp = pd.DataFrame(row_data, columns=self.columns)
                 df_result = pd.concat([df_result, df_temp])
             except:
@@ -125,11 +125,12 @@ class Scrape():
         self.driver.get(url)
         time.sleep(5)
         self.screenshot_driver()
+        redirect_url = self.driver.current_url
         html_source = self.driver.page_source
         article = Article(url='')
         article.set_html(html_source)
         article.parse()
-        return article.text
+        return article.text, redirect_url
 
 if __name__ == "__main__":
     self = scrape

@@ -2,7 +2,7 @@ from tqdm import tqdm
 import utils_scrape
 import json
 import time
-
+import re
 DATA_FOLDER = 'data/'
 FN_DF = 'df_news.csv'
 COLUMNS = ['query1', 'query2', 'state', 'county', 'city', 'id', 'url', 'pub_date', 'title', 'content']
@@ -20,8 +20,8 @@ with open(path_json_list_keywords, "r") as file:
 
 scrape = utils_scrape.Scrape(COLUMNS)
 if scrape.df is None:
-    path_df_cal=DATA_FOLDER + FN_DF
-    scrape.load_df(path_df_cal)
+    path_df=DATA_FOLDER + FN_DF
+    scrape.load_df(path_df)
 
 list_query1 = dict_list_keywords["list_query1"]
 list_query2 = dict_list_keywords["list_query2"]
@@ -55,7 +55,7 @@ for query1 in tqdm(list_query1, leave=False):
                     scrape.load_driver()
                     df_temp = scrape.get_article(feed)
                     scrape.append_df(df_temp)
-                    scrape.save_df(path_df_cal)
+                    scrape.save_df(path_df)
                     scrape.quit_driver()
 
                     time.sleep(5)
