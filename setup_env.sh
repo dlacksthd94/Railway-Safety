@@ -29,7 +29,7 @@ pip install transformers
 find . -name "chrome-*" -exec rm -rf {} +
 find . -name "chromedriver-*" -exec rm -rf {} +
 # LATEST VERSION HERE!!! https://googlechromelabs.github.io/chrome-for-testing/
-VERSION="${1:-135.0.7049.95}"
+VERSION="135.0.7049.95"
 OS="$(uname -s)"
 ARCH="$(uname -m)"
 case "${OS}" in
