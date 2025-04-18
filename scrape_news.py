@@ -3,24 +3,26 @@ import utils_scrape
 import json
 import time
 import re
+
 DATA_FOLDER = 'data/'
 FN_DF = 'df_news.csv'
 COLUMNS = ['query1', 'query2', 'state', 'county', 'city', 'id', 'url', 'pub_date', 'title', 'content']
 
+path_df=DATA_FOLDER + FN_DF
 path_json_county_city = DATA_FOLDER + 'dict_California_county_city.json'
+path_json_list_keywords = DATA_FOLDER + 'dict_list_keywords.json'
+
 with open(path_json_county_city, 'r') as file:
     dict_California_county_city = json.load(file)
     dict_California_county_city = {k.strip(' County'): v for k, v in dict_California_county_city.items() if 'County' in k}
     for k ,v in dict_California_county_city.items():
         v.insert(0, '-')
 
-path_json_list_keywords = DATA_FOLDER + 'dict_list_keywords.json'
 with open(path_json_list_keywords, "r") as file:
     dict_list_keywords = json.load(file)
 
 scrape = utils_scrape.Scrape(COLUMNS)
 if scrape.df is None:
-    path_df=DATA_FOLDER + FN_DF
     scrape.load_df(path_df)
 
 list_query1 = dict_list_keywords["list_query1"]
@@ -59,3 +61,28 @@ for query1 in tqdm(list_query1, leave=False):
                     scrape.quit_driver()
 
                     time.sleep(5)
+
+scrape = utils_scrape.Scrape(COLUMNS)
+scrape.load_df(path_df)
+
+human_verification = [
+    'Press & Hold to confirm you are\n\na human',
+    'This website is using a security service to protect itself from online attacks.',
+    'Verify you are human by completing the action below',
+    "Sorry, we have to make sure you're a human before we can show you this page."
+]
+pattern = r'|'.join(human_verification)
+indices_rescrape = scrape.df[scrape.df['content'].str.contains(pattern, na=False)].index
+
+for idx in indices_rescrape:
+    url = scrape.df.loc[idx, 'url']
+
+    try: # if the page is not loaded in 20 seconds, an error occurs.
+        content, redirect_url = scrape.extract_content(url)
+        scrape.df.loc[idx, 'content'] = content
+        scrape.save_df(path_df)
+    except:
+        scrape.quit_driver()
+        scrape.load_driver()
+
+    time.sleep(1)

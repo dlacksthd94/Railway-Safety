@@ -80,13 +80,23 @@ class Scrape():
         options = Options()
         options.add_argument("--headless")
         # options.add_argument("--disable-gpu")
-        options.add_argument("--window-size=4000x2000")
+        options.add_argument("--window-size=1440,1080")
         options.add_argument("--incognito")
         options.binary_location = "./chrome-linux64/chrome"
         chromedriver_path = "./chromedriver-linux64/chromedriver"
         service = ChromeService(executable_path=chromedriver_path)
         self.driver = webdriver.Chrome(options=options, service=service)
         self.driver.set_page_load_timeout(20)
+
+        from selenium_stealth import stealth
+        stealth(self.driver,
+            languages=["en-US", "en"],
+            vendor="Google Inc.",
+            platform="Win32",
+            webgl_vendor="Intel Inc.",
+            renderer="Intel Iris OpenGL Engine",
+            fix_hairline=True,
+        )
     
     def quit_driver(self):
         self.driver.quit()
