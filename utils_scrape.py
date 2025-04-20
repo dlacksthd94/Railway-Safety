@@ -16,6 +16,8 @@ from tqdm import tqdm
 import os
 import json
 import subprocess
+import platform
+from selenium.webdriver.common.action_chains import ActionChains
 
 class Scrape():
     def __init__(self, columns):
@@ -75,28 +77,36 @@ class Scrape():
         return feed
     
     def load_driver(self):
+        os_name = platform.system()
+        if os_name == "Linux":
+            platform_name = 'linux64'
+        elif os_name == "Darwin":
+            arch = platform.machine()
+            if arch == "x86_64":
+                platform_name = 'mac-x64'
+            elif arch == "arm64":
+                platform_name = 'mac-arm64'
+        else:
+            print(f"Unsupported OS: {os_name}")
+        
         if self.driver is not None:
             self.quit_driver()
         options = Options()
-        options.add_argument("--headless")
+        options.add_argument(
+            "user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/113.0.5672.63 Safari/537.36"
+        )
         # options.add_argument("--disable-gpu")
         options.add_argument("--window-size=1440,1080")
         options.add_argument("--incognito")
-        options.binary_location = "./chrome-linux64/chrome"
-        chromedriver_path = "./chromedriver-linux64/chromedriver"
+        if os_name == "Linux":
+            options.add_argument("--headless")
+            options.binary_location = f"./chrome-{platform_name}/chrome"
+        chromedriver_path = f"./chromedriver-{platform_name}/chromedriver"
         service = ChromeService(executable_path=chromedriver_path)
         self.driver = webdriver.Chrome(options=options, service=service)
         self.driver.set_page_load_timeout(20)
-
-        from selenium_stealth import stealth
-        stealth(self.driver,
-            languages=["en-US", "en"],
-            vendor="Google Inc.",
-            platform="Win32",
-            webgl_vendor="Intel Inc.",
-            renderer="Intel Iris OpenGL Engine",
-            fix_hairline=True,
-        )
     
     def quit_driver(self):
         self.driver.quit()
@@ -141,6 +151,7 @@ class Scrape():
         article.set_html(html_source)
         article.parse()
         return article.text, redirect_url
+
 
 if __name__ == "__main__":
     self = scrape

@@ -1,8 +1,9 @@
 from tqdm import tqdm
-import utils_scrape
+from utils_scrape import Scrape, VerificationError
 import json
 import time
 import re
+from bs4 import BeautifulSoup
 
 DATA_FOLDER = 'data/'
 FN_DF = 'df_news.csv'
@@ -21,7 +22,7 @@ with open(path_json_county_city, 'r') as file:
 with open(path_json_list_keywords, "r") as file:
     dict_list_keywords = json.load(file)
 
-scrape = utils_scrape.Scrape(COLUMNS)
+scrape = Scrape(COLUMNS)
 if scrape.df is None:
     scrape.load_df(path_df)
 
@@ -62,8 +63,9 @@ for query1 in tqdm(list_query1, leave=False):
 
                     time.sleep(5)
 
-scrape = utils_scrape.Scrape(COLUMNS)
+scrape = Scrape(COLUMNS)
 scrape.load_df(path_df)
+scrape.load_driver()
 
 human_verification = [
     'Press & Hold to confirm you are\n\na human',
@@ -73,16 +75,18 @@ human_verification = [
 ]
 pattern = r'|'.join(human_verification)
 indices_rescrape = scrape.df[scrape.df['content'].str.contains(pattern, na=False)].index
+print(f"num of articles to re-scrape: {len(indices_rescrape)}")
 
 for idx in indices_rescrape:
     url = scrape.df.loc[idx, 'url']
 
     try: # if the page is not loaded in 20 seconds, an error occurs.
         content, redirect_url = scrape.extract_content(url)
+        # scrape.press_and_hold()
         scrape.df.loc[idx, 'content'] = content
         scrape.save_df(path_df)
     except:
         scrape.quit_driver()
         scrape.load_driver()
 
-    time.sleep(1)
+    time.sleep(10)
