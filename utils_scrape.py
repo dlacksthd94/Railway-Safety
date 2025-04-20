@@ -151,6 +151,19 @@ class Scrape():
         article.set_html(html_source)
         article.parse()
         return article.text, redirect_url
+    
+    def press_and_hold(self):
+        try:
+            for _ in range(5):
+                div = self.driver.find_element(By.ID, "px-captcha")
+                x, y = div.size['width'], div.size['height']
+                ActionChains(self.driver).move_to_element_with_offset(div, 0, -y * 0.25).click_and_hold().pause(5).release().perform()
+            raise TimeoutError
+        except:
+            pass
+
+class VerificationError(Exception):
+    pass
 
 
 if __name__ == "__main__":

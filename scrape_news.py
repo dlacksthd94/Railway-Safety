@@ -82,6 +82,9 @@ for idx in indices_rescrape:
 
     try: # if the page is not loaded in 20 seconds, an error occurs.
         content, redirect_url = scrape.extract_content(url)
+        if re.search(pattern, content):
+            time.sleep(60)
+            raise VerificationError
         # scrape.press_and_hold()
         scrape.df.loc[idx, 'content'] = content
         scrape.save_df(path_df)
