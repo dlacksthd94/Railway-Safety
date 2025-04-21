@@ -17,6 +17,17 @@ df = df.dropna(subset=['content'])
 ######### drop duplicates
 df = df.drop_duplicates('url')
 
+
+######### drop human verification articles
+human_verification = [
+    'Press & Hold to confirm you are\n\na human',
+    'This website is using a security service to protect itself from online attacks.',
+    'Verify you are human by completing the action below',
+    "Sorry, we have to make sure you're a human before we can show you this page."
+]
+pattern = r'|'.join(human_verification)
+df = df[~df['content'].str.contains(pattern, na=False)]
+
 ######### drop content not containing query1
 path_json_list_keywords = DATA_FOLDER + 'dict_list_keywords.json'
 with open(path_json_list_keywords, "r") as file:
@@ -24,10 +35,7 @@ with open(path_json_list_keywords, "r") as file:
 list_query1 = dict_list_keywords['list_query1']
 pattern = '|'.join(list_query1)
 contain_query1 = df['content'].str.contains(pattern, case=False, na=False) | df['title'].str.contains(pattern, case=False, na=False)
-
-df = df[(contain_query1 | exclude)]
-
-df.loc[exclude[exclude].index]
+df = df[contain_query1]
 
 df = df.reset_index(drop=True)
 path_df_filter = DATA_FOLDER + FN_DF_FILTER

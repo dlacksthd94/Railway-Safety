@@ -63,33 +63,33 @@ for query1 in tqdm(list_query1, leave=False):
 
                     time.sleep(5)
 
-scrape = Scrape(COLUMNS)
-scrape.load_df(path_df)
-scrape.load_driver()
+# scrape = Scrape(COLUMNS)
+# scrape.load_df(path_df)
+# scrape.load_driver()
 
-human_verification = [
-    'Press & Hold to confirm you are\n\na human',
-    'This website is using a security service to protect itself from online attacks.',
-    'Verify you are human by completing the action below',
-    "Sorry, we have to make sure you're a human before we can show you this page."
-]
-pattern = r'|'.join(human_verification)
-indices_rescrape = scrape.df[scrape.df['content'].str.contains(pattern, na=False)].index
-print(f"num of articles to re-scrape: {len(indices_rescrape)}")
+# human_verification = [
+#     'Press & Hold to confirm you are\n\na human',
+#     'This website is using a security service to protect itself from online attacks.',
+#     'Verify you are human by completing the action below',
+#     "Sorry, we have to make sure you're a human before we can show you this page."
+# ]
+# pattern = r'|'.join(human_verification)
+# indices_rescrape = scrape.df[scrape.df['content'].str.contains(pattern, na=False)].index
+# print(f"num of articles to re-scrape: {len(indices_rescrape)}")
 
-for idx in indices_rescrape:
-    url = scrape.df.loc[idx, 'url']
+# for idx in indices_rescrape:
+#     url = scrape.df.loc[idx, 'url']
 
-    try: # if the page is not loaded in 20 seconds, an error occurs.
-        content, redirect_url = scrape.extract_content(url)
-        if re.search(pattern, content):
-            time.sleep(60)
-            raise VerificationError
-        # scrape.press_and_hold()
-        scrape.df.loc[idx, 'content'] = content
-        scrape.save_df(path_df)
-    except:
-        scrape.quit_driver()
-        scrape.load_driver()
+#     try: # if the page is not loaded in 20 seconds, an error occurs.
+#         content, redirect_url = scrape.extract_content(url)
+#         if re.search(pattern, content):
+#             time.sleep(60)
+#             raise VerificationError
+#         # scrape.press_and_hold()
+#         scrape.df.loc[idx, 'content'] = content
+#         scrape.save_df(path_df)
+#     except:
+#         scrape.quit_driver()
+#         scrape.load_driver()
 
-    time.sleep(10)
+#     time.sleep(10)
