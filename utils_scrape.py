@@ -6,15 +6,16 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.action_chains import ActionChains
 
 import feedparser
 from urllib.parse import urlencode
-from newspaper import Article
+import newspaper
 import trafilatura
-from readability import Document
+import readability
 import requests
 from bs4 import BeautifulSoup
-from goose3 import Goose
+import goose3 
 
 import pandas as pd
 import time
@@ -22,7 +23,13 @@ from tqdm import tqdm
 import os
 import subprocess
 import platform
-from selenium.webdriver.common.action_chains import ActionChains
+import copy
+
+TIMEOUT = 5
+CONFIG_NP = newspaper.Config()
+CONFIG_NP.request_timeout = TIMEOUT
+CONFIG_TF = copy.deepcopy(trafilatura.settings.DEFAULT_CONFIG)
+CONFIG_TF['DEFAULT']['DOWNLOAD_TIMEOUT'] = str(TIMEOUT)
 
 class Scrape():
     def __init__(self, columns):
@@ -122,7 +129,7 @@ class Scrape():
         self.driver.save_screenshot('web_screenshot.png')
     
     def get_article(self, feed):
-        empty_row = [[self.query1, self.query2, self.state, self.county, self.city, '', '', '', '', '', '', '', '', '']]
+        empty_row = [[self.query1, self.query2, self.state, self.county, self.city] + ['', '', '', ''] + [''] * 8]
         df_result = pd.DataFrame(empty_row, columns=self.columns)
         pbar_entry = tqdm(feed['entries'], leave=False)
         for entry in pbar_entry:
@@ -137,12 +144,12 @@ class Scrape():
                 title = entry['title']
                 if id in self.df['id'].values:
                     continue
-                redirect_url, content = self.get_redirect_url(url)
-                content_newspaper3k = self.extract_content_newspaper3k(redirect_url)
-                content_trafilatura = self.extract_content_trafilatura(redirect_url)
-                content_readability = self.extract_content_readability(redirect_url)
-                content_goose3 = self.extract_content_goose3(redirect_url)
-                row_data = [[self.query1, self.query2, self.state, self.county, self.city, id, redirect_url, pub_date, title, content, content_newspaper3k, content_trafilatura, content_readability, content_goose3]]
+                redirect_url, page_source = self.get_redirect_url(url)
+                content_np_url, content_np_html = self.extract_content_newspaper3k(redirect_url, page_source)
+                content_tf_url, content_tf_html = self.extract_content_trafilatura(redirect_url, page_source)
+                content_rd_url, content_rd_html = self.extract_content_readability(redirect_url, page_source)
+                content_gs_url, content_gs_html = self.extract_content_goose3(redirect_url, page_source)
+                row_data = [[self.query1, self.query2, self.state, self.county, self.city, id, redirect_url, pub_date, title, content_np_url, content_np_html, content_tf_url, content_tf_html, content_rd_url, content_rd_html, content_gs_url, content_gs_html]]
                 df_temp = pd.DataFrame(row_data, columns=self.columns)
                 df_result = pd.concat([df_result, df_temp])
             except:
@@ -157,48 +164,65 @@ class Scrape():
             redirect_url = self.driver.current_url
         assert (redirect_url != None) and (redirect_url != url) and ("google.com/rss/articles" not in redirect_url)
         self.screenshot_driver()
-        
-        article = Article('')
-        article.set_html(self.driver.page_source)
-        article.parse()
-        text = article.text
-        return redirect_url, text
+        return redirect_url, self.driver.page_source
     
-    def extract_content_newspaper3k(self, redirect_url):
+    def extract_content_newspaper3k(self, redirect_url, page_source):
         try:
-            article = Article(redirect_url)
+            article = newspaper.Article(redirect_url, config=CONFIG_NP)
             article.download()
             article.parse()
-            text = article.text
+            content_url = article.text
         except:
-            text = None
-        return text
-    
-    def extract_content_trafilatura(self, redirect_url):
+            content_url = None
         try:
-            downloaded = trafilatura.fetch_url(redirect_url)
-            text = trafilatura.extract(downloaded, include_comments=False)
+            article = newspaper.Article('')
+            article.set_html(page_source)
+            article.parse()
+            content_html = article.text
         except:
-            text = None
-        return text
+            content_html
+        return content_url, content_html
     
-    def extract_content_readability(self, redirect_url):
+    def extract_content_trafilatura(self, redirect_url, page_source):
         try:
-            resp = requests.get(redirect_url)
-            doc  = Document(resp.text)
-            text = BeautifulSoup(doc.summary(), "html.parser").get_text()
+            downloaded = trafilatura.fetch_url(redirect_url, config=CONFIG_TF)
+            content_url = trafilatura.extract(downloaded, include_comments=False)
         except:
-            text = None
-        return text
-    
-    def extract_content_goose3(self, redirect_url):
+            content_url = None
         try:
-            g = Goose()
+            content_html = trafilatura.extract(page_source, include_comments=False)
+        except:
+            content_html = None
+        return content_url, content_html
+    
+    def extract_content_readability(self, redirect_url, page_source):
+        try:
+            resp = requests.get(redirect_url, timeout=TIMEOUT)
+            doc  = readability.Document(resp.text)
+            content_url = BeautifulSoup(doc.summary(), "html.parser").get_text()
+        except:
+            content_url = None
+        try:
+            doc  = readability.Document(page_source)
+            content_html = BeautifulSoup(doc.summary(), "html.parser").get_text()
+        except:
+            content_html = None
+        return content_url, content_html
+    
+    def extract_content_goose3(self, redirect_url, page_source):
+        g = goose3.Goose()
+        try:
+            g.config.http_timeout = TIMEOUT
             article = g.extract(redirect_url)
-            text = article.cleaned_text
+            content_url = article.cleaned_text
         except:
-            text = None
-        return text
+            content_url = None
+        try:
+            article = g.extract(raw_html=page_source)
+            content_html = article.cleaned_text
+        except:
+            content_html = None
+        return content_url, content_html
     
     def press_and_hold(self):
         try:

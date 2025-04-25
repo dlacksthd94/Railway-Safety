@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 DATA_FOLDER = 'data/'
 FN_DF = 'df_news.csv'
-COLUMNS = ['query1', 'query2', 'state', 'county', 'city', 'id', 'url', 'pub_date', 'title', 'content', 'newspape3k', 'trafilatura', 'readability', 'goose3']
+COLUMNS = ['query1', 'query2', 'state', 'county', 'city', 'id', 'url', 'pub_date', 'title', 'np_url', 'tf_url', 'rd_url', 'gs_url', 'np_html', 'tf_html', 'rd_html', 'gs_html']
 
 path_df=DATA_FOLDER + FN_DF
 path_json_county_city = DATA_FOLDER + 'dict_California_county_city.json'
@@ -59,7 +59,7 @@ for query1 in pbar_query1:
                     scrape.set_params(params)
 
                     if scrape.already_scraped():
-                        time.sleep(0.01)
+                        time.sleep(0.001)
                         continue
 
                     feed = scrape.get_RSS()
