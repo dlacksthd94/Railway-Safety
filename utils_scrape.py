@@ -10,11 +10,16 @@ from selenium.common.exceptions import TimeoutException
 import feedparser
 from urllib.parse import urlencode
 from newspaper import Article
+import trafilatura
+from readability import Document
+import requests
+from bs4 import BeautifulSoup
+from goose3 import Goose
+
 import pandas as pd
 import time
 from tqdm import tqdm
 import os
-import json
 import subprocess
 import platform
 from selenium.webdriver.common.action_chains import ActionChains
@@ -106,7 +111,7 @@ class Scrape():
         chromedriver_path = f"./chromedriver-{platform_name}/chromedriver"
         service = ChromeService(executable_path=chromedriver_path)
         self.driver = webdriver.Chrome(options=options, service=service)
-        self.driver.set_page_load_timeout(20)
+        self.driver.set_page_load_timeout(10) # if the page is not loaded in 10 seconds, an error occurs.
     
     def quit_driver(self):
         self.driver.quit()
@@ -117,23 +122,27 @@ class Scrape():
         self.driver.save_screenshot('web_screenshot.png')
     
     def get_article(self, feed):
-        empty_row = [[self.query1, self.query2, self.state, self.county, self.city, '', '', '', '', '']]
+        empty_row = [[self.query1, self.query2, self.state, self.county, self.city, '', '', '', '', '', '', '', '', '']]
         df_result = pd.DataFrame(empty_row, columns=self.columns)
-        for entry in tqdm(feed['entries'], leave=False):
+        pbar_entry = tqdm(feed['entries'], leave=False)
+        for entry in pbar_entry:
             self.driver.delete_all_cookies()
             _ = self.driver.execute_cdp_cmd("Network.clearBrowserCache", {})
             _ = self.driver.execute_cdp_cmd("Network.clearBrowserCookies", {})
 
-            try: # if the page is not loaded in 20 seconds, an error occurs.
+            try:
                 id = entry['id']
                 url = entry['link']
                 pub_date = pd.to_datetime(entry['published'])
                 title = entry['title']
                 if id in self.df['id'].values:
                     continue
-
-                content, redirect_url = self.extract_content(url)
-                row_data = [[self.query1, self.query2, self.state, self.county, self.city, id, redirect_url, pub_date, title, content]]
+                redirect_url, content = self.get_redirect_url(url)
+                content_newspaper3k = self.extract_content_newspaper3k(redirect_url)
+                content_trafilatura = self.extract_content_trafilatura(redirect_url)
+                content_readability = self.extract_content_readability(redirect_url)
+                content_goose3 = self.extract_content_goose3(redirect_url)
+                row_data = [[self.query1, self.query2, self.state, self.county, self.city, id, redirect_url, pub_date, title, content, content_newspaper3k, content_trafilatura, content_readability, content_goose3]]
                 df_temp = pd.DataFrame(row_data, columns=self.columns)
                 df_result = pd.concat([df_result, df_temp])
             except:
@@ -141,16 +150,55 @@ class Scrape():
                 self.load_driver()
         return df_result
     
-    def extract_content(self, url):
+    def get_redirect_url(self, url):
         self.driver.get(url)
-        time.sleep(5)
+        redirect_url = None
+        if WebDriverWait(self.driver, 10).until_not(EC.url_contains("google.com/rss/articles")) == False: # return value False means url doens't contain the pattern
+            redirect_url = self.driver.current_url
+        assert (redirect_url != None) and (redirect_url != url) and ("google.com/rss/articles" not in redirect_url)
         self.screenshot_driver()
-        redirect_url = self.driver.current_url
-        html_source = self.driver.page_source
-        article = Article(url='')
-        article.set_html(html_source)
+        
+        article = Article('')
+        article.set_html(self.driver.page_source)
         article.parse()
-        return article.text, redirect_url
+        text = article.text
+        return redirect_url, text
+    
+    def extract_content_newspaper3k(self, redirect_url):
+        try:
+            article = Article(redirect_url)
+            article.download()
+            article.parse()
+            text = article.text
+        except:
+            text = None
+        return text
+    
+    def extract_content_trafilatura(self, redirect_url):
+        try:
+            downloaded = trafilatura.fetch_url(redirect_url)
+            text = trafilatura.extract(downloaded, include_comments=False)
+        except:
+            text = None
+        return text
+    
+    def extract_content_readability(self, redirect_url):
+        try:
+            resp = requests.get(redirect_url)
+            doc  = Document(resp.text)
+            text = BeautifulSoup(doc.summary(), "html.parser").get_text()
+        except:
+            text = None
+        return text
+    
+    def extract_content_goose3(self, redirect_url):
+        try:
+            g = Goose()
+            article = g.extract(redirect_url)
+            text = article.cleaned_text
+        except:
+            text = None
+        return text
     
     def press_and_hold(self):
         try:

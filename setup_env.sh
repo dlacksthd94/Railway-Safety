@@ -18,11 +18,10 @@ pip cache purge
 conda clean --all -y
 
 pip install pandas
-pip install selenium
-pip install newspaper3k
-pip install lxml_html_clean
 pip install feedparser
+pip install selenium
 pip install requests
+pip install newspaper3k lxml_html_clean trafilatura readability-lxml goose3
 pip install streamlit
 pip install transformers
 

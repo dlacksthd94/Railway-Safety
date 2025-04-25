@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 DATA_FOLDER = 'data/'
 FN_DF = 'df_news.csv'
-COLUMNS = ['query1', 'query2', 'state', 'county', 'city', 'id', 'url', 'pub_date', 'title', 'content']
+COLUMNS = ['query1', 'query2', 'state', 'county', 'city', 'id', 'url', 'pub_date', 'title', 'content', 'newspape3k', 'trafilatura', 'readability', 'goose3']
 
 path_df=DATA_FOLDER + FN_DF
 path_json_county_city = DATA_FOLDER + 'dict_California_county_city.json'
@@ -15,7 +15,7 @@ path_json_list_keywords = DATA_FOLDER + 'dict_list_keywords.json'
 
 with open(path_json_county_city, 'r') as file:
     dict_California_county_city = json.load(file)
-    dict_California_county_city = {k.strip(' County'): v for k, v in dict_California_county_city.items() if 'County' in k}
+    dict_California_county_city = {k.replace(' County', ''): v for k, v in dict_California_county_city.items() if 'County' in k}
     for k ,v in dict_California_county_city.items():
         v.insert(0, '-')
 
@@ -31,12 +31,22 @@ list_query2 = dict_list_keywords["list_query2"]
 list_state = dict_list_keywords["list_state"]
 list_county = dict_California_county_city.keys()
 
-for query1 in tqdm(list_query1, leave=False):
-    for query2 in tqdm(list_query2, leave=False):
-        for state in tqdm(list_state, leave=False):
-            for county in tqdm(list_county, leave=False):
+pbar_query1 = tqdm(list_query1, leave=False)
+for query1 in pbar_query1:
+    pbar_query1.set_description(query1)
+    pbar_query2 = tqdm(list_query2, leave=False)
+    for query2 in pbar_query2:
+        pbar_query2.set_description(query2)
+        pbar_state = tqdm(list_state, leave=False)
+        for state in pbar_state:
+            pbar_state.set_description(state)
+            pbar_county = tqdm(list_county, leave=False)
+            for county in pbar_county:
+                pbar_county.set_description(county)
                 list_city = dict_California_county_city[county]
-                for city in tqdm(list_city, leave=False):
+                pbar_city = tqdm(list_city, leave=False)
+                for city in pbar_city:
+                    pbar_city.set_description(city)
                     params = {
                         'query1': query1,
                         'query2': query2,
@@ -49,6 +59,7 @@ for query1 in tqdm(list_query1, leave=False):
                     scrape.set_params(params)
 
                     if scrape.already_scraped():
+                        time.sleep(0.01)
                         continue
 
                     feed = scrape.get_RSS()
@@ -61,7 +72,7 @@ for query1 in tqdm(list_query1, leave=False):
                     scrape.save_df(path_df)
                     scrape.quit_driver()
 
-                    time.sleep(5)
+                    time.sleep(3)
 
 # scrape = Scrape(COLUMNS)
 # scrape.load_df(path_df)
