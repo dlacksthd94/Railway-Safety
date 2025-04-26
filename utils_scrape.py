@@ -118,7 +118,7 @@ class Scrape():
         chromedriver_path = f"./chromedriver-{platform_name}/chromedriver"
         service = ChromeService(executable_path=chromedriver_path)
         self.driver = webdriver.Chrome(options=options, service=service)
-        self.driver.set_page_load_timeout(10) # if the page is not loaded in 10 seconds, an error occurs.
+        self.driver.set_page_load_timeout(TIMEOUT) # if the page is not loaded in 10 seconds, an error occurs.
     
     def quit_driver(self):
         self.driver.quit()
@@ -160,7 +160,7 @@ class Scrape():
     def get_redirect_url(self, url):
         self.driver.get(url)
         redirect_url = None
-        if WebDriverWait(self.driver, 10).until_not(EC.url_contains("google.com/rss/articles")) == False: # return value False means url doens't contain the pattern
+        if WebDriverWait(self.driver, TIMEOUT).until_not(EC.url_contains("google.com/rss/articles")) == False: # return value False means url doens't contain the pattern
             redirect_url = self.driver.current_url
         assert (redirect_url != None) and (redirect_url != url) and ("google.com/rss/articles" not in redirect_url)
         self.screenshot_driver()

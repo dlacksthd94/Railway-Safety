@@ -15,7 +15,7 @@ path_json_list_keywords = DATA_FOLDER + 'dict_list_keywords.json'
 
 with open(path_json_county_city, 'r') as file:
     dict_California_county_city = json.load(file)
-    dict_California_county_city = {k.replace(' County', ''): v for k, v in dict_California_county_city.items() if 'County' in k}
+    dict_California_county_city = {re.sub(r'( County| City & County)', '', k): v for k, v in dict_California_county_city.items() if 'County' in k}
     for k ,v in dict_California_county_city.items():
         v.insert(0, '-')
 
@@ -59,7 +59,7 @@ for query1 in pbar_query1:
                     scrape.set_params(params)
 
                     if scrape.already_scraped():
-                        time.sleep(0.001)
+                        time.sleep(0.01)
                         continue
 
                     feed = scrape.get_RSS()
