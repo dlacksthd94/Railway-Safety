@@ -1,106 +1,78 @@
 from tqdm import tqdm
-from utils_scrape import Scrape, VerificationError
+import utils_scrape
 import json
 import time
 import re
-from bs4 import BeautifulSoup
+import pandas as pd
 
 DATA_FOLDER = 'data/'
 FN_DF = 'df_news.csv'
-COLUMNS = ['query1', 'query2', 'state', 'county', 'city', 'id', 'url', 'pub_date', 'title', 'np_url', 'tf_url', 'rd_url', 'gs_url', 'np_html', 'tf_html', 'rd_html', 'gs_html']
+FN_DF_DATA = '250424 Highway-Rail Grade Crossing Incident Data (Form 57).csv'
+COLUMNS = ['query1', 'query2', 'county', 'state', 'city', 'highway', 'incident_id', 'news_id', 'url', 'pub_date', 'title', 'np_url', 'tf_url', 'rd_url', 'gs_url', 'np_html', 'tf_html', 'rd_html', 'gs_html']
 
 path_df=DATA_FOLDER + FN_DF
-path_json_county_city = DATA_FOLDER + 'dict_California_county_city.json'
-path_json_list_keywords = DATA_FOLDER + 'dict_list_keywords.json'
+path_df_data = DATA_FOLDER + FN_DF_DATA
 
-with open(path_json_county_city, 'r') as file:
-    dict_California_county_city = json.load(file)
-    dict_California_county_city = {re.sub(r'( County| City & County)', '', k): v for k, v in dict_California_county_city.items() if 'County' in k}
-    for k ,v in dict_California_county_city.items():
-        v.insert(0, '-')
+df_data = pd.read_csv(path_df_data)
+# df_data = df_data[(df_data['State Name'] == 'CALIFORNIA') & (df_data['County Name'] == 'RIVERSIDE')]
+df_data = df_data[df_data['State Name'] == 'CALIFORNIA']
+df_data['hash_id'] = df_data.apply(utils_scrape.hash_row, axis=1)
+df_data['Date'] = pd.to_datetime(df_data['Date'])
+df_data = df_data[df_data['Date'] >= '2000-01-01']
+list_prior_info = ['hash_id', 'Railroad Name', 'Date', 'Nearest Station', 'County Name', 'State Name', 'City Name', 'Highway Name', 'Public/Private', 'Highway User', 'Equipment Type'] # keywords useful for searching
+df_data = df_data.sort_values(['County Name', 'Date'], ascending=[True, False])
 
-with open(path_json_list_keywords, "r") as file:
-    dict_list_keywords = json.load(file)
-
-scrape = Scrape(COLUMNS)
+scrape = utils_scrape.Scrape(COLUMNS)
 if scrape.df is None:
     scrape.load_df(path_df)
 
-list_query1 = dict_list_keywords["list_query1"]
-list_query2 = dict_list_keywords["list_query2"]
-list_state = dict_list_keywords["list_state"]
-list_county = dict_California_county_city.keys()
+# list_query1 = ["train", "amtrak", "locomotive"]
+# list_query2 = ["accident", "incident", "crash", "collide", "hit", "strike", "injure", "kill", "derail"]
+list_query1 = ["train"]
+list_query2 = ["accident"]
 
-pbar_query1 = tqdm(list_query1, leave=False)
-for query1 in pbar_query1:
-    pbar_query1.set_description(query1)
-    pbar_query2 = tqdm(list_query2, leave=False)
-    for query2 in pbar_query2:
-        pbar_query2.set_description(query2)
-        pbar_state = tqdm(list_state, leave=False)
-        for state in pbar_state:
-            pbar_state.set_description(state)
-            pbar_county = tqdm(list_county, leave=False)
-            for county in pbar_county:
-                pbar_county.set_description(county)
-                list_city = dict_California_county_city[county]
-                pbar_city = tqdm(list_city, leave=False)
-                for city in pbar_city:
-                    pbar_city.set_description(city)
-                    params = {
-                        'query1': query1,
-                        'query2': query2,
-                        'state': state,
-                        'county': county,
-                        'city': city,
-                        'date_from': "2000-01-01",
-                        'date_to': "2024-12-31",
-                    }
-                    scrape.set_params(params)
+pbar_row = tqdm(df_data.iterrows(), total=df_data.shape[0])
+for i, row in pbar_row:
+    row = row.fillna('')
+    hash_id, rail_company, date, station, county, state, city, highway, private, vehicle_type, train_type = row[list_prior_info]
+    pbar_row.set_description(f'{county}, {city}, {highway}')
 
-                    if scrape.already_scraped():
-                        time.sleep(0.01)
-                        continue
+    pbar_query1 = tqdm(list_query1, leave=False)
+    for query1 in pbar_query1:
+        pbar_query1.set_description(query1)
+        pbar_query2 = tqdm(list_query2, leave=False)
+        for query2 in pbar_query2:
+            pbar_query2.set_description(query2)
+            
+            params = {
+                'query1': query1,
+                'query2': query2,
+                # 'rail_company': rail_company,
+                # 'station': station,
+                'county': county,
+                'state': state,
+                'city': city,
+                'highway': highway,
+                'private': private,
+                # 'vehicle_type': vehicle_type,
+                # 'train_type': train_type,
+                'date_from': (date - pd.Timedelta(days=7)).strftime('%Y-%m-%d'),
+                'date_to': (date + pd.Timedelta(days=7)).strftime('%Y-%m-%d'),
+                'incident_id': hash_id,
+            }
+            scrape.set_params(params)
 
-                    feed = scrape.get_RSS()
-                    f"{query1}, {query2}, {state}, {county}, {city}, {len(feed['entries'])}"
-                    assert feed['bozo'] == False
-                    
-                    scrape.load_driver()
-                    df_temp = scrape.get_article(feed)
-                    scrape.append_df(df_temp)
-                    scrape.save_df(path_df)
-                    scrape.quit_driver()
+            if scrape.already_scraped():
+                time.sleep(0.01)
+                continue
 
-                    time.sleep(3)
+            feed = scrape.get_RSS()
+            assert feed['bozo'] == False
+            
+            scrape.load_driver()
+            df_temp = scrape.get_article(feed)
+            scrape.append_df(df_temp)
+            scrape.save_df(path_df)
+            scrape.quit_driver()
 
-# scrape = Scrape(COLUMNS)
-# scrape.load_df(path_df)
-# scrape.load_driver()
-
-# human_verification = [
-#     'Press & Hold to confirm you are\n\na human',
-#     'This website is using a security service to protect itself from online attacks.',
-#     'Verify you are human by completing the action below',
-#     "Sorry, we have to make sure you're a human before we can show you this page."
-# ]
-# pattern = r'|'.join(human_verification)
-# indices_rescrape = scrape.df[scrape.df['content'].str.contains(pattern, na=False)].index
-# print(f"num of articles to re-scrape: {len(indices_rescrape)}")
-
-# for idx in indices_rescrape:
-#     url = scrape.df.loc[idx, 'url']
-
-#     try: # if the page is not loaded in 20 seconds, an error occurs.
-#         content, redirect_url = scrape.extract_content(url)
-#         if re.search(pattern, content):
-#             time.sleep(60)
-#             raise VerificationError
-#         # scrape.press_and_hold()
-#         scrape.df.loc[idx, 'content'] = content
-#         scrape.save_df(path_df)
-#     except:
-#         scrape.quit_driver()
-#         scrape.load_driver()
-
-#     time.sleep(10)
+            time.sleep(10)

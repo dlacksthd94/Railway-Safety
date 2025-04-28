@@ -24,6 +24,7 @@ import os
 import subprocess
 import platform
 import copy
+import hashlib
 
 TIMEOUT = 5
 CONFIG_NP = newspaper.Config()
@@ -38,20 +39,34 @@ class Scrape():
         self.columns = columns
         self.query1 = None
         self.query2 = None
-        self.state = None
+        self.rail_company = None
+        self.station = None
         self.county = None
+        self.state = None
         self.city = None
+        self.highway = None
+        self.private = None
+        self.vehicle_type = None
+        self.train_type = None
         self.date_from = None
         self.date_to = None
+        self.incident_id = None
     
     def set_params(self, params):
         self.query1 = params['query1']
         self.query2 = params['query2']
-        self.state = params['state']
+        # self.rail_company = params['rail_company']
+        # self.station = params['station']
         self.county = params['county']
+        self.state = params['state']
         self.city = params['city']
+        self.highway = params['highway']
+        self.private = params['private']
+        # self.vehicle_type = params['vehicle_type']
+        # self.train_type = params['train_type']
         self.date_from = params['date_from']
         self.date_to = params['date_to']
+        self.incident_id = params['incident_id']
 
     def load_df(self, path_df_cal):
         if os.path.exists(path_df_cal):
@@ -68,17 +83,18 @@ class Scrape():
     
     def already_scraped(self):
         condition = (
+            (self.df['incident_id'] == self.incident_id) &
             (self.df['query1'] == self.query1) &
-            (self.df['query2'] == self.query2) &
-            (self.df['state'] == self.state) &
-            (self.df['county'] == self.county) & 
-            (self.df['city'] == self.city)
+            (self.df['query2'] == self.query2)
         )
         return condition.any()
     
     def get_RSS(self):
+        # if self.private == 'Public':
+            # query = f'{self.query1} {self.query2} {self.county} {self.city} {self.highway} after:{self.date_from} before:{self.date_to}'
+        query = f'{self.query1} {self.query2} {self.county} {self.city} after:{self.date_from} before:{self.date_to}'
         params_rss = {
-            "q": f'{self.query1} {self.query2} state:{self.state} county:{self.county} city:{self.city} after:{self.date_from} before:{self.date_to}',
+            "q": query,
             'hl': 'en-US',
             'gl': 'US',
             'ceid': 'US:en'
@@ -129,27 +145,27 @@ class Scrape():
         self.driver.save_screenshot('web_screenshot.png')
     
     def get_article(self, feed):
-        empty_row = [[self.query1, self.query2, self.state, self.county, self.city] + ['', '', '', ''] + [''] * 8]
+        empty_row = [[self.query1, self.query2, self.county, self.state, self.city, self.highway, self.incident_id] + ['', '', '', ''] + [''] * 8]
         df_result = pd.DataFrame(empty_row, columns=self.columns)
-        pbar_entry = tqdm(feed['entries'], leave=False)
+        pbar_entry = tqdm(feed['entries'], total=len(feed['entries']), leave=False)
         for entry in pbar_entry:
             self.driver.delete_all_cookies()
             _ = self.driver.execute_cdp_cmd("Network.clearBrowserCache", {})
             _ = self.driver.execute_cdp_cmd("Network.clearBrowserCookies", {})
 
             try:
-                id = entry['id']
+                news_id = entry['id']
                 url = entry['link']
                 pub_date = pd.to_datetime(entry['published'])
                 title = entry['title']
-                if id in self.df['id'].values:
+                if news_id in self.df['news_id'].values:
                     continue
                 redirect_url, page_source = self.get_redirect_url(url)
                 content_np_url, content_np_html = self.extract_content_newspaper3k(redirect_url, page_source)
                 content_tf_url, content_tf_html = self.extract_content_trafilatura(redirect_url, page_source)
                 content_rd_url, content_rd_html = self.extract_content_readability(redirect_url, page_source)
                 content_gs_url, content_gs_html = self.extract_content_goose3(redirect_url, page_source)
-                row_data = [[self.query1, self.query2, self.state, self.county, self.city, id, redirect_url, pub_date, title, content_np_url, content_np_html, content_tf_url, content_tf_html, content_rd_url, content_rd_html, content_gs_url, content_gs_html]]
+                row_data = [[self.query1, self.query2, self.county, self.state, self.city, self.highway, self.incident_id, news_id, redirect_url, pub_date, title, content_np_url, content_np_html, content_tf_url, content_tf_html, content_rd_url, content_rd_html, content_gs_url, content_gs_html]]
                 df_temp = pd.DataFrame(row_data, columns=self.columns)
                 df_result = pd.concat([df_result, df_temp])
             except:
@@ -234,9 +250,11 @@ class Scrape():
         except:
             pass
 
-class VerificationError(Exception):
-    pass
-
+def hash_row(row):
+    strs = row.astype(str).to_list()
+    blob = ''.join(strs).encode('utf-8')
+    h = hashlib.md5(blob).hexdigest()
+    return h
 
 if __name__ == "__main__":
     self = scrape
