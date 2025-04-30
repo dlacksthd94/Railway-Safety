@@ -6,6 +6,7 @@ from tqdm import tqdm
 import re
 import time
 import gc
+import utils_inference
 
 DATA_FOLDER = 'data/'
 FN_DF_SAMPLE = 'df_news_label_sample.csv'
@@ -14,20 +15,6 @@ DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
 path_df_label = DATA_FOLDER + FN_DF_SAMPLE
 df_label = pd.read_csv(path_df_label)
-
-def inference(tokenizer, model, prompt, config):
-    input = tokenizer(prompt, return_tensors="pt", truncation=True).to(DEVICE)
-    output = model.generate(
-        input.input_ids,
-        attention_mask=input.attention_mask,
-        **config
-    )
-    # decoded_outputs = [tokenizer.decode(o, skip_special_tokens=True) for o in output]
-    input_size = input.input_ids.shape[1]
-    idx_first_output_token = input_size
-    first_output_token_id = output[:, idx_first_output_token:].squeeze()
-    answer = tokenizer.decode(first_output_token_id, skip_special_tokens=False)
-    return answer
 
 N_SIM = 5
 list_column = ['model', 'time', 'queryA', 'queryB', 'queryC']
@@ -91,7 +78,7 @@ for model_path, config in tqdm(dict_model.items()):
             prompt = f"context: {content}\n\nquery:{query}\n\nanswer:"
             if model.config.pad_token_id is None:
                 config['pad_token_id'] = tokenizer.eos_token_id
-            list_answer = [inference(tokenizer, model, prompt, config) for _ in range(N_SIM)]
+            list_answer = [utils_inference.inference(tokenizer, model, prompt, config, DEVICE) for _ in range(N_SIM)]
             list_answer_binary = [1 if re.search(r'yes', answer, re.IGNORECASE) else 0 for answer in list_answer]
             prec_temp = (np.array(list_answer_binary) == (label == 'YES')).mean()
             list_prec_temp.append(prec_temp)
