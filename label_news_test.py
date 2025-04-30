@@ -16,7 +16,7 @@ path_df_label = DATA_FOLDER + FN_DF_SAMPLE
 df_label = pd.read_csv(path_df_label)
 
 def inference(tokenizer, model, prompt, config):
-    input = tokenizer(prompt, return_tensors="pt").to(DEVICE)
+    input = tokenizer(prompt, return_tensors="pt", truncation=True).to(DEVICE)
     output = model.generate(
         input.input_ids,
         attention_mask=input.attention_mask,
@@ -48,8 +48,8 @@ dict_model = {
     }, # best performance
     'microsoft/Phi-4-mini-instruct': {
         'max_new_tokens': 1,
-        'temperature': 0.0,
-        'do_sample': False,
+        # 'temperature': 0.0,
+        'do_sample': False, # no need to set 'temperature' to 0
     }, # second best performance
     'nvidia/Llama-3.1-Nemotron-Nano-8B-v1': {
         'max_new_tokens': 1,
