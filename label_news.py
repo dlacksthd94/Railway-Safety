@@ -1,12 +1,10 @@
 import torch
 import pandas as pd
-from transformers import AutoTokenizer, AutoModelForCausalLM
 import numpy as np
 from tqdm import tqdm
 import re
-import time
 import os
-import utils_inference
+from transformers import pipeline
 
 DATA_FOLDER = 'data/'
 FN_DF_FILTER = 'df_news_filter.csv'
@@ -26,55 +24,61 @@ else:
     df_label[COLUMNS_LABEL] = float('nan')
 
 N_SIM = 1
-MODEL_PATH = 'microsoft/Phi-4-mini-instruct'
-dict_model = {
-    # 'Qwen/Qwen2.5-7B-Instruct-1M': {
-    #     'max_new_tokens': 1,
-    #     'temperature': 0.7,
-    #     'top_p': 0.8,
-    #     'do_sample': True,
-    #     # 'do_sample': False,
-    #     'repetition_penalty': 1.05,
-    # }, # good
-    'microsoft/Phi-4-mini-instruct': {
-        'max_new_tokens': 1,
-        'do_sample': False, # no need to set 'temperature' to 0
-    }, # best
-    # 'nvidia/Llama-3.1-Nemotron-Nano-8B-v1': {
-    #     'max_new_tokens': 1,
-    #     'temperature': 0.6,
-    #     'top_p': 0.95,
-    #     'do_sample': True,
-    #     # 'do_sample': False,
-    # }, # good but highly dependes on prompt
-    # "deepseek-ai/DeepSeek-R1-Distill-Llama-8B": {
-    #     'max_new_tokens': 1,
-    #     'temperature': 0.6,
-    #     'top_p': 0.95,
-    #     'do_sample': True,
-    #     # 'do_sample': False,
-    # }, # good
+dict_models = {
+    # 'google/gemma-3-1b-it',
+    # 'google/gemma-3-1b-pt': {},
+    # 'google/txgemma-2b-predict',
+    # 'google/txgemma-9b-predict',
+    # 'google/txgemma-9b-chat': {}, # no authorization
+    # 'Qwen/Qwen2.5-Omni-7B': {}, # transformers version failure
+    'Qwen/Qwen2.5-7B-Instruct-1M': {}, # third best performance
+    'microsoft/Phi-4-mini-instruct': {'truncation': True, 'use_cache': False}, # best performance
+    'nvidia/Llama-3.1-Nemotron-Nano-8B-v1': {}, # good but sometimes bad
+    "deepseek-ai/DeepSeek-R1-Distill-Llama-8B": {}, # second best performance
+    "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B": {}, # low performance
+    "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B": {}, # too low performance
+    "facebook/bart-large-mnli": {'candidate_labels': ["YES", "NO"]} # worst performance
 }
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
-model = AutoModelForCausalLM.from_pretrained(MODEL_PATH)
-_ = model.to(DEVICE)
-
-config = dict_model[MODEL_PATH]
-config['use_cache'] = False
+MODEL_PATH = 'microsoft/Phi-4-mini-instruct'
+config = dict_models[MODEL_PATH]
+pipe = pipeline(model=MODEL_PATH, device_map=DEVICE, **config)
+task = pipe.task
+if task == 'text-generation':
+    if pipe.generation_config.pad_token_id is None:
+        pipe.generation_config.pad_token_id = pipe.tokenizer.eos_token_id
+    if pipe.generation_config.temperature == 0 or pipe.generation_config.do_sample == False:
+        n_sim = 1
+    else:
+        n_sim = N_SIM
+    answer_constraint = 'Answer only YES or NO.'
+elif task == 'zero-shot-classification':
+    answer_constraint = ''
+else:
+    raise ValueError(f"Unsupported task: {task}")
 
 for idx, row in tqdm(df_label.iterrows(), total=len(df_label), desc='Labeling'):
     if row[COLUMNS_LABEL].notna().all():
         continue
     series_content = row[COLUMNS_CONTENT]
     for column_name, content in series_content.items():
-        query = "Is this article's main topic reporting a train accident? Answer only YES or NO."
-        prompt = f"context: {content}\n\nquery:{query}\n\nanswer:"
-        list_answer = [utils_inference.inference(tokenizer, model, prompt, config, DEVICE) for _ in range(N_SIM)]
+        query = f"Is this article's main topic reporting a train accident? {answer_constraint}" # best
+        prompt = f"Context: {content}\n\nQuestion: {query}\n\nAnswer:"
+        list_answer = []
+        if task == 'zero-shot-classification':
+            output = pipe(prompt)
+            answer = output['labels'][np.argmax(output['scores'])]
+            list_answer.append(answer)
+        elif task == 'text-generation':
+            for _ in range(n_sim):
+                output = pipe(prompt, max_new_tokens=1)
+                answer = output[0]['generated_text'].split('Answer:')[-1].strip()
+                list_answer.append(answer)
         list_answer_binary = [1 if re.search(r'yes', answer, re.IGNORECASE) else 0 for answer in list_answer]
-        yes = np.array(list_answer_binary).mean()
-        df_label.loc[idx, 'label_' + column_name] = yes.item()
+        is_yes = np.array(list_answer_binary).mean()
+        df_label.loc[idx, 'label_' + column_name] = is_yes.item()
 
     if idx % 10 == 0:
         df_label.to_csv(path_df_label, index=False)
+
 df_label.to_csv(path_df_label, index=False)

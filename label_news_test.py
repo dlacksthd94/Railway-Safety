@@ -44,10 +44,11 @@ for model_path, config in tqdm(dict_models.items()):
             n_sim = 1
         else:
             n_sim = N_SIM
-
-    answer_constraint = 'Answer only YES or NO.'
-    if task == 'zero-shot-classification':
+        answer_constraint = 'Answer only YES or NO.'
+    elif task == 'zero-shot-classification':
         answer_constraint = ''
+    else:
+        raise ValueError(f"Unsupported task: {task}")
 
     list_prec = []
     start = time.perf_counter()
