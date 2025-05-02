@@ -37,12 +37,13 @@ df = pd.DataFrame(columns=list_column)
 for model_path, config in tqdm(dict_models.items()):
     pipe = pipeline(model=model_path, device_map=DEVICE, **config)
     task = pipe.task
-    if task == 'text-generation' and pipe.generation_config.pad_token_id is None:
-        pipe.generation_config.pad_token_id = pipe.tokenizer.eos_token_id
-    if config.get('temperature', None) == 0 or config.get('do_sample', None) == False:
-        n_sim = 1
-    else:
-        n_sim = N_SIM
+    if task == 'text-generation':
+        if pipe.generation_config.pad_token_id is None:
+            pipe.generation_config.pad_token_id = pipe.tokenizer.eos_token_id
+        if pipe.generation_config.temperature == 0 or pipe.generation_config.do_sample == False:
+            n_sim = 1
+        else:
+            n_sim = N_SIM
 
     answer_constraint = 'Answer only YES or NO.'
     if task == 'zero-shot-classification':
