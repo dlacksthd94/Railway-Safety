@@ -1,5 +1,8 @@
 model,time,queryA,queryB,queryC
-Qwen/Qwen2.5-7B-Instruct-1M,1988.902,0.954,0.952,0.932
-microsoft/Phi-4-mini-instruct,1019.243,0.965,0.955,0.94
-nvidia/Llama-3.1-Nemotron-Nano-8B-v1,2100.438,0.957,0.894,0.921
-deepseek-ai/DeepSeek-R1-Distill-Llama-8B,2100.375,0.956,0.944,0.941
+Qwen/Qwen2.5-7B-Instruct-1M,1981.014,0.947,0.951,0.931
+microsoft/Phi-4-mini-instruct,1015.87,0.96,0.95,0.94
+nvidia/Llama-3.1-Nemotron-Nano-8B-v1,2090.72,0.927,0.884,0.846
+deepseek-ai/DeepSeek-R1-Distill-Llama-8B,2090.055,0.958,0.953,0.932
+deepseek-ai/DeepSeek-R1-Distill-Qwen-7B,1985.287,0.828,0.819,0.745
+deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B,455.495,0.67,0.647,0.663
+facebook/bart-large-mnli,52.095,0.5,0.565,0.465
