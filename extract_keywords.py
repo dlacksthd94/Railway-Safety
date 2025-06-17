@@ -6,21 +6,21 @@ import torch
 import time
 from pprint import pprint
 from tqdm import tqdm
+import os
 
 DATA_FOLDER = 'data/'
 FN_DF_DATA = '250424 Highway-Rail Grade Crossing Incident Data (Form 57).csv'
 FN_DF_LABEL = 'df_news_label.csv'
-FN_DICT_FORM57_PDF = 'form57_field_def_final.json'
-FN_DICT_FORM57_CSV = 'form57_field_def_csv.json'
+# FN_DICT_FORM57, FN_DF_OUTPUT, QUESTION_BATCH = 'form57_field_def_csv.json', 'df_output_csv.csv', 'single'
+FN_DICT_FORM57, FN_DF_OUTPUT, QUESTION_BATCH = 'form57_field_def_final.json', 'df_output_form.csv', 'category'
 FN_PDF_FORM57 = 'FRA F 6180.57 (Form 57) form only.pdf'
-FN_DF_OUTPUT = 'df_output.csv'
 COLUMNS_CONTENT = ['np_url', 'tf_url', 'rd_url', 'gs_url', 'np_html', 'tf_html', 'rd_html', 'gs_html']
 COLUMNS_LABEL = ['label_np_url', 'label_tf_url', 'label_rd_url', 'label_gs_url', 'label_np_html', 'label_tf_html', 'label_rd_html', 'label_gs_html']
 DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
 path_df = DATA_FOLDER + FN_DF_DATA
 path_df_label = DATA_FOLDER + FN_DF_LABEL
-path_dict_form57_csv = DATA_FOLDER + FN_DICT_FORM57_CSV
+path_dict_form57 = DATA_FOLDER + FN_DICT_FORM57
 path_pdf_form57 = DATA_FOLDER + FN_PDF_FORM57
 path_df_output = DATA_FOLDER + FN_DF_OUTPUT
 
@@ -31,9 +31,21 @@ df_data['Date'] = pd.to_datetime(df_data['Date'])
 df_data = df_data[df_data['Date'] >= '2000-01-01']
 
 SCRAPE_VERSION = 'rd_url'
-df_label = pd.read_csv(path_df_label)
-df_label = df_label[(df_label[COLUMNS_LABEL] == 1).any(axis=1)]
-sr_content = df_label[SCRAPE_VERSION][df_label['label_' + SCRAPE_VERSION] == 1]
+if os.path.exists(path_df_output):
+    df_output = pd.read_csv(path_df_output)
+else:
+    df_label = pd.read_csv(path_df_label)
+    df_label = df_label[(df_label[COLUMNS_LABEL] == 1).any(axis=1)]
+    sr_content = df_label[SCRAPE_VERSION]
+    mask = df_label['label_' + SCRAPE_VERSION] == 1
+    df_output = df_label.drop(COLUMNS_CONTENT + COLUMNS_LABEL, axis=1)
+    df_output[SCRAPE_VERSION] = sr_content
+    df_output = df_output[mask]
+
+    with open(path_dict_form57, 'r') as f:
+        dict_form57 = json.load(f)
+    list_col = list(map(lambda x: x['name'], dict_form57.values()))
+    df_output.loc[:, list_col] = ''
 
 dict_target_info = {
     'railroad': {
@@ -155,18 +167,14 @@ answer_format = (
 )
 
 ############ extract information using csv-version json
-with open(path_dict_form57_csv, 'r') as f:
-    dict_form57_csv = json.load(f)
 
-df_output = pd.DataFrame(sr_content)
-list_col = list(map(lambda x: x['name'], dict_form57_csv.values()))
-df_output.loc[:, list_col] = ''
-
-QUESTION_BATCH = 'single' # single, category
-for idx_content, content in tqdm(sr_content.items(), total=sr_content.size):
+for idx_content, row in tqdm(df_output.iterrows(), total=df_output.shape[0]):
+    if row.iat[-1]:
+        continue
+    content = row[SCRAPE_VERSION]
     
     if QUESTION_BATCH == 'single':
-        for i, entry in tqdm(dict_form57_csv.items(), leave=False):
+        for i, entry in tqdm(dict_form57.items(), leave=False):
             name = entry.get('name')
             options = str(entry.get('choices', ''))
             
@@ -182,7 +190,7 @@ for idx_content, content in tqdm(sr_content.items(), total=sr_content.size):
         for question_category, target_info in dict_target_info.items():
             
             for i, (field_num, column_name) in enumerate(target_info.items()):
-                field = dict_form57_csv[str(field_num)]
+                field = dict_form57[str(field_num)]
                 field_name = field['name']
                 field_choice = field.get('choices', {})
                 # if field_choice != {}:
@@ -205,6 +213,6 @@ for idx_content, content in tqdm(sr_content.items(), total=sr_content.size):
             pass
     
     if idx_content % 10 == 0:
-        df_output.to_csv(path_df_output)
+        df_output.to_csv(path_df_output, index=False)
 
-df_output.to_csv(path_df_output)
+df_output.to_csv(path_df_output, index=False)
