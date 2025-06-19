@@ -1,19 +1,26 @@
 import pandas as pd
 import json
-import utils_scrape
 from transformers import pipeline
 import torch
-import time
 from pprint import pprint
 from tqdm import tqdm
 import os
+from itertools import chain
+import re
 
+# MODE = 'csv'
+MODE = 'form'
+if MODE == 'csv':
+    FN_DICT_FORM57 = 'form57_field_def_csv.json'
+    FN_DF_OUTPUT = 'df_output_csv.csv'
+    QUESTION_BATCH = 'single'
+else:
+    FN_DICT_FORM57 = 'form57_field_def_group_OpenAI_GPT_o4-mini.json'
+    FN_DF_OUTPUT = 'df_output_form.csv'
+    QUESTION_BATCH = 'group'
 DATA_FOLDER = 'data/'
 FN_DF_DATA = '250424 Highway-Rail Grade Crossing Incident Data (Form 57).csv'
 FN_DF_LABEL = 'df_news_label.csv'
-# FN_DICT_FORM57, FN_DF_OUTPUT, QUESTION_BATCH = 'form57_field_def_csv.json', 'df_output_csv.csv', 'single'
-FN_DICT_FORM57, FN_DF_OUTPUT, QUESTION_BATCH = 'form57_field_def_final.json', 'df_output_form.csv', 'category'
-FN_PDF_FORM57 = 'FRA F 6180.57 (Form 57) form only.pdf'
 COLUMNS_CONTENT = ['np_url', 'tf_url', 'rd_url', 'gs_url', 'np_html', 'tf_html', 'rd_html', 'gs_html']
 COLUMNS_LABEL = ['label_np_url', 'label_tf_url', 'label_rd_url', 'label_gs_url', 'label_np_html', 'label_tf_html', 'label_rd_html', 'label_gs_html']
 DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
@@ -21,18 +28,20 @@ DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 path_df = DATA_FOLDER + FN_DF_DATA
 path_df_label = DATA_FOLDER + FN_DF_LABEL
 path_dict_form57 = DATA_FOLDER + FN_DICT_FORM57
-path_pdf_form57 = DATA_FOLDER + FN_PDF_FORM57
 path_df_output = DATA_FOLDER + FN_DF_OUTPUT
 
-df_data = pd.read_csv(path_df)
-df_data = df_data[df_data['State Name'] == 'CALIFORNIA']
-df_data['hash_id'] = df_data.apply(utils_scrape.hash_row, axis=1)
-df_data['Date'] = pd.to_datetime(df_data['Date'])
-df_data = df_data[df_data['Date'] >= '2000-01-01']
+with open(path_dict_form57, 'r') as f:
+    dict_form57 = json.load(f)
+
+if QUESTION_BATCH == 'single':
+    list_col = list(map(lambda x: x['name'], dict_form57.values()))
+elif QUESTION_BATCH == 'group':
+    list_col = list(chain.from_iterable(map(lambda group: list(group.keys()), dict_form57.values())))
 
 SCRAPE_VERSION = 'rd_url'
 if os.path.exists(path_df_output):
     df_output = pd.read_csv(path_df_output)
+    df_output[list_col] = df_output[list_col].fillna('')
 else:
     df_label = pd.read_csv(path_df_label)
     df_label = df_label[(df_label[COLUMNS_LABEL] == 1).any(axis=1)]
@@ -41,10 +50,6 @@ else:
     df_output = df_label.drop(COLUMNS_CONTENT + COLUMNS_LABEL, axis=1)
     df_output[SCRAPE_VERSION] = sr_content
     df_output = df_output[mask]
-
-    with open(path_dict_form57, 'r') as f:
-        dict_form57 = json.load(f)
-    list_col = list(map(lambda x: x['name'], dict_form57.values()))
     df_output.loc[:, list_col] = ''
 
 dict_target_info = {
@@ -157,15 +162,6 @@ if pipe.generation_config.temperature == 0 or pipe.generation_config.do_sample =
 else:
     n_sim = N_SIM
 
-question_base = (
-        "From the context, find the information: "
-    )
-answer_format = (
-    "The answer should be short and without explanation.\n"
-    "If options are provided, answer only with codes.\n"
-    "If you cannot find the relevant information, answer with 'Unknown'.\n"
-)
-
 ############ extract information using csv-version json
 
 for idx_content, row in tqdm(df_output.iterrows(), total=df_output.shape[0]):
@@ -174,6 +170,15 @@ for idx_content, row in tqdm(df_output.iterrows(), total=df_output.shape[0]):
     content = row[SCRAPE_VERSION]
     
     if QUESTION_BATCH == 'single':
+        question_base = (
+                "From the context, find the information: "
+            )
+        answer_format = (
+            "The answer should be short and without explanation.\n"
+            "If options are provided, answer only with codes.\n"
+            "If you cannot find the relevant information, answer with 'Unknown'."
+        )
+
         for i, entry in tqdm(dict_form57.items(), leave=False):
             name = entry.get('name')
             options = str(entry.get('choices', ''))
@@ -186,32 +191,33 @@ for idx_content, row in tqdm(df_output.iterrows(), total=df_output.shape[0]):
 
             df_output.loc[idx_content, name] = answer
 
-    elif QUESTION_BATCH == 'category':
-        for question_category, target_info in dict_target_info.items():
-            
-            for i, (field_num, column_name) in enumerate(target_info.items()):
-                field = dict_form57[str(field_num)]
-                field_name = field['name']
-                field_choice = field.get('choices', {})
-                # if field_choice != {}:
-                #     field_choice['0'] = 'Unknown'
-                question_temp = f"{field_num}. {field_name}: {field_choice}"
-                question += question_temp + "\n"
-            
-            question += answer_format
-            first_key = list(target_info.keys())[0]
-            prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n" + f"{first_key}."# {dict_form57_csv[str(first_key)]['name']}:"
+    elif QUESTION_BATCH == 'group':
+        question_base = (
+                "From the context, answer the questions: "
+            )
+        answer_format = (
+            "The answers should be short and without explanation.\n"
+            "If options are provided, answer only with codes without labels.\n"
+            "If you cannot find the relevant information, answer with 'Unknown'."
+        )
 
-            list_answer = []
-            for _ in range(n_sim):
-                start = time.time()
-                output = pipe(prompt)
-                end = time.time()
-                end - start
-                answers = output[0]['generated_text'].split('Answer:')[-1].strip()
-                print(answers.split('\n'))
-            pass
-    
+        for group_name, group in tqdm(dict_form57.items(), leave=False):
+            question = question_base + '\n'
+            for entry_idx, entry in tqdm(group.items(), leave=False):
+                name = entry.get('name')
+                options = str(entry.get('choices', ''))
+                question += f'({entry_idx}): ' + name + options + '\n'
+            question += answer_format
+            prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n({list(group.keys())[0]}):"
+            
+            output = pipe(prompt)#, max_new_tokens=30)
+            answer = output[0]['generated_text'].split('Answer:\n')[-1]
+
+            dict_idxentry_answer = dict(re.findall(r'\((\d+)\):\s*([^\n]+)', answer))
+
+            for idx_entry, answer in dict_idxentry_answer.items():
+                df_output.loc[idx_content, idx_entry] = answer
+
     if idx_content % 10 == 0:
         df_output.to_csv(path_df_output, index=False)
 
