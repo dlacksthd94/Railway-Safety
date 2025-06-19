@@ -1,0 +1,2276 @@
+[
+    {
+        "1": {
+            "name": "Name of Reporting Railroad",
+            "type": "string"
+        },
+        "1a": {
+            "name": "Alphabetic Code",
+            "type": "string"
+        },
+        "1b": {
+            "name": "Railroad Accident/Incident No.",
+            "type": "string"
+        },
+        "2": {
+            "name": "Name of Other Railroad or Other Entity Filing for Equipment Involved in Train Accident/Incident",
+            "type": "string"
+        },
+        "2a": {
+            "name": "Alphabetic Code",
+            "type": "string"
+        },
+        "2b": {
+            "name": "Railroad Accident/Incident No.",
+            "type": "string"
+        },
+        "3": {
+            "name": "Name of Railroad or Other Entity Responsible for Track Maintenance",
+            "type": "string"
+        },
+        "3a": {
+            "name": "Alphabetic Code",
+            "type": "string"
+        },
+        "3b": {
+            "name": "Railroad Accident/Incident No.",
+            "type": "string"
+        },
+        "4": {
+            "name": "U.S. DOT Grade Crossing Identification Number",
+            "type": "string"
+        },
+        "5": {
+            "name": "Date of Accident/Incident",
+            "type": "string"
+        },
+        "6": {
+            "name": "Time of Accident/Incident",
+            "type": "string"
+        },
+        "7": {
+            "name": "Nearest Railroad Station",
+            "type": "string"
+        },
+        "8": {
+            "name": "Subdivision",
+            "type": "string"
+        },
+        "9": {
+            "name": "County",
+            "type": "string"
+        },
+        "10": {
+            "name": "State Abbr.",
+            "type": "string"
+        },
+        "11": {
+            "name": "City (if in a city)",
+            "type": "string"
+        },
+        "12": {
+            "name": "Highway Name or Number",
+            "type": "string"
+        },
+        "13": {
+            "name": "Type",
+            "type": "single choice",
+            "choices": {
+                "A": "Auto",
+                "B": "Truck",
+                "C": "Truck-trailer",
+                "D": "Pick-up truck",
+                "E": "Van",
+                "F": "Bus",
+                "G": "School bus",
+                "H": "Motorcycle",
+                "J": "Other motor vehicle",
+                "K": "Pedestrian",
+                "M": "Other (specify)"
+            }
+        },
+        "14": {
+            "name": "Vehicle Speed (est. mph at impact)",
+            "type": "digit"
+        },
+        "15": {
+            "name": "Direction (geographical)",
+            "type": "single choice",
+            "choices": {
+                "1": "North",
+                "2": "South",
+                "3": "East",
+                "4": "West"
+            }
+        },
+        "16": {
+            "name": "Position",
+            "type": "single choice",
+            "choices": {
+                "1": "Stalled or stuck on crossing",
+                "2": "Stopped on crossing",
+                "3": "Moving over crossing",
+                "4": "Trapped on crossing by traffic",
+                "5": "Blocked on crossing by gates"
+            }
+        },
+        "17": {
+            "name": "Equipment",
+            "type": "single choice",
+            "choices": {
+                "1": "Train (units pulling)",
+                "2": "Train (units pushing)",
+                "3": "Train (standing)",
+                "4": "Car(s) (moving)",
+                "5": "Car(s) (standing)",
+                "6": "Light loco(s) (moving)",
+                "7": "Light loco(s) (standing)",
+                "8": "Other (specify)",
+                "A": "Train pulling \u2013 RCL",
+                "B": "Train pushing \u2013 RCL",
+                "C": "Train standing \u2013 RCL",
+                "D": "EMU Locomotive(s)",
+                "E": "DMU Locomotive(s)"
+            }
+        },
+        "18": {
+            "name": "Position of Car Unit in Train",
+            "type": "string"
+        },
+        "19": {
+            "name": "Circumstance",
+            "type": "single choice",
+            "choices": {
+                "1": "Rail equipment struck highway user",
+                "2": "Rail equipment struck by highway user"
+            }
+        },
+        "20a": {
+            "name": "Was the highway user and/or rail equipment involved in the impact transporting hazardous materials?",
+            "type": "single choice",
+            "choices": {
+                "1": "Highway user",
+                "2": "Rail equipment",
+                "3": "Both",
+                "4": "Neither"
+            }
+        },
+        "20b": {
+            "name": "Was there a hazardous materials release by",
+            "type": "single choice",
+            "choices": {
+                "1": "Highway user",
+                "2": "Rail equipment",
+                "3": "Both",
+                "4": "Neither"
+            }
+        },
+        "20c": {
+            "name": "State here the name and quantity of the hazardous material released, if any.",
+            "type": "string"
+        },
+        "21": {
+            "name": "Temperature (Specify if minus)",
+            "type": "string"
+        },
+        "22": {
+            "name": "Visibility (single entry)",
+            "type": "single choice",
+            "choices": {
+                "1": "Dawn",
+                "2": "Day",
+                "3": "Dusk",
+                "4": "Dark"
+            }
+        },
+        "23": {
+            "name": "Weather (single entry)",
+            "type": "single choice",
+            "choices": {
+                "1": "Clear",
+                "2": "Cloudy",
+                "3": "Rain",
+                "4": "Fog",
+                "5": "Sleet",
+                "6": "Snow"
+            }
+        },
+        "24": {
+            "name": "Type of Equipment Consist (single entry)",
+            "type": "single choice",
+            "choices": {
+                "1": "Freight Train",
+                "2": "Passenger Train-Pulling",
+                "3": "Commuter Train-Pulling",
+                "4": "Work train",
+                "5": "Single Car",
+                "6": "Cut of cars",
+                "7": "Yard/switching",
+                "8": "Light loco(s)",
+                "9": "Maint./inspect. Car",
+                "A": "Spec. MoW Equip.",
+                "B": "Passenger Train-Pushing",
+                "C": "Commuter Train-Pushing",
+                "D": "EMU",
+                "E": "DMU"
+            }
+        },
+        "25": {
+            "name": "Track Type Used by Rail Equipment Involved",
+            "type": "single choice",
+            "choices": {
+                "1": "Main",
+                "2": "Yard",
+                "3": "Siding",
+                "4": "Industry"
+            }
+        },
+        "26": {
+            "name": "Track Number or Name",
+            "type": "string"
+        },
+        "27": {
+            "name": "FRA Track Class (1-9, X)",
+            "type": "string"
+        },
+        "28": {
+            "name": "Number of Locomotive Units",
+            "type": "digit"
+        },
+        "29": {
+            "name": "Number of Cars",
+            "type": "digit"
+        },
+        "30": {
+            "name": "Consist Speed (Recorded speed, if available)",
+            "type": "string"
+        },
+        "31": {
+            "name": "Time Table Direction",
+            "type": "single choice",
+            "choices": {
+                "1": "North",
+                "2": "South",
+                "3": "East",
+                "4": "West"
+            }
+        },
+        "32": {
+            "name": "Type of Crossing Warning",
+            "type": "single choice",
+            "choices": {
+                "1": "Gates",
+                "2": "Cantilever FLS",
+                "3": "Standard FLS",
+                "4": "Wig wags",
+                "5": "Hwy. traffic signals",
+                "6": "Audible",
+                "7": "Crossbucks",
+                "8": "Stop signs",
+                "9": "Watchman",
+                "10": "Flagged by crew",
+                "11": "Other (specify)",
+                "12": "None"
+            }
+        },
+        "33": {
+            "name": "Signaled Crossing Warning",
+            "type": "string"
+        },
+        "34": {
+            "name": "Roadway Conditions",
+            "type": "single choice",
+            "choices": {
+                "A": "Dry",
+                "B": "Wet",
+                "C": "Snow/slush",
+                "D": "Ice",
+                "E": "Sand, Mud, Dirt, Oil, Gravel",
+                "F": "Water (Standing, Moving)"
+            }
+        },
+        "35": {
+            "name": "Location of Warning",
+            "type": "single choice",
+            "choices": {
+                "1": "Both sides",
+                "2": "Side of vehicle approach",
+                "3": "Opposite side of vehicle approach"
+            }
+        },
+        "36": {
+            "name": "Crossing Warning Interconnected with Highway Signals",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "37": {
+            "name": "Crossing Illuminated by Street Lights or Special Lights",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "38": {
+            "name": "Highway User's Age",
+            "type": "digit"
+        },
+        "39": {
+            "name": "Highway User's Gender",
+            "type": "single choice",
+            "choices": {
+                "1": "Male",
+                "2": "Female"
+            }
+        },
+        "40": {
+            "name": "Highway User Went Behind or in Front of Train and Struck or was Struck by Second Train",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "41": {
+            "name": "Highway User",
+            "type": "single choice",
+            "choices": {
+                "1": "Went around the gate",
+                "2": "Stopped and then proceeded",
+                "3": "Did not stop",
+                "4": "Stopped on crossing",
+                "5": "Other (specify)",
+                "6": "Went around/thru temporary barricade",
+                "7": "Went thru the gate",
+                "8": "Suicide/Attempted suicide"
+            }
+        },
+        "42": {
+            "name": "Driver Passed Standing Highway Vehicle",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "43": {
+            "name": "View of Track Obscured by (primary obstruction)",
+            "type": "single choice",
+            "choices": {
+                "1": "Permanent structure",
+                "2": "Standing railroad equipment",
+                "3": "Passing train",
+                "4": "Topography",
+                "5": "Vegetation",
+                "6": "Highway vehicles",
+                "7": "Other (specify)",
+                "8": "Not obstructed"
+            }
+        },
+        "44": {
+            "name": "Driver was",
+            "type": "single choice",
+            "choices": {
+                "1": "Killed",
+                "2": "Injured",
+                "3": "Uninjured"
+            }
+        },
+        "45": {
+            "name": "Was Driver in the Vehicle?",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No"
+            }
+        },
+        "46": {
+            "name": "Highway-Rail Crossing Users Killed",
+            "type": "digit"
+        },
+        "47": {
+            "name": "Highway Vehicle Property Damage (est. dollar damage)",
+            "type": "digit"
+        },
+        "48": {
+            "name": "Total Number of Vehicle Occupants (including driver)",
+            "type": "digit"
+        },
+        "49": {
+            "name": "Railroad Employees",
+            "type": "digit"
+        },
+        "50": {
+            "name": "Total Number of People on Train (include passengers and train crew)",
+            "type": "digit"
+        },
+        "51": {
+            "name": "Is a Rail Equipment Accident/Incident Report Being Filed?",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No"
+            }
+        },
+        "52": {
+            "name": "Passengers on Train",
+            "type": "digit"
+        },
+        "53a": {
+            "name": "Special Study Block - Video Taken?",
+            "type": "single choice",
+            "choices": {
+                "Yes": "Yes",
+                "No": "No"
+            }
+        },
+        "53b": {
+            "name": "Special Study Block - Video Used?",
+            "type": "single choice",
+            "choices": {
+                "Yes": "Yes",
+                "No": "No"
+            }
+        },
+        "54": {
+            "name": "Narrative Description",
+            "type": "string"
+        },
+        "55": {
+            "name": "Typed Name & Title",
+            "type": "string"
+        },
+        "56": {
+            "name": "Signature",
+            "type": "string"
+        },
+        "57": {
+            "name": "Date",
+            "type": "string"
+        }
+    },
+    {
+        "1": {
+            "name": "Name of Reporting Railroad",
+            "type": "string"
+        },
+        "1a": {
+            "name": "Alphabetic Code (Reporting Railroad)",
+            "type": "string"
+        },
+        "1b": {
+            "name": "Railroad Accident/Incident No. (Reporting Railroad)",
+            "type": "string"
+        },
+        "2": {
+            "name": "Name of Other Railroad or Other Entity Filing for Equipment Involved in Train Accident/Incident",
+            "type": "string"
+        },
+        "2a": {
+            "name": "Alphabetic Code (Other Railroad or Entity)",
+            "type": "string"
+        },
+        "2b": {
+            "name": "Railroad Accident/Incident No. (Other Railroad or Entity)",
+            "type": "string"
+        },
+        "3": {
+            "name": "Name of Railroad or Other Entity Responsible for Track Maintenance",
+            "type": "string"
+        },
+        "3a": {
+            "name": "Alphabetic Code (Track Maintenance Entity)",
+            "type": "string"
+        },
+        "3b": {
+            "name": "Railroad Accident/Incident No. (Track Maintenance)",
+            "type": "string"
+        },
+        "4": {
+            "name": "U.S. DOT Grade Crossing Identification Number",
+            "type": "string"
+        },
+        "5": {
+            "name": "Date of Accident/Incident",
+            "type": "string"
+        },
+        "6": {
+            "name": "Time of Accident/Incident",
+            "type": "string"
+        },
+        "7": {
+            "name": "Nearest Railroad Station",
+            "type": "string"
+        },
+        "8": {
+            "name": "Subdivision",
+            "type": "string"
+        },
+        "9": {
+            "name": "County",
+            "type": "string"
+        },
+        "10": {
+            "name": "State Abbreviation",
+            "type": "string"
+        },
+        "11": {
+            "name": "City (if in a city)",
+            "type": "string"
+        },
+        "12": {
+            "name": "Highway Name or Number",
+            "type": "string"
+        },
+        "13": {
+            "name": "Type of Highway User Involved",
+            "type": "single choice",
+            "choices": {
+                "A": "Auto",
+                "B": "Truck",
+                "C": "Truck-trailer",
+                "D": "Pick-up truck",
+                "E": "Van",
+                "F": "Bus",
+                "G": "School bus",
+                "H": "Motorcycle",
+                "J": "Other motor vehicle",
+                "K": "Pedestrian",
+                "M": "Other (specify)"
+            }
+        },
+        "14": {
+            "name": "Vehicle Speed (est. mph at impact)",
+            "type": "digit"
+        },
+        "15": {
+            "name": "Direction (geographical)",
+            "type": "single choice",
+            "choices": {
+                "1": "North",
+                "2": "South",
+                "3": "East",
+                "4": "West"
+            }
+        },
+        "16": {
+            "name": "Position (Highway User)",
+            "type": "single choice",
+            "choices": {
+                "1": "Stalled or stuck on crossing",
+                "2": "Stopped on crossing",
+                "3": "Moving over crossing",
+                "4": "Trapped on crossing by traffic",
+                "5": "Blocked on crossing by gates"
+            }
+        },
+        "17": {
+            "name": "Equipment (Rail Equipment Involved)",
+            "type": "single choice",
+            "choices": {
+                "1": "Train (units pulling)",
+                "2": "Train (units pushing)",
+                "3": "Train (standing)",
+                "4": "Car(s) (moving)",
+                "5": "Car(s) (standing)",
+                "6": "Light loco(s) (moving)",
+                "7": "Light loco(s) (standing)",
+                "8": "Other (specify)"
+            }
+        },
+        "17_code": {
+            "name": "Equipment Code",
+            "type": "string"
+        },
+        "18": {
+            "name": "Position of Car Unit in Train",
+            "type": "digit"
+        },
+        "19": {
+            "name": "Circumstance",
+            "type": "single choice",
+            "choices": {
+                "1": "Rail equipment struck highway user",
+                "2": "Rail equipment struck by highway user"
+            }
+        },
+        "20a": {
+            "name": "Was the highway user and/or rail equipment involved in the impact transporting hazardous materials?",
+            "type": "single choice",
+            "choices": {
+                "1": "Highway user",
+                "2": "Rail equipment",
+                "3": "Both",
+                "4": "Neither"
+            }
+        },
+        "20b": {
+            "name": "Was there a hazardous materials release by?",
+            "type": "single choice",
+            "choices": {
+                "1": "Highway user",
+                "2": "Rail equipment",
+                "3": "Both",
+                "4": "Neither"
+            }
+        },
+        "20c": {
+            "name": "Name and quantity of hazardous material released, if any",
+            "type": "string"
+        },
+        "21": {
+            "name": "Temperature (Specify if minus)",
+            "type": "string"
+        },
+        "22": {
+            "name": "Visibility (single entry)",
+            "type": "single choice",
+            "choices": {
+                "1": "Dawn",
+                "2": "Day",
+                "3": "Dusk",
+                "4": "Dark"
+            }
+        },
+        "23": {
+            "name": "Weather (single entry)",
+            "type": "single choice",
+            "choices": {
+                "1": "Clear",
+                "2": "Cloudy",
+                "3": "Rain",
+                "4": "Fog",
+                "5": "Sleet",
+                "6": "Snow"
+            }
+        },
+        "24": {
+            "name": "Type of Equipment Consist (single entry)",
+            "type": "single choice",
+            "choices": {
+                "1": "Freight Train",
+                "2": "Passenger Train-Pulling",
+                "3": "Commuter Train-Pulling",
+                "4": "Work train",
+                "5": "Single Car",
+                "6": "Cut of cars",
+                "7": "Yard/switching",
+                "8": "Light loco(s)",
+                "9": "Maint./inspect. Car",
+                "A": "Spec. MoW Equip.",
+                "B": "Passenger Train-Pushing",
+                "C": "Commuter Train-Pushing",
+                "D": "EMU",
+                "E": "DMU"
+            }
+        },
+        "25": {
+            "name": "Track Type Used by Rail Equipment Involved",
+            "type": "single choice",
+            "choices": {
+                "1": "Main",
+                "2": "Yard",
+                "3": "Siding",
+                "4": "Industry"
+            }
+        },
+        "26": {
+            "name": "Track Number or Name",
+            "type": "string"
+        },
+        "27": {
+            "name": "FRA Track Class (1-9, X)",
+            "type": "string"
+        },
+        "28": {
+            "name": "Number of Locomotive Units",
+            "type": "digit"
+        },
+        "29": {
+            "name": "Number of Cars",
+            "type": "digit"
+        },
+        "30": {
+            "name": "Consist Speed (Recorded speed, if available)",
+            "type": "string"
+        },
+        "31": {
+            "name": "Time Table Direction",
+            "type": "single choice",
+            "choices": {
+                "1": "North",
+                "2": "South",
+                "3": "East",
+                "4": "West"
+            }
+        },
+        "32": {
+            "name": "Type of Crossing Warning",
+            "type": "single choice",
+            "choices": {
+                "1": "Gates",
+                "2": "Cantilever FLS",
+                "3": "Standard FLS",
+                "4": "Wig wags",
+                "5": "Hwy. traffic signals",
+                "6": "Audible",
+                "7": "Crossbucks",
+                "8": "Stop signs",
+                "9": "Watchman",
+                "10": "Flagged by crew",
+                "11": "Other (specify)",
+                "12": "None"
+            }
+        },
+        "33": {
+            "name": "Signaled Crossing Warning",
+            "type": "string"
+        },
+        "34": {
+            "name": "Roadway Conditions",
+            "type": "single choice",
+            "choices": {
+                "A": "Dry",
+                "B": "Wet",
+                "C": "Snow/slush",
+                "D": "Ice",
+                "E": "Sand, Mud, Dirt, Oil, Gravel",
+                "F": "Water (Standing, Moving)"
+            }
+        },
+        "35": {
+            "name": "Location of Warning",
+            "type": "single choice",
+            "choices": {
+                "1": "Both sides",
+                "2": "Side of vehicle approach",
+                "3": "Opposite side of vehicle approach"
+            }
+        },
+        "36": {
+            "name": "Crossing Warning Interconnected with Highway Signals",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "37": {
+            "name": "Crossing Illuminated by Street Lights or Special Lights",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "38": {
+            "name": "Highway User's Age",
+            "type": "digit"
+        },
+        "39": {
+            "name": "Highway User's Gender",
+            "type": "single choice",
+            "choices": {
+                "1": "Male",
+                "2": "Female"
+            }
+        },
+        "40": {
+            "name": "Highway User Went Behind or in Front of Train and Struck or was Struck by Second Train",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "41": {
+            "name": "Highway User",
+            "type": "single choice",
+            "choices": {
+                "1": "Went around the gate",
+                "2": "Stopped and then proceeded",
+                "3": "Did not stop",
+                "4": "Stopped on crossing",
+                "5": "Other (specify)",
+                "6": "Went around/thru temporary barricade",
+                "7": "Went thru the gate",
+                "8": "Suicide/Attempted suicide"
+            }
+        },
+        "42": {
+            "name": "Driver Passed Standing Highway Vehicle",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "43": {
+            "name": "View of Track Obscured by (primary obstruction)",
+            "type": "single choice",
+            "choices": {
+                "1": "Permanent structure",
+                "2": "Standing railroad equipment",
+                "3": "Passing train",
+                "4": "Topography",
+                "5": "Vegetation",
+                "6": "Highway vehicles",
+                "7": "Other (specify)",
+                "8": "Not obstructed"
+            }
+        },
+        "44": {
+            "name": "Driver was",
+            "type": "single choice",
+            "choices": {
+                "1": "Killed",
+                "2": "Injured",
+                "3": "Uninjured"
+            }
+        },
+        "45": {
+            "name": "Was Driver in the Vehicle?",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No"
+            }
+        },
+        "46": {
+            "name": "Highway-Rail Crossing Users - Killed",
+            "type": "digit"
+        },
+        "46_injured": {
+            "name": "Highway-Rail Crossing Users - Injured",
+            "type": "digit"
+        },
+        "47": {
+            "name": "Highway Vehicle Property Damage (est. dollar damage)",
+            "type": "digit"
+        },
+        "48": {
+            "name": "Total Number of Vehicle Occupants (including driver)",
+            "type": "digit"
+        },
+        "49": {
+            "name": "Railroad Employees",
+            "type": "digit"
+        },
+        "50": {
+            "name": "Total Number of People on Train (include passengers and train crew)",
+            "type": "digit"
+        },
+        "51": {
+            "name": "Is a Rail Equipment Accident/Incident Report Being Filed?",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No"
+            }
+        },
+        "52": {
+            "name": "Passengers on Train",
+            "type": "digit"
+        },
+        "53a": {
+            "name": "Special Study Block - Video Taken?",
+            "type": "single choice",
+            "choices": {
+                "Yes": "Yes",
+                "No": "No"
+            }
+        },
+        "53b": {
+            "name": "Special Study Block - Video Used?",
+            "type": "single choice",
+            "choices": {
+                "Yes": "Yes",
+                "No": "No"
+            }
+        },
+        "54": {
+            "name": "Narrative Description",
+            "type": "string"
+        },
+        "55": {
+            "name": "Typed Name & Title",
+            "type": "string"
+        },
+        "56": {
+            "name": "Signature",
+            "type": "string"
+        },
+        "57": {
+            "name": "Date",
+            "type": "string"
+        }
+    },
+    {
+        "1": {
+            "name": "Name of Reporting Railroad",
+            "type": "string"
+        },
+        "1a": {
+            "name": "Alphabetic Code",
+            "type": "string"
+        },
+        "1b": {
+            "name": "Railroad Accident/Incident No.",
+            "type": "string"
+        },
+        "2": {
+            "name": "Name of Other Railroad or Other Entity Filing for Equipment Involved in Train Accident/Incident",
+            "type": "string"
+        },
+        "2a": {
+            "name": "Alphabetic Code",
+            "type": "string"
+        },
+        "2b": {
+            "name": "Railroad Accident/Incident No.",
+            "type": "string"
+        },
+        "3": {
+            "name": "Name of Railroad or Other Entity Responsible for Track Maintenance",
+            "type": "string"
+        },
+        "3a": {
+            "name": "Alphabetic Code",
+            "type": "string"
+        },
+        "3b": {
+            "name": "Railroad Accident/Incident No.",
+            "type": "string"
+        },
+        "4": {
+            "name": "U.S. DOT Grade Crossing Identification Number",
+            "type": "string"
+        },
+        "5": {
+            "name": "Date of Accident/Incident",
+            "type": "string"
+        },
+        "6": {
+            "name": "Time of Accident/Incident",
+            "type": "string"
+        },
+        "7": {
+            "name": "Nearest Railroad Station",
+            "type": "string"
+        },
+        "8": {
+            "name": "Subdivision",
+            "type": "string"
+        },
+        "9": {
+            "name": "County",
+            "type": "string"
+        },
+        "10": {
+            "name": "State Abbr.",
+            "type": "string"
+        },
+        "11": {
+            "name": "City (if in a city)",
+            "type": "string"
+        },
+        "12": {
+            "name": "Highway Name or Number",
+            "type": "string"
+        },
+        "13": {
+            "name": "Type (Highway User Involved)",
+            "type": "single choice",
+            "choices": {
+                "A": "Auto",
+                "B": "Truck",
+                "C": "Truck-trailer",
+                "D": "Pick-up truck",
+                "E": "Van",
+                "F": "Bus",
+                "G": "School bus",
+                "H": "Motorcycle",
+                "J": "Other motor vehicle",
+                "K": "Pedestrian",
+                "M": "Other (specify)"
+            }
+        },
+        "14": {
+            "name": "Vehicle Speed (est. mph at impact)",
+            "type": "digit"
+        },
+        "15": {
+            "name": "Direction (geographical)",
+            "type": "single choice",
+            "choices": {
+                "1": "North",
+                "2": "South",
+                "3": "East",
+                "4": "West"
+            }
+        },
+        "16": {
+            "name": "Position (Highway User)",
+            "type": "single choice",
+            "choices": {
+                "1": "Stalled or stuck on crossing",
+                "2": "Stopped on crossing",
+                "3": "Moving over crossing",
+                "4": "Trapped on crossing by traffic",
+                "5": "Blocked on crossing by gates"
+            }
+        },
+        "17": {
+            "name": "Equipment (Rail Equipment Involved)",
+            "type": "single choice",
+            "choices": {
+                "1": "Train (units pulling)",
+                "2": "Train (units pushing)",
+                "3": "Train (standing)",
+                "4": "Car(s) (moving)",
+                "5": "Car(s) (standing)",
+                "6": "Light loco(s) (moving)",
+                "7": "Light loco(s) (standing)",
+                "8": "Other (specify)"
+            }
+        },
+        "18": {
+            "name": "Position of Car Unit in Train",
+            "type": "string"
+        },
+        "19": {
+            "name": "Circumstance",
+            "type": "single choice",
+            "choices": {
+                "1": "Rail equipment struck highway user",
+                "2": "Rail equipment struck by highway user"
+            }
+        },
+        "20a": {
+            "name": "Was the highway user and/or rail equipment involved in the impact transporting hazardous materials?",
+            "type": "single choice",
+            "choices": {
+                "1": "Highway user",
+                "2": "Rail equipment",
+                "3": "Both",
+                "4": "Neither"
+            }
+        },
+        "20b": {
+            "name": "Was there a hazardous materials release by",
+            "type": "single choice",
+            "choices": {
+                "1": "Highway user",
+                "2": "Rail equipment",
+                "3": "Both",
+                "4": "Neither"
+            }
+        },
+        "20c": {
+            "name": "State here the name and quantity of the hazardous material released, if any.",
+            "type": "string"
+        },
+        "21": {
+            "name": "Temperature (Specify if minus)",
+            "type": "string"
+        },
+        "22": {
+            "name": "Visibility (single entry)",
+            "type": "single choice",
+            "choices": {
+                "1": "Dawn",
+                "2": "Day",
+                "3": "Dusk",
+                "4": "Dark"
+            }
+        },
+        "23": {
+            "name": "Weather (single entry)",
+            "type": "single choice",
+            "choices": {
+                "1": "Clear",
+                "2": "Cloudy",
+                "3": "Rain",
+                "4": "Fog",
+                "5": "Sleet",
+                "6": "Snow"
+            }
+        },
+        "24": {
+            "name": "Type of Equipment Consist (single entry)",
+            "type": "single choice",
+            "choices": {
+                "1": "Freight Train",
+                "2": "Passenger Train-Pulling",
+                "3": "Commuter Train-Pulling",
+                "4": "Work train",
+                "5": "Single Car",
+                "6": "Cut of cars",
+                "7": "Yard/switching",
+                "8": "Light loco(s)",
+                "9": "Maint./inspect. Car",
+                "A": "Spec. MoW Equip.",
+                "B": "Passenger Train-Pushing",
+                "C": "Commuter Train-Pushing",
+                "D": "EMU",
+                "E": "DMU"
+            }
+        },
+        "25": {
+            "name": "Track Type Used by Rail Equipment Involved",
+            "type": "single choice",
+            "choices": {
+                "1": "Main",
+                "2": "Yard",
+                "3": "Siding",
+                "4": "Industry"
+            }
+        },
+        "26": {
+            "name": "Track Number or Name",
+            "type": "string"
+        },
+        "27": {
+            "name": "FRA Track Class (1-9, X)",
+            "type": "string"
+        },
+        "28": {
+            "name": "Number of Locomotive Units",
+            "type": "digit"
+        },
+        "29": {
+            "name": "Number of Cars",
+            "type": "digit"
+        },
+        "30": {
+            "name": "Consist Speed (Recorded speed, if available)",
+            "type": "string"
+        },
+        "31": {
+            "name": "Time Table Direction",
+            "type": "single choice",
+            "choices": {
+                "1": "North",
+                "2": "South",
+                "3": "East",
+                "4": "West"
+            }
+        },
+        "32": {
+            "name": "Type of Crossing Warning",
+            "type": "single choice",
+            "choices": {
+                "1": "Gates",
+                "2": "Cantilever FLS",
+                "3": "Standard FLS",
+                "4": "Wig wags",
+                "5": "Hwy. traffic signals",
+                "6": "Audible",
+                "7": "Crossbucks",
+                "8": "Stop signs",
+                "9": "Watchman",
+                "10": "Flagged by crew",
+                "11": "Other (specify)",
+                "12": "None"
+            }
+        },
+        "33": {
+            "name": "Signaled Crossing Warning",
+            "type": "string"
+        },
+        "34": {
+            "name": "Roadway Conditions",
+            "type": "single choice",
+            "choices": {
+                "A": "Dry",
+                "B": "Wet",
+                "C": "Snow/slush",
+                "D": "Ice",
+                "E": "Sand, Mud, Dirt, Oil, Gravel",
+                "F": "Water (Standing, Moving)"
+            }
+        },
+        "35": {
+            "name": "Location of Warning",
+            "type": "single choice",
+            "choices": {
+                "1": "Both sides",
+                "2": "Side of vehicle approach",
+                "3": "Opposite side of vehicle approach"
+            }
+        },
+        "36": {
+            "name": "Crossing Warning Interconnected with Highway Signals",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "37": {
+            "name": "Crossing Illuminated by Street Lights or Special Lights",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "38": {
+            "name": "Highway User's Age",
+            "type": "digit"
+        },
+        "39": {
+            "name": "Highway User's Gender",
+            "type": "single choice",
+            "choices": {
+                "1": "Male",
+                "2": "Female"
+            }
+        },
+        "40": {
+            "name": "Highway User Went Behind or in Front of Train and Struck or was Struck by Second Train",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "41": {
+            "name": "Highway User",
+            "type": "single choice",
+            "choices": {
+                "1": "Went around the gate",
+                "2": "Stopped and then proceeded",
+                "3": "Did not stop",
+                "4": "Stopped on crossing",
+                "5": "Other (specify)",
+                "6": "Went around/thru temporary barricade",
+                "7": "Went thru the gate",
+                "8": "Suicide/Attempted suicide"
+            }
+        },
+        "42": {
+            "name": "Driver Passed Standing Highway Vehicle",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "43": {
+            "name": "View of Track Obscured by (primary obstruction)",
+            "type": "single choice",
+            "choices": {
+                "1": "Permanent structure",
+                "2": "Standing railroad equipment",
+                "3": "Passing train",
+                "4": "Topography",
+                "5": "Vegetation",
+                "6": "Highway vehicles",
+                "7": "Other (specify)",
+                "8": "Not obstructed"
+            }
+        },
+        "44": {
+            "name": "Driver was",
+            "type": "single choice",
+            "choices": {
+                "1": "Killed",
+                "2": "Injured",
+                "3": "Uninjured"
+            }
+        },
+        "45": {
+            "name": "Was Driver in the Vehicle?",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No"
+            }
+        },
+        "46": {
+            "name": "Highway-Rail Crossing Users Casualties Killed",
+            "type": "digit"
+        },
+        "46b": {
+            "name": "Highway-Rail Crossing Users Casualties Injured",
+            "type": "digit"
+        },
+        "47": {
+            "name": "Highway Vehicle Property Damage (est. dollar damage)",
+            "type": "string"
+        },
+        "48": {
+            "name": "Total Number of Vehicle Occupants (including driver)",
+            "type": "digit"
+        },
+        "49": {
+            "name": "Railroad Employees Casualties",
+            "type": "digit"
+        },
+        "50": {
+            "name": "Total Number of People on Train (include passengers and train crew)",
+            "type": "digit"
+        },
+        "51": {
+            "name": "Is a Rail Equipment Accident/Incident Report Being Filed?",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No"
+            }
+        },
+        "52": {
+            "name": "Passengers on Train Casualties",
+            "type": "digit"
+        },
+        "53a": {
+            "name": "Special Study Block - Video Taken?",
+            "type": "single choice",
+            "choices": {
+                "Yes": "Yes",
+                "No": "No"
+            }
+        },
+        "53b": {
+            "name": "Special Study Block - Video Used?",
+            "type": "single choice",
+            "choices": {
+                "Yes": "Yes",
+                "No": "No"
+            }
+        },
+        "54": {
+            "name": "Narrative Description",
+            "type": "string"
+        },
+        "55": {
+            "name": "Typed Name & Title",
+            "type": "string"
+        },
+        "56": {
+            "name": "Signature",
+            "type": "string"
+        },
+        "57": {
+            "name": "Date",
+            "type": "string"
+        }
+    },
+    {
+        "1": {
+            "name": "Name of Reporting Railroad",
+            "type": "string"
+        },
+        "1a": {
+            "name": "Alphabetic Code",
+            "type": "string"
+        },
+        "1b": {
+            "name": "Railroad Accident/Incident No.",
+            "type": "string"
+        },
+        "2": {
+            "name": "Name of Other Railroad or Other Entity Filing for Equipment Involved in Train Accident/Incident",
+            "type": "string"
+        },
+        "2a": {
+            "name": "Alphabetic Code",
+            "type": "string"
+        },
+        "2b": {
+            "name": "Railroad Accident/Incident No.",
+            "type": "string"
+        },
+        "3": {
+            "name": "Name of Railroad or Other Entity Responsible for Track Maintenance",
+            "type": "string"
+        },
+        "3a": {
+            "name": "Alphabetic Code",
+            "type": "string"
+        },
+        "3b": {
+            "name": "Railroad Accident/Incident No.",
+            "type": "string"
+        },
+        "4": {
+            "name": "U.S. DOT Grade Crossing Identification Number",
+            "type": "string"
+        },
+        "5": {
+            "name": "Date of Accident/Incident",
+            "type": "string"
+        },
+        "6": {
+            "name": "Time of Accident/Incident",
+            "type": "string"
+        },
+        "7": {
+            "name": "Nearest Railroad Station",
+            "type": "string"
+        },
+        "8": {
+            "name": "Subdivision",
+            "type": "string"
+        },
+        "9": {
+            "name": "County",
+            "type": "string"
+        },
+        "10": {
+            "name": "State Abbr.",
+            "type": "string"
+        },
+        "11": {
+            "name": "City (if in a city)",
+            "type": "string"
+        },
+        "12": {
+            "name": "Highway Name or Number",
+            "type": "string"
+        },
+        "13": {
+            "name": "Type",
+            "type": "single choice",
+            "choices": {
+                "A": "Auto",
+                "B": "Truck",
+                "C": "Truck-trailer",
+                "D": "Pick-up truck",
+                "E": "Van",
+                "F": "Bus",
+                "G": "School bus",
+                "H": "Motorcycle",
+                "J": "Other motor vehicle",
+                "K": "Pedestrian",
+                "M": "Other (specify)"
+            }
+        },
+        "14": {
+            "name": "Vehicle Speed (est. mph at impact)",
+            "type": "digit"
+        },
+        "15": {
+            "name": "Direction (geographical)",
+            "type": "single choice",
+            "choices": {
+                "1": "North",
+                "2": "South",
+                "3": "East",
+                "4": "West"
+            }
+        },
+        "16": {
+            "name": "Position",
+            "type": "single choice",
+            "choices": {
+                "1": "Stalled or stuck on crossing",
+                "2": "Stopped on crossing",
+                "3": "Moving over crossing",
+                "4": "Trapped on crossing by traffic",
+                "5": "Blocked on crossing by gates"
+            }
+        },
+        "17": {
+            "name": "Equipment",
+            "type": "single choice",
+            "choices": {
+                "1": "Train (units pulling)",
+                "2": "Train (units pushing)",
+                "3": "Train (standing)",
+                "4": "Car(s) (moving)",
+                "5": "Car(s) (standing)",
+                "6": "Light loco(s) (moving)",
+                "7": "Light loco(s) (standing)",
+                "8": "Other (specify)"
+            }
+        },
+        "18": {
+            "name": "Position of Car Unit in Train",
+            "type": "string"
+        },
+        "19": {
+            "name": "Circumstance",
+            "type": "single choice",
+            "choices": {
+                "1": "Rail equipment struck highway user",
+                "2": "Rail equipment struck by highway user"
+            }
+        },
+        "20a": {
+            "name": "Was the highway user and/or rail equipment involved in the impact transporting hazardous materials?",
+            "type": "single choice",
+            "choices": {
+                "1": "Highway user",
+                "2": "Rail equipment",
+                "3": "Both",
+                "4": "Neither"
+            }
+        },
+        "20b": {
+            "name": "Was there a hazardous materials release by",
+            "type": "single choice",
+            "choices": {
+                "1": "Highway user",
+                "2": "Rail equipment",
+                "3": "Both",
+                "4": "Neither"
+            }
+        },
+        "20c": {
+            "name": "State here the name and quantity of the hazardous material released, if any.",
+            "type": "string"
+        },
+        "21": {
+            "name": "Temperature (Specify if minus)",
+            "type": "string"
+        },
+        "22": {
+            "name": "Visibility (single entry)",
+            "type": "single choice",
+            "choices": {
+                "1": "Dawn",
+                "2": "Day",
+                "3": "Dusk",
+                "4": "Dark"
+            }
+        },
+        "23": {
+            "name": "Weather (single entry)",
+            "type": "single choice",
+            "choices": {
+                "1": "Clear",
+                "2": "Cloudy",
+                "3": "Rain",
+                "4": "Fog",
+                "5": "Sleet",
+                "6": "Snow"
+            }
+        },
+        "24": {
+            "name": "Type of Equipment Consist (single entry)",
+            "type": "single choice",
+            "choices": {
+                "1": "Freight Train",
+                "2": "Passenger Train-Pulling",
+                "3": "Commuter Train-Pulling",
+                "4": "Work train",
+                "5": "Single Car",
+                "6": "Cut of cars",
+                "7": "Yard/switching",
+                "8": "Light loco(s)",
+                "9": "Maint./inspect. Car",
+                "A": "Spec. MoW Equip.",
+                "B": "Passenger Train-Pushing",
+                "C": "Commuter Train-Pushing",
+                "D": "EMU",
+                "E": "DMU"
+            }
+        },
+        "25": {
+            "name": "Track Type Used by Rail Equipment Involved",
+            "type": "single choice",
+            "choices": {
+                "1": "Main",
+                "2": "Yard",
+                "3": "Siding",
+                "4": "Industry"
+            }
+        },
+        "26": {
+            "name": "Track Number or Name",
+            "type": "string"
+        },
+        "27": {
+            "name": "FRA Track Class (1-9, X)",
+            "type": "string"
+        },
+        "28": {
+            "name": "Number of Locomotive Units",
+            "type": "digit"
+        },
+        "29": {
+            "name": "Number of Cars",
+            "type": "digit"
+        },
+        "30": {
+            "name": "Consist Speed (Recorded speed, if available)",
+            "type": "string"
+        },
+        "31": {
+            "name": "Time Table Direction",
+            "type": "single choice",
+            "choices": {
+                "1": "North",
+                "2": "South",
+                "3": "East",
+                "4": "West"
+            }
+        },
+        "32": {
+            "name": "Type of Crossing Warning",
+            "type": "single choice",
+            "choices": {
+                "1": "Gates",
+                "2": "Cantilever FLS",
+                "3": "Standard FLS",
+                "4": "Wig wags",
+                "5": "Hwy. traffic signals",
+                "6": "Audible",
+                "7": "Crossbucks",
+                "8": "Stop signs",
+                "9": "Watchman",
+                "10": "Flagged by crew",
+                "11": "Other (specify)",
+                "12": "None"
+            }
+        },
+        "33": {
+            "name": "Signaled Crossing Warning",
+            "type": "string"
+        },
+        "34": {
+            "name": "Roadway Conditions",
+            "type": "single choice",
+            "choices": {
+                "A": "Dry",
+                "B": "Wet",
+                "C": "Snow/slush",
+                "D": "Ice",
+                "E": "Sand, Mud, Dirt, Oil, Gravel",
+                "F": "Water (Standing, Moving)"
+            }
+        },
+        "35": {
+            "name": "Location of Warning",
+            "type": "single choice",
+            "choices": {
+                "1": "Both sides",
+                "2": "Side of vehicle approach",
+                "3": "Opposite side of vehicle approach"
+            }
+        },
+        "36": {
+            "name": "Crossing Warning Interconnected with Highway Signals",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "37": {
+            "name": "Crossing Illuminated by Street Lights or Special Lights",
+            "type": "single_choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "38": {
+            "name": "Highway User's Age",
+            "type": "digit"
+        },
+        "39": {
+            "name": "Highway User's Gender",
+            "type": "single choice",
+            "choices": {
+                "1": "Male",
+                "2": "Female"
+            }
+        },
+        "40": {
+            "name": "Highway User Went Behind or in Front of Train and Struck or was Struck by Second Train",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "41": {
+            "name": "Highway User",
+            "type": "single choice",
+            "choices": {
+                "1": "Went around the gate",
+                "2": "Stopped and then proceeded",
+                "3": "Did not stop",
+                "4": "Stopped on crossing",
+                "5": "Other (specify)",
+                "6": "Went around/thru temporary barricade",
+                "7": "Went thru the gate",
+                "8": "Suicide/Attempted suicide"
+            }
+        },
+        "42": {
+            "name": "Driver Passed Standing Highway Vehicle",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "43": {
+            "name": "View of Track Obscured by (primary obstruction)",
+            "type": "single choice",
+            "choices": {
+                "1": "Permanent structure",
+                "2": "Standing railroad equipment",
+                "3": "Passing train",
+                "4": "Topography",
+                "5": "Vegetation",
+                "6": "Highway vehicles",
+                "7": "Other (specify)",
+                "8": "Not obstructed"
+            }
+        },
+        "44": {
+            "name": "Driver was",
+            "type": "single choice",
+            "choices": {
+                "1": "Killed",
+                "2": "Injured",
+                "3": "Uninjured"
+            }
+        },
+        "45": {
+            "name": "Was Driver in the Vehicle?",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No"
+            }
+        },
+        "46": {
+            "name": "Highway-Rail Crossing Users Casualties",
+            "type": "object",
+            "structure": {
+                "Killed": "digit",
+                "Injured": "digit"
+            }
+        },
+        "47": {
+            "name": "Highway Vehicle Property Damage (est. dollar damage)",
+            "type": "digit"
+        },
+        "48": {
+            "name": "Total Number of Vehicle Occupants (including driver)",
+            "type": "digit"
+        },
+        "49": {
+            "name": "Railroad Employees Casualties",
+            "type": "string"
+        },
+        "50": {
+            "name": "Total Number of People on Train (include passengers and train crew)",
+            "type": "digit"
+        },
+        "51": {
+            "name": "Is a Rail Equipment Accident/Incident Report Being Filed?",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No"
+            }
+        },
+        "52": {
+            "name": "Passengers on Train",
+            "type": "string"
+        },
+        "53a": {
+            "name": "Special Study Block 1",
+            "type": "string"
+        },
+        "53b": {
+            "name": "Special Study Block 2",
+            "type": "string"
+        },
+        "54": {
+            "name": "Narrative Description",
+            "type": "string"
+        },
+        "55": {
+            "name": "Typed Name & Title",
+            "type": "string"
+        },
+        "56": {
+            "name": "Signature",
+            "type": "string"
+        },
+        "57": {
+            "name": "Date",
+            "type": "string"
+        }
+    },
+    {
+        "1": {
+            "name": "Name of Reporting Railroad",
+            "type": "string"
+        },
+        "1a": {
+            "name": "Alphabetic Code",
+            "type": "string"
+        },
+        "1b": {
+            "name": "Railroad Accident/Incident No.",
+            "type": "string"
+        },
+        "2": {
+            "name": "Name of Other Railroad or Other Entity Filing for Equipment Involved in Train Accident/Incident",
+            "type": "string"
+        },
+        "2a": {
+            "name": "Alphabetic Code",
+            "type": "string"
+        },
+        "2b": {
+            "name": "Railroad Accident/Incident No.",
+            "type": "string"
+        },
+        "3": {
+            "name": "Name of Railroad or Other Entity Responsible for Track Maintenance",
+            "type": "string"
+        },
+        "3a": {
+            "name": "Alphabetic Code",
+            "type": "string"
+        },
+        "3b": {
+            "name": "Railroad Accident/Incident No.",
+            "type": "string"
+        },
+        "4": {
+            "name": "U.S. DOT Grade Crossing Identification Number",
+            "type": "string"
+        },
+        "5": {
+            "name": "Date of Accident/Incident",
+            "type": "string"
+        },
+        "6": {
+            "name": "Time of Accident/Incident",
+            "type": "string"
+        },
+        "7": {
+            "name": "Nearest Railroad Station",
+            "type": "string"
+        },
+        "8": {
+            "name": "Subdivision",
+            "type": "string"
+        },
+        "9": {
+            "name": "County",
+            "type": "string"
+        },
+        "10": {
+            "name": "State Abbr.",
+            "type": "string"
+        },
+        "11": {
+            "name": "City (if in a city)",
+            "type": "string"
+        },
+        "12": {
+            "name": "Highway Name or Number",
+            "type": "string"
+        },
+        "13": {
+            "name": "Type",
+            "type": "single choice",
+            "choices": {
+                "A": "Auto",
+                "B": "Truck",
+                "C": "Truck-trailer",
+                "D": "Pick-up truck",
+                "E": "Van",
+                "F": "Bus",
+                "G": "School bus",
+                "H": "Motorcycle",
+                "J": "Other motor vehicle",
+                "K": "Pedestrian",
+                "M": "Other (specify)"
+            }
+        },
+        "14": {
+            "name": "Vehicle Speed (est. mph at impact)",
+            "type": "digit"
+        },
+        "15": {
+            "name": "Direction (geographical)",
+            "type": "single choice",
+            "choices": {
+                "1": "North",
+                "2": "South",
+                "3": "East",
+                "4": "West"
+            }
+        },
+        "16": {
+            "name": "Position",
+            "type": "single choice",
+            "choices": {
+                "1": "Stalled or stuck on crossing",
+                "2": "Stopped on crossing",
+                "3": "Moving over crossing",
+                "4": "Trapped on crossing by traffic",
+                "5": "Blocked on crossing by gates"
+            }
+        },
+        "17": {
+            "name": "Equipment",
+            "type": "single choice",
+            "choices": {
+                "1": "Train (units pulling)",
+                "2": "Train (units pushing)",
+                "3": "Train (standing)",
+                "4": "Car(s) (moving)",
+                "5": "Car(s) (standing)",
+                "6": "Light loco(s) (moving)",
+                "7": "Light loco(s) (standing)",
+                "8": "Other (specify)"
+            }
+        },
+        "18": {
+            "name": "Position of Car Unit in Train",
+            "type": "string"
+        },
+        "19": {
+            "name": "Circumstance",
+            "type": "single choice",
+            "choices": {
+                "1": "Rail equipment struck highway user",
+                "2": "Rail equipment struck by highway user"
+            }
+        },
+        "20a": {
+            "name": "Was the highway user and/or rail equipment involved in the impact transporting hazardous materials?",
+            "type": "single choice",
+            "choices": {
+                "1": "Highway user",
+                "2": "Rail equipment",
+                "3": "Both",
+                "4": "Neither"
+            }
+        },
+        "20b": {
+            "name": "Was there a hazardous materials release by",
+            "type": "single choice",
+            "choices": {
+                "1": "Highway user",
+                "2": "Rail equipment",
+                "3": "Both",
+                "4": "Neither"
+            }
+        },
+        "20c": {
+            "name": "State here the name and quantity of the hazardous material released, if any",
+            "type": "string"
+        },
+        "21": {
+            "name": "Temperature (Specify if minus)",
+            "type": "string"
+        },
+        "22": {
+            "name": "Visibility (single entry)",
+            "type": "single choice",
+            "choices": {
+                "1": "Dawn",
+                "2": "Day",
+                "3": "Dusk",
+                "4": "Dark"
+            }
+        },
+        "23": {
+            "name": "Weather (single entry)",
+            "type": "single choice",
+            "choices": {
+                "1": "Clear",
+                "2": "Cloudy",
+                "3": "Rain",
+                "4": "Fog",
+                "5": "Sleet",
+                "6": "Snow"
+            }
+        },
+        "24": {
+            "name": "Type of Equipment Consist (single entry)",
+            "type": "single choice",
+            "choices": {
+                "1": "Freight Train",
+                "2": "Passenger Train-Pulling",
+                "3": "Commuter Train-Pulling",
+                "4": "Work train",
+                "5": "Single Car",
+                "6": "Cut of cars",
+                "7": "Yard/switching",
+                "8": "Light loco(s)",
+                "9": "Maint./inspect. Car",
+                "A": "Spec. MoW Equip.",
+                "B": "Passenger Train-Pushing",
+                "C": "Commuter Train-Pushing",
+                "D": "EMU",
+                "E": "DMU"
+            }
+        },
+        "25": {
+            "name": "Track Type Used by Rail Equipment Involved",
+            "type": "single choice",
+            "choices": {
+                "1": "Main",
+                "2": "Yard",
+                "3": "Siding",
+                "4": "Industry"
+            }
+        },
+        "26": {
+            "name": "Track Number or Name",
+            "type": "string"
+        },
+        "27": {
+            "name": "FRA Track Class (1-9, X)",
+            "type": "string"
+        },
+        "28": {
+            "name": "Number of Locomotive Units",
+            "type": "digit"
+        },
+        "29": {
+            "name": "Number of Cars",
+            "type": "digit"
+        },
+        "30": {
+            "name": "Consist Speed (Recorded speed, if available)",
+            "type": "string"
+        },
+        "31": {
+            "name": "Time Table Direction",
+            "type": "single choice",
+            "choices": {
+                "1": "North",
+                "2": "South",
+                "3": "East",
+                "4": "West"
+            }
+        },
+        "32": {
+            "name": "Type of Crossing Warning",
+            "type": "single choice",
+            "choices": {
+                "1": "Gates",
+                "2": "Cantilever FLS",
+                "3": "Standard FLS",
+                "4": "Wig wags",
+                "5": "Hwy. traffic signals",
+                "6": "Audible",
+                "7": "Crossbucks",
+                "8": "Stop signs",
+                "9": "Watchman",
+                "10": "Flagged by crew",
+                "11": "Other (specify)",
+                "12": "None"
+            }
+        },
+        "33": {
+            "name": "Signaled Crossing Warning",
+            "type": "single choice",
+            "choices": {}
+        },
+        "34": {
+            "name": "Roadway Conditions",
+            "type": "single choice",
+            "choices": {
+                "A": "Dry",
+                "B": "Wet",
+                "C": "Snow/slush",
+                "D": "Ice",
+                "E": "Sand, Mud, Dirt, Oil, Gravel",
+                "F": "Water (Standing, Moving)"
+            }
+        },
+        "35": {
+            "name": "Location of Warning",
+            "type": "single choice",
+            "choices": {
+                "1": "Both sides",
+                "2": "Side of vehicle approach",
+                "3": "Opposite side of vehicle approach"
+            }
+        },
+        "36": {
+            "name": "Crossing Warning Interconnected with Highway Signals",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "37": {
+            "name": "Crossing Illuminated by Street Lights or Special Lights",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "38": {
+            "name": "Highway User's Age",
+            "type": "digit"
+        },
+        "39": {
+            "name": "Highway User's Gender",
+            "type": "single choice",
+            "choices": {
+                "1": "Male",
+                "2": "Female"
+            }
+        },
+        "40": {
+            "name": "Highway User Went Behind or in Front of Train and Struck or was Struck by Second Train",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "41": {
+            "name": "Highway User",
+            "type": "single choice",
+            "choices": {
+                "1": "Went around the gate",
+                "2": "Stopped and then proceeded",
+                "3": "Did not stop",
+                "4": "Stopped on crossing",
+                "5": "Other (specify)",
+                "6": "Went around/thru temporary barricade",
+                "7": "Went thru the gate",
+                "8": "Suicide/Attempted suicide"
+            }
+        },
+        "42": {
+            "name": "Driver Passed Standing Highway Vehicle",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        },
+        "43": {
+            "name": "View of Track Obscured by (primary obstruction)",
+            "type": "single choice",
+            "choices": {
+                "1": "Permanent structure",
+                "2": "Standing railroad equipment",
+                "3": "Passing train",
+                "4": "Topography",
+                "5": "Vegetation",
+                "6": "Highway vehicles",
+                "7": "Other (specify)",
+                "8": "Not obstructed"
+            }
+        },
+        "44": {
+            "name": "Driver was",
+            "type": "single choice",
+            "choices": {
+                "1": "Killed",
+                "2": "Injured",
+                "3": "Uninjured"
+            }
+        },
+        "45": {
+            "name": "Was Driver in the Vehicle?",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No"
+            }
+        },
+        "46": {
+            "name": "Highway-Rail Crossing Users - Killed",
+            "type": "digit"
+        },
+        "47": {
+            "name": "Highway Vehicle Property Damage (est. dollar damage)",
+            "type": "digit"
+        },
+        "48": {
+            "name": "Total Number of Vehicle Occupants (including driver)",
+            "type": "digit"
+        },
+        "49": {
+            "name": "Railroad Employees",
+            "type": "digit"
+        },
+        "50": {
+            "name": "Total Number of People on Train (include passengers and train crew)",
+            "type": "digit"
+        },
+        "51": {
+            "name": "Is a Rail Equipment Accident/Incident Report Being Filed?",
+            "type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No"
+            }
+        },
+        "52": {
+            "name": "Passengers on Train",
+            "type": "digit"
+        },
+        "53a": {
+            "name": "Special Study Block - Video Taken?",
+            "type": "single choice",
+            "choices": {
+                "Yes": "Yes",
+                "No": "No"
+            }
+        },
+        "53b": {
+            "name": "Special Study Block - Video Used?",
+            "type": "single choice",
+            "choices": {
+                "Yes": "Yes",
+                "No": "No"
+            }
+        },
+        "54": {
+            "name": "Narrative Description",
+            "type": "string"
+        },
+        "55": {
+            "name": "Typed Name & Title",
+            "type": "string"
+        },
+        "56": {
+            "name": "Signature",
+            "type": "string"
+        },
+        "57": {
+            "name": "Date",
+            "type": "string"
+        }
+    }
+]

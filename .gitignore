@@ -1,4 +1,5 @@
 chrome*
+google*
 udot_project
 data2
 250424 Highway-Rail Grade Crossing Incident Data (Form 57).csv
@@ -7,3 +8,4 @@ sandbox.py
 inspect_news.py
 df_news.csv
 backup
+aws*
