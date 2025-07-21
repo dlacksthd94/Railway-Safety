@@ -8,50 +8,6 @@ import os
 from itertools import chain
 import re
 
-# MODE = 'csv'
-MODE = 'form'
-if MODE == 'csv':
-    FN_DICT_FORM57 = 'form57_field_def_csv.json'
-    FN_DF_OUTPUT = 'df_output_csv.csv'
-    QUESTION_BATCH = 'single'
-else:
-    FN_DICT_FORM57 = 'form57_field_def_group_OpenAI_GPT_o4-mini.json'
-    FN_DF_OUTPUT = 'df_output_form.csv'
-    QUESTION_BATCH = 'group'
-DATA_FOLDER = 'data/'
-FN_DF_DATA = '250424 Highway-Rail Grade Crossing Incident Data (Form 57).csv'
-FN_DF_LABEL = 'df_news_label.csv'
-COLUMNS_CONTENT = ['np_url', 'tf_url', 'rd_url', 'gs_url', 'np_html', 'tf_html', 'rd_html', 'gs_html']
-COLUMNS_LABEL = ['label_np_url', 'label_tf_url', 'label_rd_url', 'label_gs_url', 'label_np_html', 'label_tf_html', 'label_rd_html', 'label_gs_html']
-DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
-
-path_df = DATA_FOLDER + FN_DF_DATA
-path_df_label = DATA_FOLDER + FN_DF_LABEL
-path_dict_form57 = DATA_FOLDER + FN_DICT_FORM57
-path_df_output = DATA_FOLDER + FN_DF_OUTPUT
-
-with open(path_dict_form57, 'r') as f:
-    dict_form57 = json.load(f)
-
-if QUESTION_BATCH == 'single':
-    list_col = list(map(lambda x: x['name'], dict_form57.values()))
-elif QUESTION_BATCH == 'group':
-    list_col = list(chain.from_iterable(map(lambda group: list(group.keys()), dict_form57.values())))
-
-SCRAPE_VERSION = 'rd_url'
-if os.path.exists(path_df_output):
-    df_output = pd.read_csv(path_df_output)
-    df_output[list_col] = df_output[list_col].fillna('')
-else:
-    df_label = pd.read_csv(path_df_label)
-    df_label = df_label[(df_label[COLUMNS_LABEL] == 1).any(axis=1)]
-    sr_content = df_label[SCRAPE_VERSION]
-    mask = df_label['label_' + SCRAPE_VERSION] == 1
-    df_output = df_label.drop(COLUMNS_CONTENT + COLUMNS_LABEL, axis=1)
-    df_output[SCRAPE_VERSION] = sr_content
-    df_output = df_output[mask]
-    df_output.loc[:, list_col] = ''
-
 dict_target_info = {
     'railroad': {
         1: 'Railroad Name',
@@ -126,99 +82,122 @@ dict_target_info = {
     # },
 }
 
-N_SIM = 1
-MODEL_PATH = 'microsoft/Phi-4-mini-instruct'
-# MODEL_PATH = 'nvidia/Llama-3.1-Nemotron-Nano-8B-v1'
-dict_model = {
-    'microsoft/Phi-4-mini-instruct': {
-        'max_new_tokens': 512,
-        'truncation': True,
-        'use_cache': True,
-    },
-    "deepseek-ai/DeepSeek-R1-Distill-Llama-8B": {
-        'max_new_tokens': 512,
-        'truncation': True,
-        'use_cache': True,
-        'do_sample': False,
-    },
-    'Qwen/Qwen2.5-7B-Instruct-1M': {
-        'max_new_tokens': 512,
-        'truncation': True,
-        'use_cache': True,
-    },
-    'nvidia/Llama-3.1-Nemotron-Nano-8B-v1': {
-        'max_new_tokens': 512,
-        'truncation': True,
-        'use_cache': True,
-    },
-}
+COLUMNS_CONTENT = ['np_url', 'tf_url', 'rd_url', 'gs_url', 'np_html', 'tf_html', 'rd_html', 'gs_html']
+COLUMNS_LABEL = ['label_np_url', 'label_tf_url', 'label_rd_url', 'label_gs_url', 'label_np_html', 'label_tf_html', 'label_rd_html', 'label_gs_html']
+DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
-config = dict_model[MODEL_PATH]
-pipe = pipeline(model=MODEL_PATH, device_map=DEVICE, **config)
-if pipe.generation_config.pad_token_id is None:
-    pipe.generation_config.pad_token_id = pipe.tokenizer.eos_token_id
-if pipe.generation_config.temperature == 0 or pipe.generation_config.do_sample == False:
-    n_sim = 1
-else:
-    n_sim = N_SIM
+def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_label, config_retrieval):
+    _, model, n_generate, question_batch = config_retrieval.to_tuple()
 
-############ extract information using csv-version json
-
-for idx_content, row in tqdm(df_output.iterrows(), total=df_output.shape[0]):
-    if row.iat[-1]:
-        continue
-    content = row[SCRAPE_VERSION]
+    with open(path_form57_json, 'r') as f:
+        dict_form57 = json.load(f)
     
-    if QUESTION_BATCH == 'single':
-        question_base = (
-                "From the context, find the information: "
-            )
-        answer_format = (
-            "The answer should be short and without explanation.\n"
-            "If options are provided, answer only with codes.\n"
-            "If you cannot find the relevant information, answer with 'Unknown'."
+    if question_batch == 'group':
+        with open(path_form57_json_group, 'r') as f:
+            dict_form57_group = json.load(f)
+
+    list_col = list(dict_form57)
+
+    SCRAPE_VERSION = 'rd_url'
+    if os.path.exists(path_df_form57_retrieval):
+        df_retrieval = pd.read_csv(path_df_form57_retrieval)
+        df_retrieval[list_col] = df_retrieval[list_col].fillna('')
+    else:
+        df_label = pd.read_csv(path_df_news_label)
+        df_label = df_label[(df_label[COLUMNS_LABEL] == 1).any(axis=1)]
+        sr_content = df_label[SCRAPE_VERSION]
+        mask = df_label['label_' + SCRAPE_VERSION] == 1
+        df_retrieval = df_label.drop(COLUMNS_CONTENT + COLUMNS_LABEL, axis=1)
+        df_retrieval[SCRAPE_VERSION] = sr_content
+        df_retrieval = df_retrieval[mask]
+        df_retrieval.loc[:, list_col] = ''
+
+    dict_model = {
+        'microsoft/Phi-4-mini-instruct': {
+            'max_new_tokens': 512,
+            'truncation': True,
+            'use_cache': True,
+        },
+        "deepseek-ai/DeepSeek-R1-Distill-Llama-8B": {
+            'max_new_tokens': 512,
+            'truncation': True,
+            'use_cache': True,
+            'do_sample': False,
+        },
+        'Qwen/Qwen2.5-7B-Instruct-1M': {
+            'max_new_tokens': 512,
+            'truncation': True,
+            'use_cache': True,
+        },
+        'nvidia/Llama-3.1-Nemotron-Nano-8B-v1': {
+            'max_new_tokens': 512,
+            'truncation': True,
+            'use_cache': True,
+        },
+    }
+
+    config = dict_model[model]
+    pipe = pipeline(model=model, device_map=DEVICE, **config)
+    if pipe.generation_config.pad_token_id is None:
+        pipe.generation_config.pad_token_id = pipe.tokenizer.eos_token_id
+    if pipe.generation_config.temperature == 0 or pipe.generation_config.do_sample == False:
+        n_sim = 1
+    else:
+        n_sim = n_generate
+
+    ############ extract information using csv-version json
+
+    question_base = (
+            "From the context, answer the following question: "
         )
+    answer_format = (
+        "The answer should be short and without explanation.\n"
+        "If options are provided, answer only with codes without labels.\n"
+        "If you cannot find the relevant information, answer with 'Unknown'."
+    )
 
-        for i, entry in tqdm(dict_form57.items(), leave=False):
-            name = entry.get('name')
-            options = str(entry.get('choices', ''))
-            
-            question = question_base + name + options + '\n' + answer_format
-            prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n"
-            
-            output = pipe(prompt)#, max_new_tokens=30)
-            answer = output[0]['generated_text'].split('Answer:\n')[-1]
-
-            df_output.loc[idx_content, name] = answer
-
-    elif QUESTION_BATCH == 'group':
-        question_base = (
-                "From the context, answer the questions: "
-            )
-        answer_format = (
-            "The answers should be short and without explanation.\n"
-            "If options are provided, answer only with codes without labels.\n"
-            "If you cannot find the relevant information, answer with 'Unknown'."
-        )
-
-        for group_name, group in tqdm(dict_form57.items(), leave=False):
-            question = question_base + '\n'
-            for entry_idx, entry in tqdm(group.items(), leave=False):
-                name = entry.get('name')
+    for idx_content, row in tqdm(df_retrieval.iterrows(), total=df_retrieval.shape[0]):
+        if row.iat[-1]:
+            continue
+        content = row[SCRAPE_VERSION]
+        
+        if question_batch == 'single':
+            for entry_idx, entry in tqdm(dict_form57.items(), leave=False):
+                name = entry.get('name', '')
                 options = str(entry.get('choices', ''))
-                question += f'({entry_idx}): ' + name + options + '\n'
-            question += answer_format
-            prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n({list(group.keys())[0]}):"
-            
-            output = pipe(prompt)#, max_new_tokens=30)
-            answer = output[0]['generated_text'].split('Answer:\n')[-1]
+                
+                question = question_base + '\n' + f'({entry_idx}): ' + name + f'(options: {options})' + '\n' + answer_format
+                prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n"
+                
+                output = pipe(prompt)#, max_new_tokens=30)
+                answer = output[0]['generated_text'].split('Answer:\n')[-1]
 
-            dict_idxentry_answer = dict(re.findall(r'\((\d+)\):\s*([^\n]+)', answer))
+                df_retrieval.loc[idx_content, name] = answer
+            # df_retrieval.loc[idx_content, :].to_dict()
 
-            for idx_entry, answer in dict_idxentry_answer.items():
-                df_output.loc[idx_content, idx_entry] = answer
+        elif question_batch == 'group':
+            for group_name, group in tqdm(dict_form57_group.items(), leave=False):
+                question = question_base + '\n'
+                for entry_idx in tqdm(group, leave=False):
+                    entry = dict_form57[entry_idx]
+                    name = entry.get('name', '')
+                    options = str(entry.get('choices', ''))
+                    question += f'({entry_idx}): ' + name + f'(options: {options})' + '\n'
+                question += answer_format
+                prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n({group[0]}):"
+                
+                output = pipe(prompt)#, max_new_tokens=30)
+                answer = output[0]['generated_text'].split('Answer:\n')[-1]
 
-    if idx_content % 10 == 0:
-        df_output.to_csv(path_df_output, index=False)
+                dict_answer = dict(re.findall(r'\((.+)\):\s*([^\n]+)', answer))
+                # pprint(dict_answer)
 
-df_output.to_csv(path_df_output, index=False)
+                for entry_idx in group:
+                    df_retrieval.loc[idx_content, entry_idx] = dict_answer.get(entry_idx, '')
+            # df_retrieval.loc[idx_content, :].to_dict()
+
+        if idx_content % 10 == 0:
+            df_retrieval.to_csv(path_df_form57_retrieval, index=False)
+
+    df_retrieval.to_csv(path_df_form57_retrieval, index=False)
+    return df_retrieval

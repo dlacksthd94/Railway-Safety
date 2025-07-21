@@ -1,5 +1,5 @@
 {
-    "Railroad Information": {
+    "Reporting Railroad": {
         "1": {
             "name": "Name of Reporting Railroad"
         },
@@ -8,7 +8,9 @@
         },
         "1b": {
             "name": "Railroad Accident/Incident No."
-        },
+        }
+    },
+    "Other Entity Filing": {
         "2": {
             "name": "Name of Other Railroad or Other Entity Filing for Equipment Involved in Train Accident/Incident"
         },
@@ -17,7 +19,9 @@
         },
         "2b": {
             "name": "Railroad Accident/Incident No."
-        },
+        }
+    },
+    "Track Maintenance Responsibility": {
         "3": {
             "name": "Name of Railroad or Other Entity Responsible for Track Maintenance (single entry)"
         },
@@ -28,7 +32,7 @@
             "name": "Railroad Accident/Incident No."
         }
     },
-    "Accident Location & Time": {
+    "Location & Time": {
         "4": {
             "name": "U.S. DOT Grade Crossing Identification Number"
         },
@@ -68,7 +72,7 @@
             }
         }
     },
-    "Highway User Details": {
+    "Involved Parties": {
         "13": {
             "name": "Type of Highway User Involved",
             "choices": {
@@ -106,9 +110,7 @@
                 "4": "Trapped on crossing by traffic",
                 "5": "Blocked on crossing by gates"
             }
-        }
-    },
-    "Rail Equipment Details": {
+        },
         "17": {
             "name": "Rail Equipment Involved",
             "choices": {
@@ -136,9 +138,7 @@
                 "1": "Rail equipment struck highway user",
                 "2": "Rail equipment struck by highway user"
             }
-        }
-    },
-    "Hazardous Materials": {
+        },
         "20a": {
             "name": "Was highway user and/or rail equipment transporting hazardous materials?",
             "choices": {
@@ -161,7 +161,7 @@
             "name": "Name and quantity of hazardous material released, if any"
         }
     },
-    "Environmental & Consist Conditions": {
+    "Environmental Conditions": {
         "21": {
             "name": "Temperature (Specify if minus)"
         },
@@ -184,7 +184,9 @@
                 "5": "Sleet",
                 "6": "Snow"
             }
-        },
+        }
+    },
+    "Train Consist Details": {
         "24": {
             "name": "Type of Equipment Consist (single entry)",
             "choices": {
@@ -203,9 +205,7 @@
                 "D": "EMU",
                 "E": "DMU"
             }
-        }
-    },
-    "Track & Train Consist": {
+        },
         "25": {
             "name": "Track Type Used by Rail Equipment Involved",
             "choices": {
@@ -244,7 +244,7 @@
             }
         }
     },
-    "Crossing Warning Devices": {
+    "Crossing Warning": {
         "32": {
             "name": "Type of Crossing Warning",
             "choices": {
@@ -264,17 +264,6 @@
         },
         "33": {
             "name": "Signaled Crossing Warning (see reverse for codes)"
-        },
-        "34": {
-            "name": "Roadway Conditions",
-            "choices": {
-                "A": "Dry",
-                "B": "Wet",
-                "C": "Snow/slush",
-                "D": "Ice",
-                "E": "Sand, Mud, Dirt, Oil, Gravel",
-                "F": "Water (Standing or Moving)"
-            }
         },
         "35": {
             "name": "Location of Warning",
@@ -301,7 +290,20 @@
             }
         }
     },
-    "Visibility & User Behavior": {
+    "Roadway Conditions": {
+        "34": {
+            "name": "Roadway Conditions",
+            "choices": {
+                "A": "Dry",
+                "B": "Wet",
+                "C": "Snow/slush",
+                "D": "Ice",
+                "E": "Sand, Mud, Dirt, Oil, Gravel",
+                "F": "Water (Standing or Moving)"
+            }
+        }
+    },
+    "Highway User Details": {
         "38": {
             "name": "Highway User\u2019s Age"
         },
@@ -406,7 +408,7 @@
             "name": "Passengers on Train Injured"
         }
     },
-    "Video & Narrative": {
+    "Special Study Block": {
         "53a": {
             "name": "Video Taken?",
             "choices": {
@@ -420,12 +422,14 @@
                 "Yes": "Yes",
                 "No": "No"
             }
-        },
+        }
+    },
+    "Narrative": {
         "54": {
             "name": "Narrative Description (Be specific, and continue on separate sheet if necessary)"
         }
     },
-    "Certification & Signature": {
+    "Signature": {
         "55": {
             "name": "Typed Name & Title"
         },

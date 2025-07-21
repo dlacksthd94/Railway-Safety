@@ -27,6 +27,12 @@ pip install openai pytesseract # for transcribing report form in json format
 pip install transformers accelerate # for labeling news & populating the report form
 pip install sentencepiece # for running VLMs from Hugging Face
 
+############ Modify code in `def postprocess` in `class ImageTextToTextPipeline` in transformers/pipelines/image_text_to_text.py
+# After `decoded_inputs = self.processor.post_process_image_text_to_text(input_ids, **postprocess_kwargs)` line, add the following codes:
+# from itertools import cycle
+# decoded_inputs = cycle(decoded_inputs)
+# input_texts = cycle(input_texts)
+
 #################### install chrome driver for news scraping
 find . -name "chrome-*" -exec rm -rf {} +
 find . -name "chromedriver-*" -exec rm -rf {} +
