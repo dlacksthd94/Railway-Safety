@@ -1,5 +1,6 @@
 import os
 import argparse
+import pandas as pd
 
 parser = argparse.ArgumentParser(
     description="Run main.py"
@@ -44,10 +45,9 @@ from config import Config, ConversionConfig, RetrievalConfig
 ### ConversionConfig
 # config_conversion = ConversionConfig(api=None, model=None, n_generate=None, json_source='csv')
 # config_conversion = ConversionConfig(api='OpenAI', model='o4-mini', n_generate=8, json_source='pdf')
-# config_conversion = ConversionConfig(api='Huggingface', model='Qwen/Qwen2.5-VL-7B-Instruct', n_generate=4, json_source='img')
+config_conversion = ConversionConfig(api='Huggingface', model='Qwen/Qwen2.5-VL-7B-Instruct', n_generate=4, json_source='img')
 # config_conversion = ConversionConfig(api='Huggingface', model='OpenGVLab/InternVL3-8B-hf', n_generate=4, json_source='img')
-# config_conversion = ConversionConfig(api='Huggingface', model='ByteDance-Seed/UI-TARS-1.5-7B', n_generate=4, json_source='img')
-config_conversion = ConversionConfig(api=args.c_api, model=args.c_model, n_generate=args.c_n_generate, json_source=args.c_json_source)
+# config_conversion = ConversionConfig(api=args.c_api, model=args.c_model, n_generate=args.c_n_generate, json_source=args.c_json_source)
 
 ### RetrievalConfig
 config_retrieval = RetrievalConfig(api='Huggingface', model='microsoft/Phi-4-mini-instruct', n_generate=1, question_batch='single')
@@ -75,6 +75,8 @@ FN_FORM57_JSON_GROUP = f'form57_group.json'
 
 FN_DF_FORM57_RETRIEVAL = f'df_form57_retrieval.csv'
 
+FN_DF_MATCH = 'df_match.csv'
+
 conversion_model_replaced = config.conversion.model.replace('/', '@')
 retrieval_model_replaced = config.retrieval.model.replace('/', '@')
 dir_config_json = f'{config.conversion.json_source}_{config.conversion.api}_{conversion_model_replaced}_{config.conversion.n_generate}'
@@ -91,6 +93,7 @@ path_form57_img = os.path.join(DIR_DATA_ROOT, FN_FORM57_IMG)
 path_form57_json = os.path.join(path_dir_config_json, FN_FORM57_JSON)
 path_form57_json_group = os.path.join(path_dir_config_json, FN_FORM57_JSON_GROUP)
 path_df_form57_retrieval = os.path.join(path_dir_config_result, FN_DF_FORM57_RETRIEVAL)
+path_df_match = os.path.join(DIR_DATA_ROOT, 'df_match.csv')
 
 print('------------Setting path DONE!!------------')
 
@@ -109,6 +112,15 @@ print('------------Conversion DONE!!------------')
 ############ extract keywords
 from extract_keywords import extract_keywords
 
-extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_label, config.retrieval)
+df_retrieval = extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_label, config.retrieval)
 
 print('------------Retrieval DONE!!------------')
+
+############ match news and csv file using retrieved information
+assert os.path.exists(path_df_match)
+df_match = pd.read_csv(path_df_match)
+df_match = df_match[df_match['match'] == 1]
+
+print('------------Matching DONE!!------------')
+
+############ calculate the accuracy
