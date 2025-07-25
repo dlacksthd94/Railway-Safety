@@ -16,10 +16,8 @@ Transcribe all fields in JSON format:
         "name": "<field label>",
         "choices": {
             "<choice_key>": "<choice_label>",
-            …
         }
     },
-    …
 }
 ```
 """
@@ -58,12 +56,15 @@ Please merge them into a single, unified grouping without annotations or explana
 
 def parse_json_from_output(output):
     try:
-        json_start_index = output.index('```')
-        json_end_index = output.rindex('```')
-        str_form57 = output[json_start_index:json_end_index].strip('`')
-        if str_form57.startswith('json'):
-            str_form57 = str_form57.replace('json', '', 1)
-        dict_form57 = json.loads(str_form57)
+        if '```' in output:
+            json_start_index = output.index('```')
+            json_end_index = output.rindex('```')
+            str_form57 = output[json_start_index:json_end_index].strip('`')
+            if str_form57.startswith('json'):
+                str_form57 = str_form57.replace('json', '', 1)
+            dict_form57 = json.loads(str_form57)
+        else:
+            dict_form57 = json.loads(output)
     except:
         dict_form57 = ''
     return dict_form57

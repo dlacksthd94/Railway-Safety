@@ -8,80 +8,6 @@ import os
 from itertools import chain
 import re
 
-dict_target_info = {
-    'railroad': {
-        1: 'Railroad Name',
-        2: 'Other Railroad Name',
-        3: 'Maintenance Railroad Name',
-    },
-    'time': {
-        5: 'Date',
-        "5a": 'Day of Week',
-        6: 'Time',
-    },
-    'location': {
-        7: 'Nearest Station',
-        9: 'County Name',
-        10: 'State Name',
-        11: 'City Name',
-        12: 'Highway Name',
-    },
-    'highway user': {
-        13: 'Highway User',
-        14: 'Estimated Vehicle Speed',
-        15: 'Vehicle Direction',
-        16: 'Highway User Position',
-        38: 'User Age',
-        39: 'User Sex',
-        40: 'User Struck By Second Train',
-        41: 'Highway User Action',
-    },
-    'train': {
-        # 17: 'Equipment Involved',
-        # 18: 'Railroad Car Unit Position',
-        19: 'Equipment Struck',
-        24: 'Equipment Type',
-        26: "Track Name",
-        30: 'Train Speed',
-        31: 'Train Direction',
-    },
-    'hazmat': {
-        '20a': 'Hazmat Involvement',
-        '20b': 'Hazmat Released by',
-        '20c': 'Hazmat Released Quantity',
-        '20c': 'Hazmat Released Quantity',
-    },
-    'environment': {
-        21: 'Temperature',
-        22: 'Visibility',
-        23: 'Weather Condition',
-        34: 'Roadway Condition',
-    },
-    # 'warning': {
-        # 32: [f'Crossing Warning Expanded {str(i)}' for i in range(1, 13)],
-        # 35: 'Crossing Warning Location',
-        # 36: 'Warning Connected To Signal',
-        # 37: 'Crossing Illuminated',
-    # },
-    'damage': {
-        44: 'Driver Condition',
-        45: 'Driver In Vehicle',
-        '46a': 'Crossing Users Killed',
-        '46b': 'Crossing Users Injured',
-        48: 'Number Vehicle Occupants',
-        '49a': 'Employees Killed',
-        '49b': 'Employees Injured',
-        50: 'Number People On Train',
-        '52a': 'Passengers Killed',
-        '52b': 'Passengers Injured',
-    },
-    # 'analysis': {
-    #     42: 'Driver Passed Vehicle',
-    #     43: 'View Obstruction',
-    #     54: 'Narrative',
-    # },
-}
-
 COLUMNS_CONTENT = ['np_url', 'tf_url', 'rd_url', 'gs_url', 'np_html', 'tf_html', 'rd_html', 'gs_html']
 COLUMNS_LABEL = ['label_np_url', 'label_tf_url', 'label_rd_url', 'label_gs_url', 'label_np_html', 'label_tf_html', 'label_rd_html', 'label_gs_html']
 DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
@@ -172,7 +98,7 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
                 output = pipe(prompt)#, max_new_tokens=30)
                 answer = output[0]['generated_text'].split('Answer:\n')[-1]
 
-                df_retrieval.loc[idx_content, name] = answer
+                df_retrieval.loc[idx_content, entry_idx] = answer
             # df_retrieval.loc[idx_content, :].to_dict()
 
         elif question_batch == 'group':
