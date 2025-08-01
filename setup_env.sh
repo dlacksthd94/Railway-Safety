@@ -19,7 +19,7 @@ conda activate $ENV_NAME
 pip cache purge
 conda clean --all -y
 
-pip install pandas
+pip install pandas json5
 pip install feedparser requests # for Google RSS
 pip install selenium newspaper3k lxml_html_clean trafilatura readability-lxml goose3 # for scraping news articles
 pip install streamlit

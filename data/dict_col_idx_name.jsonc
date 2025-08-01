@@ -1,0 +1,76 @@
+{
+        "1": "Railroad Name",
+        // "1a": "Railroad Code",
+        // "1b": "Incident Number",
+        "2": "Other Railroad Name",
+        // "2a": "Other Railroad Code",
+        // "2b": "Other Incident Number",
+        "3": "Maintenance Railroad Name",
+        // "3a": "Maintenance Railroad Code",
+        // "3b": "Maintenance Incident Number",
+        // "4": "Grade Crossing ID",
+        "5": ["Date", "Month", "Day", "Incident Year"],
+        "6": ["Time", "Hour", "Minute", "AM/PM"],
+
+        "7": "Nearest Station",
+        // "8": "Subdivision",
+        "9": "County Name",
+        "10": "State Name",
+        "11": "City Name",
+        "12": ["Highway Name", "Public/Private"],
+
+        "13": "Highway User Code",
+        "14": "Estimated Vehicle Speed",
+        "15": "Vehicle Direction Code",
+        "16": "Highway User Position Code",
+
+        "17": "Equipment Involved Code",
+        "18": "Railroad Car Unit Position",
+        "19": "Equipment Struck Code",
+
+        "20a": "Hazmat Involvement Code",
+        "20b": "Hazmat Released by Code",
+        "20c": ["Hazmat Released Name", "Hazmat Released Quantity", "Hazmat Released Measure"],
+
+        "21": "Temperature",
+        "22": "Visibility Code",
+        "23": "Weather Condition Code",
+
+        "24": "Equipment Type Code",
+        "25": "Track Type Code",
+        "26": "Track Name",
+        "27": "Track Class",
+        "28": "Number of Locomotive Units",
+        "29": "Number of Cars",
+
+        "30": ["Train Speed", "Estimated/Recorded Speed"],
+        "31": "Train Direction Code",
+                
+        // "32": [f"Crossing Warning Expanded Code {str(i)}" for i in range(1, 13)],
+        // "33": "Signaled Crossing Warning Code",
+        "34": "Roadway Condition Code",
+        "35": "Crossing Warning Location Code",
+        "36": "Warning Connected To Signal", // no code column
+        "37": "Crossing Illuminated", // no code column
+
+        "38": "User Age",
+        "39": "User Sex",
+        "40": "User Struck By Second Train", // no code column
+        "41": "Highway User Action Code",
+        "42": "Driver Passed Vehicle", // no code column
+        "43": "View Obstruction Code",
+
+        "44": "Driver Condition Code",
+        "45": "Driver In Vehicle", // no code column
+        "46": ["Crossing Users Killed", "Crossing Users Injured"],
+        "47": "Vehicle Damage Cost",
+        "48": "Number Vehicle Occupants",
+        "49": ["Employees Killed", "Employees Injured"],
+        "50": "Number People On Train",
+        // "51": "Form 54 Filed,
+        "52": ["Passengers Killed", "Passengers Injured"],
+
+        // "53a": "Speical Study 1", #Video Taken; Video Used
+        // "53b": "Speical Study 2",
+        // "54": "Narrative"
+}
