@@ -1,0 +1,102 @@
+{
+    "Railroad Information": [
+        "1",
+        "1a",
+        "1b",
+        "2",
+        "2a",
+        "2b",
+        "3",
+        "3a",
+        "3b"
+    ],
+    "Date and Time Details": [
+        "5",
+        "6"
+    ],
+    "Location Information": [
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12"
+    ],
+    "Highway User Type": [
+        "13"
+    ],
+    "Accident Position and Circumstances": [
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20a",
+        "20b",
+        "20c"
+    ],
+    "Weather and Visibility": [
+        "21",
+        "22",
+        "23"
+    ],
+    "Equipment and Track Information": [
+        "24",
+        "25",
+        "26",
+        "27",
+        "28",
+        "29",
+        "30",
+        "31"
+    ],
+    "Crossing Details": [
+        "32",
+        "33",
+        "34",
+        "35",
+        "36",
+        "37"
+    ],
+    "Highway User Characteristics": [
+        "38",
+        "39",
+        "40",
+        "41"
+    ],
+    "Driver and Vehicle Interaction": [
+        "42",
+        "43",
+        "44",
+        "45"
+    ],
+    "Additional Users and Property Damage": [
+        "46",
+        "47",
+        "48",
+        "49",
+        "50"
+    ],
+    "Accident Confirmation": [
+        "51"
+    ],
+    "Passenger Details": [
+        "52"
+    ],
+    "Special Study Details": [
+        "53a",
+        "53b"
+    ],
+    "Narrative Description": [
+        "54"
+    ],
+    "Signatory Information": [
+        "55",
+        "56",
+        "57"
+    ],
+    "Miscellaneous Notes": [
+        "58"
+    ]
+}

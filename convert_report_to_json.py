@@ -2,7 +2,7 @@ import json
 from tqdm import tqdm
 import copy
 import os
-import pprint
+from pprint import pprint
 import pandas as pd
 import utils_scrape
 import time
@@ -22,36 +22,54 @@ Transcribe all fields in JSON format:
 ```
 """
 
-PROMPT_DICT_FORM57 = f"""
-I'll give you:
-1. The original form PDF.
-2. A list of JSON files, each one an imperfect transcription of that same form.
-Please merge them into a single, accurate transcription.
+PROMPT_DICT_FORM57 = """
+I'll provide you with the following:
+1. The original form PDF/image.
+2. A list of imperfect JSON transcription attempts of that same form.
+Merge and correct them into a single transcription in JSON format:
+```json
+{
+    "<field_id>": {
+        "name": "<field label>",
+        "choices": {
+            "<choice_key>": "<choice_label>",
+        }
+    },
+}
+```
 """
 
 PROMPT_DICT_FORM57_GROUP_TEMP = """
-I'll give you:
-1. The original form PDF.
-2. A single, accurate transcription of the PDF.
-Some entries may be ambiguous on their own, but grouping semantically related entries together can help clarify their meaning.
-Please categorize them accordingly.
-The output should be in JSON format without annotations or explanations:
+I'll provide you with the following:
+1. The original form PDF/image.
+2. An accurate transcription of the form.
+Please categorize the fields into semantic groups considering the layout of the form.
+Ensure that each field belongs to only one group (i.e., no overlapping groups).
+The output should be in JSON format, with no additional annotations or explanations:
 ```
 {
-    group: [entry, entry, ...],
-    group: [entry, entry, ...],
+    "<group name>": ["<field idx>", "<field idx>", ...],
+    "<group name>": ["<field idx>", "<field idx>", ...],
     ...
 }
 ```
 """
 
-PROMPT_DICT_FORM57_GROUP = f"""
-I'll give you:
-1. The original form PDF.
-2. A single, accurate transcription of the PDF.
-3. A list of JSON files, each containing a different grouping of entries from the same form.
-Some entries may be ambiguous on their own, but grouping semantically related entries together can help clarify their meaning.
-Please merge them into a single, unified grouping without annotations or explanations.
+PROMPT_DICT_FORM57_GROUP = """
+I'll provide you with the following:
+1. The original form PDF/image.
+2. An accurate transcription of the form.
+3. A list of JSON files, each containing a different grouping of fields from the same form.
+Please categorize the fields into semantic groups considering the layout of the form.
+Ensure that each field belongs to only one group (i.e., no overlapping groups).
+The output should be in JSON format, with no additional annotations or explanations:
+```
+{
+    "<group name>": ["<field idx>", "<field idx>", ...],
+    "<group name>": ["<field idx>", "<field idx>", ...],
+    ...
+}
+```
 """
 
 def parse_json_from_output(output):
@@ -77,7 +95,7 @@ def csv_to_json(path_form57_csv, path_form57_json):
 
     else:
         df_data = pd.read_csv(path_form57_csv)
-        # df_data = df_data[df_data['State Name'] == 'CALIFORNIA']
+        df_data = df_data[df_data['State Name'] == 'CALIFORNIA']
         df_data['hash_id'] = df_data.apply(utils_scrape.hash_row, axis=1)
         df_data['Date'] = pd.to_datetime(df_data['Date'])
         df_data = df_data[df_data['Date'] >= '2000-01-01']
@@ -484,7 +502,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
                         { "type": "text", "text": str(dict_form57)}
                     ]
                 },
-            ],
+            ]
             with utils.Timer(path_form57_json):
                 response = client.chat.completions.create(
                     model=model,
@@ -538,11 +556,11 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
         from PIL import Image
 
         dict_model_config = {
-            'Qwen/Qwen2.5-VL-7B-Instruct': {'num_beams': 1}, # good
+            'Qwen/Qwen2.5-VL-7B-Instruct': {'torch_dtype': torch.float16}, # good
             # 'microsoft/GUI-Actor-7B-Qwen2.5-VL': {}, # bad
             # 'OpenGVLab/InternVL3-8B': {}, #must be used with custom code to correctly load the model
             # 'OpenGVLab/InternVL3-8B-Instruct': {}, #must be used with custom code to correctly load the model
-            'OpenGVLab/InternVL3-8B-hf': {'num_beams': 1}, # good
+            'OpenGVLab/InternVL3-8B-hf': {'torch_dtype': torch.float32}, # good
             # 'microsoft/Phi-3.5-vision-instruct': {}, #error
             # 'google/gemma-3-4b-it': {}, # bad
             # 'microsoft/OmniParser-v2.0': {}, #error
@@ -560,17 +578,17 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             # 'meta-llama/Llama-3.2-11B-Vision': {}, # cannot use chat template input
             # 'meta-llama/Llama-3.2-11B-Vision-Instruct': {}, # bad
             # 'nvidia/Eagle2.5-8B': {}, # must be used with custom code to correctly load the model
-            'ByteDance-Seed/UI-TARS-1.5-7B': {'num_beams': 1}, # good
+            # 'ByteDance-Seed/UI-TARS-1.5-7B': {'num_beams': 1}, # good
             # 'allenai/Molmo-7B-D-0924': {}, # must be used with custom code to correctly load the model
         }
         device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
         image = Image.open(path_form57_img)
 
         generation_config_base = {'max_new_tokens': 4096}
-        generation_config_beam_sample = {**generation_config_base, 'do_sample': True, 'temperature': 1, 'top_p': 0.95}
-        generation_config_greedy_search = {**generation_config_base, 'do_sample': False, 'num_beams': 1}
-        generation_config_additional = dict_model_config[model]
-        pipe = pipeline(model=model, device_map=device, model_kwargs={})
+        generation_config_sample = {**generation_config_base, 'do_sample': True, 'temperature': 1, 'top_p': 0.95} # sample or beam sample
+        generation_config_search = {**generation_config_base, 'do_sample': False} # greedy search or beam search
+        model_config = dict_model_config[model]
+        pipe = pipeline(model=model, device_map=device, model_kwargs=model_config)
 
         if os.path.exists(path_form57_json):
             with open(path_form57_json, 'r') as f:
@@ -589,7 +607,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
                     }
                 ]
                 with utils.Timer(path_form57_json):
-                    response = pipe(text=messages, return_full_text=False, generate_kwargs={**generation_config_beam_sample, **generation_config_additional})
+                    response = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config_sample)
                 list_response.append(response)
 
             list_dict_form57_temp = []
@@ -610,17 +628,79 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
                 }
             ]
             with utils.Timer(path_form57_json):
-                response = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config_greedy_search)
+                response = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config_search)
             
             output = response[0]['generated_text']
             dict_form57 = parse_json_from_output(output)
             
             with open(path_form57_json, 'w') as f:
                 json.dump(dict_form57, f, indent=4)
-        
-        
+
+        ############ categorize the entries
+        if os.path.exists(path_form57_json_group):
+            with open(path_form57_json_group, 'r') as f:
+                dict_form57_group = json.load(f)
+                
+        else:
+            while True:
+                list_response_group = []
+                for _ in range(n_generate):
+                    messages = [
+                        {
+                            "role": "user",
+                            "content": [
+                                { "type": "text", "text": PROMPT_DICT_FORM57_GROUP_TEMP},
+                                { "type": "image", "image": image},
+                                { "type": "text", "text": json.dumps(dict_form57, indent=4)}
+                            ]
+                        },
+                    ]
+                    with utils.Timer(path_form57_json_group):
+                        response_group = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config_sample)
+                    list_response_group.append(response_group)
+                
+                list_dict_form57_group_temp = []
+                for response_group in list_response_group:
+                    output = response_group[0]['generated_text']
+                    print(output)
+                    dict_form57_group_temp = parse_json_from_output(output)
+                    list_dict_form57_group_temp.append(dict_form57_group_temp)
+                
+                ############ merge groupings into one
+                messages = [
+                    {
+                        "role": "user",
+                        "content": [
+                            { "type": "image", "image": image},
+                            { "type": "text", "text": PROMPT_DICT_FORM57_GROUP},
+                            { "type": "text", "text": json.dumps(dict_form57, indent=4)},
+                            { "type": "text", "text": '\n\n'.join(map(lambda x: json.dumps(x, indent=4), list_dict_form57_group_temp))}
+                        ]
+                    }
+                ]
+                with utils.Timer(path_form57_json_group):
+                    response = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config_search)
+                
+                output = response[0]['generated_text']
+                dict_form57_group = parse_json_from_output(output)
+
+                group_overlap = False
+                all_entry_idx = []
+                for _, list_entry_idx in dict_form57_group.items():
+                    for entry_idx in list_entry_idx:
+                        if entry_idx not in all_entry_idx:
+                            all_entry_idx.append(entry_idx)
+                        else:
+                            group_overlap = True
+                            break
+                if not group_overlap:
+                    break
+            
+            with open(path_form57_json_group, 'w') as f:
+                json.dump(dict_form57_group, f, indent=4)
+            
         del pipe
         gc.collect()
         torch.cuda.empty_cache()
-    
+
     return dict_form57, dict_form57_group

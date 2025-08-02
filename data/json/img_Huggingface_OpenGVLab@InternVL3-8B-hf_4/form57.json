@@ -13,11 +13,7 @@
     },
     "2": {
         "name": "Name of Other Railroad or Other Entity Filing for Equipment Involved in Train Accident/Incident",
-        "choices": {
-            "1": "Railroad",
-            "2": "Other",
-            "\u2026": "\u2026"
-        }
+        "choices": {}
     },
     "2a": {
         "name": "Alphabetic Code",
@@ -28,7 +24,7 @@
         "choices": {}
     },
     "3": {
-        "name": "Name of Railroad or Other Entity Responsible for Track Maintenance",
+        "name": "Name of Railroad or Other Entity Responsible for Track Maintenance (single entry)",
         "choices": {}
     },
     "3a": {
@@ -46,9 +42,9 @@
     "5": {
         "name": "Date of Accident/Incident",
         "choices": {
-            "month": "month",
-            "day": "day",
-            "year": "year"
+            "month": "Month",
+            "day": "Day",
+            "year": "Year"
         }
     },
     "6": {
@@ -71,9 +67,9 @@
         "choices": {}
     },
     "10": {
-        "name": "State Code",
+        "name": "State Code Abbr.",
         "choices": {
-            "Abbr.": "Abbreviation"
+            "Abbr.": ""
         }
     },
     "11": {
@@ -88,7 +84,7 @@
         }
     },
     "13": {
-        "name": "Highway User Involved",
+        "name": "Type",
         "choices": {
             "A": "Auto",
             "B": "Truck",
@@ -136,7 +132,7 @@
         }
     },
     "20c": {
-        "name": "State here the name and quantity of the hazardous materials released, if any.",
+        "name": "State here the name and quantity of the hazardous material released, if any.",
         "choices": {}
     },
     "21": {
@@ -151,11 +147,15 @@
             "1": "Dawn",
             "2": "Day",
             "3": "Dusk",
-            "4": "Dark"
+            "4": "Dark",
+            "5": "Rain",
+            "6": "Fog",
+            "7": "Sleet",
+            "8": "Snow"
         }
     },
     "23": {
-        "name": "Weather (single entry)",
+        "name": "Weather",
         "choices": {
             "1": "Clear",
             "2": "Cloudy",
@@ -174,9 +174,8 @@
             "4": "Work train",
             "5": "Single Car",
             "6": "Cut of cars",
-            "7": "Maint/Inspe Car",
-            "8": "Light loco(s) (standing)",
-            "9": "Maint/Inspe Car",
+            "7": "Maint/Inspect Car",
+            "8": "Light locos (specify)",
             "A": "Spec. Mow Equip.",
             "B": "DMU",
             "C": "Passenger Train-Pulling",
@@ -186,7 +185,7 @@
         }
     },
     "25": {
-        "name": "Track Type Used by Railroad Equipment Involved",
+        "name": "Track Type Used by Rail Equipment Involved",
         "choices": {
             "1": "Main",
             "2": "Yard",
@@ -211,19 +210,17 @@
         "choices": {}
     },
     "30": {
-        "name": "Consist Speed (Recorded if available)",
+        "name": "Consist Speed (Recorded speed, E - Recorded if available)",
         "choices": {
-            "R": "Recorded",
-            "E": "Estimated",
             "MPH": "MPH"
         }
     },
     "31": {
         "name": "Time Table Direction",
         "choices": {
-            "1": "East",
-            "2": "South",
-            "3": "East",
+            "1": "North",
+            "2": "East",
+            "3": "South",
             "4": "West"
         }
     },
@@ -233,14 +230,13 @@
             "1": "Gates",
             "2": "Cantilever FLS",
             "3": "Standard FLS",
-            "4": "Wig wags",
+            "4": "Wig wag",
             "5": "Hwy, traffic signals",
-            "6": "Audible",
             "7": "Crossbucks",
             "8": "Flagged by crew",
-            "9": "Watchman",
+            "9": "Stop signs",
             "10": "Other (specify)",
-            "11": "Other",
+            "11": "Watchman",
             "12": "None"
         }
     },
@@ -269,52 +265,47 @@
         }
     },
     "38": {
-        "name": "Highway User's Gender Age",
+        "name": "Highway User's User",
         "choices": {
-            "Code": {
-                "1": "Male",
-                "2": "Female",
-                "3": "Unknown"
-            }
+            "User's Age": "User's Age",
+            "1": "Male",
+            "2": "Female"
         }
     },
     "39": {
         "name": "Highway User's Gender",
         "choices": {
-            "Code": {
-                "1": "Male",
-                "2": "Female",
-                "3": "Unknown"
-            }
+            "1": "Male",
+            "2": "Female"
         }
     },
     "40": {
         "name": "Highway User Went Behind or in Front of Train and Struck or was Struck by Second Train",
         "choices": {
-            "Code": {
-                "1": "Yes",
-                "2": "No",
-                "3": "Unknown"
-            }
+            "1": "Yes",
+            "2": "No",
+            "3": "Unknown"
         }
     },
     "41": {
-        "name": "Highway User Went Around/Thru or Around/Thru the Gate",
+        "name": "Highway User",
         "choices": {
-            "1": "Went around/through the gate",
-            "2": "Stopped and then proceeded (if yes, see instructions)",
-            "3": "Did not stop and then proceeded",
-            "4": "Stopped on crossing"
+            "1": "Went around the gate",
+            "2": "Stopped temporarily and then proceeded (if yes, see instructions)",
+            "3": "Did not stop and then proceeded (if yes, see instructions)",
+            "4": "Stopped on crossing",
+            "5": "Other (specify)",
+            "6": "Went around/althru temporary barricade",
+            "7": "Went thru the gate",
+            "8": "Suicide/attempted suicide"
         }
     },
     "42": {
         "name": "Driver Passed Standing Highway Vehicle",
         "choices": {
-            "Code": {
-                "1": "Yes",
-                "2": "No",
-                "3": "Unknown"
-            }
+            "1": "Yes",
+            "2": "No",
+            "3": "Unknown"
         }
     },
     "43": {
@@ -340,9 +331,8 @@
     "45": {
         "name": "Casualties to:",
         "choices": {
-            "1": "Killed",
-            "2": "Injured",
-            "3": "Uninjured"
+            "Killed": "Killed",
+            "Injured": "Injured"
         }
     },
     "46": {
@@ -379,14 +369,8 @@
     "53a": {
         "name": "Special Study Block",
         "choices": {
-            "Video Taken?": {
-                "Yes": "Yes",
-                "No": "No"
-            },
-            "Video Used?": {
-                "Yes": "Yes",
-                "No": "No"
-            }
+            "Video Taken?": "Yes/No",
+            "Video Used?": "Yes/No"
         }
     },
     "53b": {
@@ -396,7 +380,7 @@
     "54": {
         "name": "Narrative Description",
         "choices": {
-            "Be specific, and continue on separate sheet if necessary": "Continue if necessary"
+            "Be specific, and continue on separate sheet if necessary": ""
         }
     },
     "55": {
@@ -409,28 +393,6 @@
     },
     "57": {
         "name": "Date",
-        "choices": {}
-    },
-    "58": {
-        "name": "Note",
-        "choices": {
-            "This report": "This report is part of the reporting railroad's accident report pursuant to the accident reports statute and, as such shall not 'be admitted as evidence or used for any purpose in any suit or action for damages growing out of any matter mentioned in said report... 49 U.S.C. 20903. See 49 C.F.R. 225.7 (b)."
-        }
-    },
-    "59": {
-        "name": "OMB approved 6/6/2018, Approval expires 6/30/2021",
-        "choices": {}
-    },
-    "60": {
-        "name": "FORM FRA F 6180.57 (Rev. 08/10)",
-        "choices": {}
-    },
-    "61": {
-        "name": "*NOTE THAT ALL CASUALTIES MUST BE REPORTED ON FORM FRA F 6180.5A",
-        "choices": {}
-    },
-    "62": {
-        "name": "OMB approved 6/6/2018, Approval expires 6/30/2021",
         "choices": {}
     }
 }

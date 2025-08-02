@@ -27,6 +27,7 @@ parser.add_argument(
     type=str,
     choices=['Qwen/Qwen2.5-VL-7B-Instruct', 'OpenGVLab/InternVL3-8B-hf', 'ByteDance-Seed/UI-TARS-1.5-7B', 'None'],
     default='Qwen/Qwen2.5-VL-7B-Instruct',
+    # default='OpenGVLab/InternVL3-8B-hf',
     help="Model to use for processing"
 )
 
@@ -46,7 +47,14 @@ parser.add_argument(
     help="Source of JSON data"
 )
 
-# parser.add_argument("--r_question_batch")
+parser.add_argument(
+    "--r_question_batch",
+    type=str,
+    choices=['single', 'group'],
+    # default='single',
+    default='group',
+    help="Batching strategy for questions"
+)
 
 args = parser.parse_args()
 
@@ -54,12 +62,8 @@ args = parser.parse_args()
 ############### config
 from config import Config, ConversionConfig, RetrievalConfig
 
-### ConversionConfig
 config_conversion = ConversionConfig(api=args.c_api, model=args.c_model, n_generate=args.c_n_generate, json_source=args.c_json_source)
-
-### RetrievalConfig
-# config_retrieval = RetrievalConfig(api='Huggingface', model='microsoft/Phi-4-mini-instruct', n_generate=1, question_batch='single')
-config_retrieval = RetrievalConfig(api='Huggingface', model='microsoft/Phi-4-mini-instruct', n_generate=1, question_batch='group')
+config_retrieval = RetrievalConfig(api='Huggingface', model='microsoft/Phi-4-mini-instruct', n_generate=1, question_batch=args.r_question_batch)
 config = Config(conversion=config_conversion, retrieval=config_retrieval)
 
 print('------------Configuration DONE!!------------')
