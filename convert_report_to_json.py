@@ -7,6 +7,7 @@ import pandas as pd
 import utils_scrape
 import time
 import utils
+from PIL import Image
 
 PROMPT_DICT_FORM57_TEMP = """
 Transcribe all fields in JSON format:
@@ -46,7 +47,7 @@ I'll provide you with the following:
 Please categorize the fields into semantic groups considering the layout of the form.
 Ensure that each field belongs to only one group (i.e., no overlapping groups).
 The output should be in JSON format, with no additional annotations or explanations:
-```
+```json
 {
     "<group name>": ["<field idx>", "<field idx>", ...],
     "<group name>": ["<field idx>", "<field idx>", ...],
@@ -63,7 +64,7 @@ I'll provide you with the following:
 Please categorize the fields into semantic groups considering the layout of the form.
 Ensure that each field belongs to only one group (i.e., no overlapping groups).
 The output should be in JSON format, with no additional annotations or explanations:
-```
+```json
 {
     "<group name>": ["<field idx>", "<field idx>", ...],
     "<group name>": ["<field idx>", "<field idx>", ...],
@@ -205,7 +206,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
     # https://docs.aws.amazon.com/textract/latest/dg/API_AnalyzeDocument.html
     # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/textract/client/analyze_document.html
     # https://docs.aws.amazon.com/textract/latest/dg/analyzing-document-text.html?utm_source=chatgpt.com
-    if api == 'AWS_Textract':
+    elif api == 'AWS_Textract':
         import boto3
         import io
         from PIL import Image, ImageDraw
@@ -336,7 +337,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
 
     ############# Azure Form Recognizer API
     # https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/concept/choose-model-feature?view=doc-intel-4.0.0#pretrained-document-analysis-models
-    if api == 'Azure_FormRecognizer':
+    elif api == 'Azure_FormRecognizer':
         from azure.core.credentials import AzureKeyCredential
         from azure.ai.documentintelligence import DocumentIntelligenceClient
         from azure.ai.documentintelligence.models import AnalyzeResult
@@ -431,7 +432,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
         # +++ draw a bounding box around the table and save as an image
 
     ############# OpenAI API
-    if api == 'OpenAI':
+    elif api == 'OpenAI':
         from openai import OpenAI
 
         API_key = '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'
@@ -473,23 +474,30 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
                 list_dict_form57_temp.append(dict_form57_temp)
 
             ############ merge transcripts into one
-            response = client.responses.create(
-                model=model_path,
-                input=[
-                    {
-                        "role": "user",
-                        "content": [
-                            { "type": "input_file", "file_id": pdf_file.id },
-                            { "type": "input_text", "text": PROMPT_DICT_FORM57},
-                            { "type": "input_text", "text": str(list_dict_form57_temp)}
-                        ]
-                    }
-                ],
-            )
-            # print(response.output_text)
+            while True:
+                response = client.responses.create(
+                    model=model_path,
+                    input=[
+                        {
+                            "role": "user",
+                            "content": [
+                                { "type": "input_file", "file_id": pdf_file.id },
+                                { "type": "input_text", "text": PROMPT_DICT_FORM57},
+                                { "type": "input_text", "text": str(list_dict_form57_temp)}
+                            ]
+                        }
+                    ],
+                )
+                # print(response.output_text)
 
-            output = response.output_text
-            dict_form57 = parse_json_from_output(output)
+                output = response.output_text
+                dict_form57 = parse_json_from_output(output)
+
+                if not (dict_form57.get('name', False) and dict_form57.get('choices', False)):
+                    continue
+                
+                if dict_form57:
+                    break
 
             with open(path_form57_json, 'w') as f:
                 json.dump(dict_form57, f, indent=4)
@@ -526,28 +534,47 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
                 list_dict_form57_group_temp.append(dict_form57_group_temp)
 
             ############ merge groupings into one
-            messages = [
-                {
-                    "role": "user",
-                    "content": [
-                        { "type": "input_file", "file_id": pdf_file.id },
-                        { "type": "input_text", "text": PROMPT_DICT_FORM57_GROUP},
-                        { "type": "input_text", "text": str(dict_form57)},
-                        { "type": "input_text", "text": str(list_dict_form57_group_temp)}
-                    ]
-                }
-            ]
-            with utils.Timer(path_form57_json):
-                response = client.responses.create(
-                    model=model_path,
-                    input=messages
-                )
+            while True:
+                messages = [
+                    {
+                        "role": "user",
+                        "content": [
+                            { "type": "input_file", "file_id": pdf_file.id },
+                            { "type": "input_text", "text": PROMPT_DICT_FORM57_GROUP},
+                            { "type": "input_text", "text": str(dict_form57)},
+                            { "type": "input_text", "text": str(list_dict_form57_group_temp)}
+                        ]
+                    }
+                ]
+                with utils.Timer(path_form57_json):
+                    response = client.responses.create(
+                        model=model_path,
+                        input=messages
+                    )
 
-            output = response.output_text
-            dict_form57_group = parse_json_from_output(output)
-            
+                output = response.output_text
+                dict_form57_group = parse_json_from_output(output)
+
+                if not dict_form57_group:
+                    continue
+                
+                group_overlap = False
+                all_entry_idx = []
+                for _, list_entry_idx in dict_form57_group.items():
+                    for entry_idx in list_entry_idx:
+                        if entry_idx not in all_entry_idx:
+                            all_entry_idx.append(entry_idx)
+                        else:
+                            group_overlap = True
+                            break
+                if not group_overlap:
+                    break
+                
             with open(path_form57_json_group, 'w') as f:
                 json.dump(dict_form57_group, f, indent=4)
+    
+    else:
+        raise ValueError(f"Unsupported API: {api}")
 
     return dict_form57, dict_form57_group
 
@@ -555,12 +582,12 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
     
     dict_form57_group = None
     api, model_path, n_generate, _ = config_conversion.to_tuple()
+    image = Image.open(path_form57_img)
 
     if api == 'Huggingface':
         import torch
         import gc
         from transformers import pipeline, BitsAndBytesConfig
-        from PIL import Image
 
         dict_model_config = {
             'Qwen/Qwen2.5-VL-7B-Instruct': {'torch_dtype': torch.float16}, # good
@@ -568,7 +595,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             # 'microsoft/GUI-Actor-7B-Qwen2.5-VL': {}, # bad
             # 'OpenGVLab/InternVL3-8B': {}, #must be used with custom code to correctly load the model
             # 'OpenGVLab/InternVL3-8B-Instruct': {}, #must be used with custom code to correctly load the model
-            'OpenGVLab/InternVL3-8B-hf': {'torch_dtype': torch.float32}, # good
+            'OpenGVLab/InternVL3-8B-hf': {'load_in_8bit': True, 'torch_dtype': torch.float32}, # good
             'OpenGVLab/InternVL3-14B-hf': {'load_in_8bit': True, 'torch_dtype': torch.float32},
             'OpenGVLab/InternVL3-38B-hf': {'load_in_4bit': True, 'torch_dtype': torch.float32},
             # 'microsoft/Phi-3.5-vision-instruct': {}, #error
@@ -598,7 +625,6 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             # 'allenai/Molmo-7B-D-0924': {}, # must be used with custom code to correctly load the model
         }
         device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
-        image = Image.open(path_form57_img)
 
         quant_config = dict_model_config[model_path]
         generation_config_base = {'max_new_tokens': 4096}
@@ -650,6 +676,9 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
                 
                 output = response[0]['generated_text']
                 dict_form57 = parse_json_from_output(output)
+
+                if not (dict_form57.get('name', False) and dict_form57.get('choices', False)):
+                    continue
 
                 if dict_form57:
                     break
@@ -725,5 +754,143 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
         del pipe
         gc.collect()
         torch.cuda.empty_cache()
+    
+    elif api == 'OpenAI':
+        from openai import OpenAI
+
+        API_key = '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'
+        client = OpenAI(api_key=API_key)
+
+        ############ transcribe
+        if os.path.exists(path_form57_json):
+            with open(path_form57_json, 'r') as f:
+                dict_form57 = json.load(f)
+
+        else:
+            ############ transcribe pdf N times
+            response = client.chat.completions.create(
+                model=model_path,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            { "type": "text", "text": PROMPT_DICT_FORM57_TEMP},
+                            { "type": "file", "file": {"file_id": pdf_file.id} },
+                        ]
+                    },
+                ],
+                n=n_generate,
+                # seed=0,
+                # temperature=0,
+            )
+
+            list_dict_form57_temp = []
+            for choice in response.choices:
+                output = choice.message.content
+                dict_form57_temp = parse_json_from_output(output)
+                list_dict_form57_temp.append(dict_form57_temp)
+
+            ############ merge transcripts into one
+            while True:
+                response = client.responses.create(
+                    model=model_path,
+                    input=[
+                        {
+                            "role": "user",
+                            "content": [
+                                { "type": "input_file", "file_id": pdf_file.id },
+                                { "type": "input_text", "text": PROMPT_DICT_FORM57},
+                                { "type": "input_text", "text": str(list_dict_form57_temp)}
+                            ]
+                        }
+                    ],
+                )
+                # print(response.output_text)
+
+                output = response.output_text
+                dict_form57 = parse_json_from_output(output)
+
+                if not (dict_form57.get('name', False) and dict_form57.get('choices', False)):
+                    continue
+                
+                if dict_form57:
+                    break
+
+            with open(path_form57_json, 'w') as f:
+                json.dump(dict_form57, f, indent=4)
+        
+        ############ categorize the entries
+        if os.path.exists(path_form57_json_group):
+            with open(path_form57_json_group, 'r') as f:
+                dict_form57_group = json.load(f)
+                
+        else:
+            messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        { "type": "text", "text": PROMPT_DICT_FORM57_GROUP_TEMP},
+                        { "type": "file", "file": {"file_id": pdf_file.id} },
+                        { "type": "text", "text": str(dict_form57)}
+                    ]
+                },
+            ]
+            with utils.Timer(path_form57_json):
+                response = client.chat.completions.create(
+                    model=model_path,
+                    messages=messages,
+                    n=n_generate,
+                    # seed=0,
+                    # temperature=0,
+                )
+
+            list_dict_form57_group_temp = []
+            for choice in response.choices:
+                output = choice.message.content
+                dict_form57_group_temp = parse_json_from_output(output)
+                list_dict_form57_group_temp.append(dict_form57_group_temp)
+
+            ############ merge groupings into one
+            while True:
+                messages = [
+                    {
+                        "role": "user",
+                        "content": [
+                            { "type": "input_file", "file_id": pdf_file.id },
+                            { "type": "input_text", "text": PROMPT_DICT_FORM57_GROUP},
+                            { "type": "input_text", "text": str(dict_form57)},
+                            { "type": "input_text", "text": str(list_dict_form57_group_temp)}
+                        ]
+                    }
+                ]
+                with utils.Timer(path_form57_json):
+                    response = client.responses.create(
+                        model=model_path,
+                        input=messages
+                    )
+
+                output = response.output_text
+                dict_form57_group = parse_json_from_output(output)
+
+                if not dict_form57_group:
+                    continue
+                
+                group_overlap = False
+                all_entry_idx = []
+                for _, list_entry_idx in dict_form57_group.items():
+                    for entry_idx in list_entry_idx:
+                        if entry_idx not in all_entry_idx:
+                            all_entry_idx.append(entry_idx)
+                        else:
+                            group_overlap = True
+                            break
+                if not group_overlap:
+                    break
+                
+            with open(path_form57_json_group, 'w') as f:
+                json.dump(dict_form57_group, f, indent=4)
+    
+    else:
+        raise ValueError(f"Unsupported API: {api}")
 
     return dict_form57, dict_form57_group

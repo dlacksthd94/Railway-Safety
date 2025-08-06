@@ -17,8 +17,10 @@ parser = argparse.ArgumentParser(
 # Optional (flag-style) arguments
 parser.add_argument(
     "--c_api",
+    type=str,
     choices=['Huggingface', 'OpenAI', 'None'],
-    default="None",
+    # default="None",
+    default="Huggingface",
     help="API to use for processing"
 )
 
@@ -26,15 +28,15 @@ parser.add_argument(
     "--c_model",
     type=str,
     # choices=['Qwen/Qwen2.5-VL-7B-Instruct', 'OpenGVLab/InternVL3-8B-hf', 'ByteDance-Seed/UI-TARS-1.5-7B', 'None'],
-    default='None',
-    # default='Qwen/Qwen2.5-VL-32B-Instruct',
+    # default='None',
+    default='Qwen/Qwen2.5-VL-32B-Instruct',
     help="Model to use for processing"
 )
 
 parser.add_argument(
     "--c_n_generate",
     type=int,
-    default=0,
+    default=4,
     # action="store_true",
     help="Number of generations"
 )
@@ -43,7 +45,8 @@ parser.add_argument(
     "--c_json_source",
     type=str,
     choices=['csv', 'pdf', 'img'],
-    default='csv',
+    # default='csv',
+    default='img',
     help="Source of JSON data"
 )
 
@@ -51,8 +54,8 @@ parser.add_argument(
     "--r_question_batch",
     type=str,
     choices=['single', 'group'],
-    default='single',
-    # default='group',
+    # default='single',
+    default='group',
     help="Batching strategy for questions"
 )
 
@@ -156,4 +159,5 @@ from utils import get_acc_table
 # list_answer_type_selected = ['choice', 'digit', 'str', 'list', 'etc']
 list_answer_type_selected = ['choice']
 df_acc = get_acc_table(path_form57_csv, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
-df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
+acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
+print(acc)
