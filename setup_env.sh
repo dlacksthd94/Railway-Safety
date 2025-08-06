@@ -24,7 +24,7 @@ pip install feedparser requests # for Google RSS
 pip install selenium newspaper3k lxml_html_clean trafilatura readability-lxml goose3 # for scraping news articles
 pip install streamlit
 pip install openai pytesseract # for transcribing report form in json format
-pip install transformers accelerate # for labeling news & populating the report form
+pip install transformers accelerate bitsandbytes # for labeling news & populating the report form
 pip install sentencepiece # for running VLMs from Hugging Face
 
 ############ Modify code in `def postprocess` in `class ImageTextToTextPipeline` in transformers/pipelines/image_text_to_text.py

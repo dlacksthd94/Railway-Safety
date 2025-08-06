@@ -15,7 +15,12 @@
         "name": "Incident Month"
     },
     "5": {
-        "name": "Other Railroad Name"
+        "name": "Other Railroad Name",
+        "choices": {
+            "PCMZ": "Caltrain Commuter Railroad Company",
+            "SDTI": "San Diego Trolley Incorporated",
+            "XDBI": "DBI Services"
+        }
     },
     "6": {
         "name": "Other Incident Number"
@@ -75,7 +80,10 @@
         "name": "County Name"
     },
     "25": {
-        "name": "State Name"
+        "name": "State Name",
+        "choices": {
+            "6": "CALIFORNIA"
+        }
     },
     "26": {
         "name": "City Name"
@@ -99,7 +107,6 @@
             "D": "Pick-up truck",
             "E": "Van",
             "F": "Bus",
-            "G": "School bus",
             "H": "Motorcycle",
             "J": "Other motor vehicle",
             "K": "Pedestrian",
@@ -169,8 +176,6 @@
         "name": "Hazmat Released by",
         "choices": {
             "1": "Highway user",
-            "2": "Rail equipment",
-            "3": "Both",
             "4": "Neither"
         }
     },
@@ -202,7 +207,6 @@
             "2": "Cloudy",
             "3": "Rain",
             "4": "Fog",
-            "5": "Sleet",
             "6": "Snow"
         }
     },
@@ -346,7 +350,15 @@
         }
     },
     "78": {
-        "name": "Crossing Warning Explanation"
+        "name": "Crossing Warning Explanation",
+        "choices": {
+            "A": "Insulated rail traffic",
+            "E": "Devices down for repair",
+            "F": "Devices out of service",
+            "J": "Warning > 60 secs - other train/equipment within track circuit limits",
+            "K": "Warning < 20 secs - signals timed out before train arrived at xing/island circ",
+            "S": "Other cause(s) - explain in Narrative Description"
+        }
     },
     "79": {
         "name": "Roadway Condition",
@@ -355,8 +367,7 @@
             "B": "Wet",
             "C": "Snow/slush",
             "D": "Ice",
-            "E": "Sand, Mud, Dirt, Oil, Grease",
-            "F": "Water (Standing, Moving)"
+            "E": "Sand, Mud, Dirt, Oil, Grease"
         }
     },
     "80": {
@@ -368,19 +379,38 @@
         }
     },
     "81": {
-        "name": "Warning Connected To Signal"
+        "name": "Warning Connected To Signal",
+        "choices": {
+            "1": "Yes",
+            "2": "No",
+            "3": "Unknown"
+        }
     },
     "82": {
-        "name": "Crossing Illuminated"
+        "name": "Crossing Illuminated",
+        "choices": {
+            "1": "Yes",
+            "2": "No",
+            "3": "Unknown"
+        }
     },
     "83": {
         "name": "User Age"
     },
     "84": {
-        "name": "User Sex"
+        "name": "User Sex",
+        "choices": {
+            "1": "Male",
+            "2": "Female"
+        }
     },
     "85": {
-        "name": "User Struck By Second Train"
+        "name": "User Struck By Second Train",
+        "choices": {
+            "1": "Yes",
+            "2": "No",
+            "3": "Unknown"
+        }
     },
     "86": {
         "name": "Highway User Action",
@@ -396,7 +426,12 @@
         }
     },
     "87": {
-        "name": "Driver Passed Vehicle"
+        "name": "Driver Passed Vehicle",
+        "choices": {
+            "1": "Yes",
+            "2": "No",
+            "3": "Unknown"
+        }
     },
     "88": {
         "name": "View Obstruction",
@@ -420,7 +455,11 @@
         }
     },
     "90": {
-        "name": "Driver In Vehicle"
+        "name": "Driver In Vehicle",
+        "choices": {
+            "1": "Yes",
+            "2": "No"
+        }
     },
     "91": {
         "name": "Crossing Users Killed"
@@ -479,7 +518,7 @@
     "109": {
         "name": "Total Killed Form 55A",
         "choices": {
-            "1": 7
+            "1": 6
         }
     },
     "110": {
@@ -524,7 +563,12 @@
         "name": "Other Railroad SMT Grouping"
     },
     "122": {
-        "name": "Other Parent Railroad Name"
+        "name": "Other Parent Railroad Name",
+        "choices": {
+            "PCMZ": "Caltrain Commuter Railroad Company",
+            "SDTI": "San Diego Trolley Incorporated",
+            "XDBI": "DBI Services"
+        }
     },
     "123": {
         "name": "Other Railroad Holding Company"

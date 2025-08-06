@@ -1,14 +1,8 @@
 {
     "General Information": [
         "1",
-        "1a",
-        "1b",
         "2",
-        "2a",
-        "2b",
         "3",
-        "3a",
-        "3b",
         "4",
         "5",
         "6",
@@ -19,20 +13,26 @@
         "11",
         "12"
     ],
-    "Railroad Details": [
+    "Highway User Details": [
         "13",
         "14",
         "15",
-        "16",
+        "16"
+    ],
+    "Rail Equipment Details": [
         "17",
         "18",
         "19",
         "20a",
         "20b",
-        "20c",
+        "20c"
+    ],
+    "Environmental Conditions": [
         "21",
         "22",
-        "23",
+        "23"
+    ],
+    "Equipment and Track Details": [
         "24",
         "25",
         "26",
@@ -40,7 +40,9 @@
         "28",
         "29",
         "30",
-        "31",
+        "31"
+    ],
+    "Crossing Warning Systems": [
         "32",
         "33",
         "34",
@@ -48,29 +50,38 @@
         "36",
         "37"
     ],
-    "Accident Circumstances": [
+    "Highway User Actions": [
+        "38",
+        "39",
         "40",
-        "41",
+        "41"
+    ],
+    "Obstruction Details": [
         "42",
-        "43",
+        "43"
+    ],
+    "Casualties": [
         "44",
         "45"
     ],
-    "Highway User Details": [
-        "38",
-        "39",
+    "Property Damage": [
         "46",
         "47",
-        "48",
+        "48"
+    ],
+    "Railroad Employee and Passenger Information": [
         "49",
         "50",
-        "51",
         "52"
     ],
-    "Additional Information": [
+    "Special Study Block": [
         "53a",
-        "53b",
-        "54",
+        "53b"
+    ],
+    "Narrative Description": [
+        "54"
+    ],
+    "Signature and Date": [
         "55",
         "56",
         "57"

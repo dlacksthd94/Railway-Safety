@@ -77,12 +77,12 @@
     "12": {
         "name": "Highway Name or Number",
         "choices": {
-            "Public": "Public",
-            "Private": "Private"
+            "Public": "",
+            "Private": ""
         }
     },
     "13": {
-        "name": "Type of Highway User Involved",
+        "name": "Type",
         "choices": {
             "A": "Auto",
             "B": "Truck",
@@ -102,7 +102,7 @@
         "choices": {}
     },
     "15": {
-        "name": "Direction (geographical) Code",
+        "name": "Direction (geographical)",
         "choices": {
             "1": "North",
             "2": "South",
@@ -111,7 +111,7 @@
         }
     },
     "16": {
-        "name": "Position of Highway User",
+        "name": "Position",
         "choices": {
             "1": "Stalled or stuck on crossing",
             "2": "Stopped on crossing",
@@ -121,11 +121,13 @@
         }
     },
     "17": {
-        "name": "Type of Rail Equipment Involved",
+        "name": "Equipment",
         "choices": {
             "A": "Train pulling - RCL",
             "B": "Train pushing - RCL",
             "C": "Train standing - RCL",
+            "D": "EMU Locomotive(s)",
+            "E": "DMU Locomotive(s)",
             "1": "Train (units pulling)",
             "2": "Train (units pushing)",
             "3": "Train (standing)",
@@ -166,15 +168,17 @@
         }
     },
     "20c": {
-        "name": "Name and quantity of the hazardous material released, if any",
+        "name": "State here the name and quantity of the hazardous material released, if any.",
         "choices": {}
     },
     "21": {
-        "name": "Temperature (Specify if minus) \u00b0F",
-        "choices": {}
+        "name": "Temperature (Specify if minus)",
+        "choices": {
+            "\u00b0F": ""
+        }
     },
     "22": {
-        "name": "Visibility (single entry) Code",
+        "name": "Visibility (single entry)",
         "choices": {
             "1": "Dawn",
             "2": "Day",
@@ -183,7 +187,7 @@
         }
     },
     "23": {
-        "name": "Weather (single entry) Code",
+        "name": "Weather (single entry)",
         "choices": {
             "1": "Clear",
             "2": "Cloudy",
@@ -194,7 +198,7 @@
         }
     },
     "24": {
-        "name": "Type of Equipment Consist (single entry)",
+        "name": "Type of Equipment Consist",
         "choices": {
             "1": "Freight Train",
             "2": "Passenger Train-Pulling",
@@ -238,14 +242,13 @@
         "choices": {}
     },
     "30": {
-        "name": "Consist Speed (Recorded speed, R - Recorded if available) E - Estimated MPH",
+        "name": "Consist Speed (Recorded speed, R - Recorded if available, E - Estimated MPH)",
         "choices": {
-            "R": "Recorded",
-            "E": "Estimated"
+            "MPH": ""
         }
     },
     "31": {
-        "name": "Time Table Direction Code",
+        "name": "Time Table Direction",
         "choices": {
             "1": "North",
             "2": "South",
@@ -272,10 +275,12 @@
     },
     "33": {
         "name": "Signaled Crossing Warning",
-        "choices": {}
+        "choices": {
+            "See reverse side for instructions and codes": ""
+        }
     },
     "34": {
-        "name": "Roadway Conditions Code",
+        "name": "Roadway Conditions",
         "choices": {
             "A": "Dry",
             "B": "Wet",
@@ -310,7 +315,7 @@
         }
     },
     "38": {
-        "name": "Highway User's Gender Code",
+        "name": "Highway User's Gender",
         "choices": {
             "1": "Male",
             "2": "Female"
@@ -318,10 +323,13 @@
     },
     "39": {
         "name": "Highway User's Age",
-        "choices": {}
+        "choices": {
+            "1": "Male",
+            "2": "Female"
+        }
     },
     "40": {
-        "name": "Highway User Went Behind or in Front of Train and Struck or was Struck by Second Train Code",
+        "name": "Highway User Went Behind or in Front of Train and Struck or was Struck by Second Train",
         "choices": {
             "1": "Yes",
             "2": "No",
@@ -331,14 +339,14 @@
     "41": {
         "name": "Highway User",
         "choices": {
-            "1": "Went around the gate temporary barricade",
+            "1": "Went around the gate",
             "2": "Stopped and then proceeded",
             "3": "Did not stop",
             "4": "Went thru the gate",
             "5": "Other (specify)",
             "6": "Went around/thru temporary barricade",
-            "7": "Went thru the gate",
-            "8": "Suicide/Attempted suicide"
+            "7": "Suicide/Attempted suicide",
+            "8": "Went on crossing"
         }
     },
     "42": {
@@ -350,7 +358,7 @@
         }
     },
     "43": {
-        "name": "View of Track Obscured by (primary obstruction) Code",
+        "name": "View of Track Obscured by (primary obstruction)",
         "choices": {
             "1": "Permanent structure",
             "2": "Standing railroad equipment",
@@ -409,16 +417,10 @@
         "choices": {}
     },
     "53a": {
-        "name": "Special Study Block",
+        "name": "Special Study Block Video Taken?",
         "choices": {
-            "Video Taken?": {
-                "Yes": "Yes",
-                "No": "No"
-            },
-            "Video Used?": {
-                "Yes": "Yes",
-                "No": "No"
-            }
+            "Yes": "",
+            "No": ""
         }
     },
     "53b": {
@@ -439,10 +441,6 @@
     },
     "57": {
         "name": "Date",
-        "choices": {}
-    },
-    "58": {
-        "name": "Note: This report is part of the reporting railroad's accident report pursuant to the accident reports statute and, as such shall not 'be admitted as evidence or used for any purpose in any suit or action for damages growing out of any matter mentioned in said report.....' 49 U.S.C. 20903. See 49 C.F.R. 225.7 (b).",
         "choices": {}
     }
 }

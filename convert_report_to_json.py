@@ -109,7 +109,7 @@ def csv_to_json(path_form57_csv, path_form57_json):
                 col_code = col
                 col_label = list_col[i + 1]
                 dict_code_label[col_code] = col_label
-
+        
         ############ Extract the options (multiple choices), if any
         dict_entry_choice = {}
         for col_code, col_label in dict_code_label.items():
@@ -123,18 +123,25 @@ def csv_to_json(path_form57_csv, path_form57_json):
             dict_entry_choice_temp = df_sort.set_index(col_code)[col_label].to_dict()
             if len(dict_entry_choice_temp) <= 15:
                 dict_entry_choice[col_label] = dict_entry_choice_temp
-        pprint(dict_entry_choice)
+
+        ############### manually add the options for special cases
+        for i, col in enumerate(list_col):
+            if col in ['Warning Connected To Signal', 'Crossing Illuminated', 'User Struck By Second Train', 'Driver Passed Vehicle']:
+                dict_entry_choice[col] = {'1': 'Yes', '2': 'No', '3': 'Unknown'}
+            elif col == 'User Sex':
+                dict_entry_choice[col] = {'1': 'Male', '2': 'Female'}
+            elif col == 'Driver In Vehicle':
+                dict_entry_choice[col] = {'1': 'Yes', '2': 'No'}
 
         ############ Convert into JSON
         list_col_wo_code = list(filter(lambda col: not col.endswith('Code'), list_col))
         list_col_wo_code.remove('hash_id')
-        dict_form57 = {i: {'name': col} for i, col in enumerate(list_col_wo_code)}
+        dict_form57 = {str(i): {'name': col} for i, col in enumerate(list_col_wo_code)}
         for i, dict_meta_info in dict_form57.items():
             col = dict_meta_info['name']
             if col in dict_entry_choice:
                 choices = dict_entry_choice[col]
                 dict_form57[i]['choices'] = choices
-        pprint(dict_form57)
 
         with open(path_form57_json, 'w') as f:
             json.dump(dict_form57, f, indent=4)
@@ -143,7 +150,7 @@ def csv_to_json(path_form57_csv, path_form57_json):
 
 def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, config_conversion):
     dict_form57_group = None
-    api, model, n_generate, _ = config_conversion.to_tuple()
+    api, model_path, n_generate, _ = config_conversion.to_tuple()
     ############# Google Document AI API
 
     if api == 'Google_DocAI':
@@ -157,7 +164,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
         # 1) Configure client
         project_id = "railway-safety-460721"
         location   = "us"                # e.g. "us", "eu"
-        processor_id = dict_type_pid[model]
+        processor_id = dict_type_pid[model_path]
         client = documentai.DocumentProcessorServiceClient(
             client_options={"api_endpoint": f"{location}-documentai.googleapis.com"}
         )
@@ -444,7 +451,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
         else:
             ############ transcribe pdf N times
             response = client.chat.completions.create(
-                model=model,
+                model=model_path,
                 messages=[
                     {
                         "role": "user",
@@ -467,7 +474,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
 
             ############ merge transcripts into one
             response = client.responses.create(
-                model=model,
+                model=model_path,
                 input=[
                     {
                         "role": "user",
@@ -505,7 +512,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
             ]
             with utils.Timer(path_form57_json):
                 response = client.chat.completions.create(
-                    model=model,
+                    model=model_path,
                     messages=messages,
                     n=n_generate,
                     # seed=0,
@@ -532,7 +539,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
             ]
             with utils.Timer(path_form57_json):
                 response = client.responses.create(
-                    model=model,
+                    model=model_path,
                     input=messages
                 )
 
@@ -547,92 +554,106 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
 def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, config_conversion):
     
     dict_form57_group = None
-    api, model, n_generate, _ = config_conversion.to_tuple()
+    api, model_path, n_generate, _ = config_conversion.to_tuple()
 
     if api == 'Huggingface':
         import torch
         import gc
-        from transformers import pipeline
+        from transformers import pipeline, BitsAndBytesConfig
         from PIL import Image
 
         dict_model_config = {
             'Qwen/Qwen2.5-VL-7B-Instruct': {'torch_dtype': torch.float16}, # good
+            'Qwen/Qwen2.5-VL-32B-Instruct': {'load_in_4bit': True},
             # 'microsoft/GUI-Actor-7B-Qwen2.5-VL': {}, # bad
             # 'OpenGVLab/InternVL3-8B': {}, #must be used with custom code to correctly load the model
             # 'OpenGVLab/InternVL3-8B-Instruct': {}, #must be used with custom code to correctly load the model
             'OpenGVLab/InternVL3-8B-hf': {'torch_dtype': torch.float32}, # good
+            'OpenGVLab/InternVL3-14B-hf': {'load_in_8bit': True, 'torch_dtype': torch.float32},
+            'OpenGVLab/InternVL3-38B-hf': {'load_in_4bit': True, 'torch_dtype': torch.float32},
             # 'microsoft/Phi-3.5-vision-instruct': {}, #error
             # 'google/gemma-3-4b-it': {}, # bad
+            'google/gemma-3-12b-it': {'load_in_8bit': True},
+            'google/gemma-3-27b-it': {'load_in_8bit': True},
             # 'microsoft/OmniParser-v2.0': {}, #error
             # 'U4R/StructTable-base': {}, #StructEqTable. cannot use chat template input
             # 'U4R/StructTable-InternVL2-1B': {}, #StructEqTable. must be used with custom code to correctly load the model
             # 'stepfun-ai/GOT-OCR-2.0-hf': {}, #cannot use chat template input
             ### https://github.com/haotian-liu/LLaVA/blob/main/docs/MODEL_ZOO.md
             # 'llava-hf/llava-1.5-7b-hf': {}, # bad
+            'llava-hf/llava-1.5-13b-hf': {'load_in_8bit': True},
             # 'llava-hf/vip-llava-7b-hf': {}, # bad
+            'llava-hf/vip-llava-13b-hf': {'load_in_8bit': True},
             # 'llava-hf/llava-v1.6-vicuna-7b-hf': {}, # bad
             # 'llava-hf/llava-v1.6-mistral-7b-hf': {}, # bad
+            'llava-hf/llava-v1.6-34b-hf': {'load_in_4bit': True},
             # 'llava-hf/llava-interleave-qwen-7b-hf': {}, # bad
             # 'llava-hf/llama3-llava-next-8b-hf': {}, # bad
             # 'allenai/olmOCR-7B-0225-preview': {}, #olmOCR(OLMo OCR)
             # 'meta-llama/Llama-3.2-11B-Vision': {}, # cannot use chat template input
             # 'meta-llama/Llama-3.2-11B-Vision-Instruct': {}, # bad
             # 'nvidia/Eagle2.5-8B': {}, # must be used with custom code to correctly load the model
-            # 'ByteDance-Seed/UI-TARS-1.5-7B': {'num_beams': 1}, # good
+            'ByteDance-Seed/UI-TARS-1.5-7B': {}, # good
+            # 'ByteDance/Sa2VA-26B': {'load_in_8bit': True}, # must be used with custom code to correctly load the model
             # 'allenai/Molmo-7B-D-0924': {}, # must be used with custom code to correctly load the model
         }
         device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
         image = Image.open(path_form57_img)
 
+        quant_config = dict_model_config[model_path]
         generation_config_base = {'max_new_tokens': 4096}
-        generation_config_sample = {**generation_config_base, 'do_sample': True, 'temperature': 1, 'top_p': 0.95} # sample or beam sample
+        generation_config_sample = {**generation_config_base, 'do_sample': True}#, 'temperature': 1, 'top_p': 0.95} # sample or beam sample
         generation_config_search = {**generation_config_base, 'do_sample': False} # greedy search or beam search
-        model_config = dict_model_config[model]
-        pipe = pipeline(model=model, device_map=device, model_kwargs=model_config)
+
+        pipe = pipeline(model=model_path, device_map=device, model_kwargs=quant_config)
 
         if os.path.exists(path_form57_json):
             with open(path_form57_json, 'r') as f:
                 dict_form57 = json.load(f)
         
         else:
-            list_response = []
-            for _ in range(n_generate):
+            list_dict_form57_temp = []
+            for i in range(n_generate):
+                while True:
+                    messages = [
+                        {
+                            "role": "user",
+                            "content": [
+                                {"type": "image", "image": image},
+                                {"type": "text", "text": PROMPT_DICT_FORM57_TEMP},
+                            ],
+                        }
+                    ]
+                    with utils.Timer(f'{i}\t' + path_form57_json):
+                        response = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config_sample)
+
+                    output = response[0]['generated_text']
+                    dict_form57_temp = parse_json_from_output(output)
+                    if dict_form57_temp:
+                        break
+                list_dict_form57_temp.append(dict_form57_temp)
+
+            ############ merge transcripts into one
+            while True:
                 messages = [
                     {
                         "role": "user",
                         "content": [
                             {"type": "image", "image": image},
-                            {"type": "text", "text": PROMPT_DICT_FORM57_TEMP},
+                            {"type": "text", "text": PROMPT_DICT_FORM57},
+                            {"type": "text", "text": '\n\n'.join(map(lambda x: json.dumps(x, indent=4), list_dict_form57_temp))}
                         ],
                     }
                 ]
                 with utils.Timer(path_form57_json):
                     response = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config_sample)
-                list_response.append(response)
-
-            list_dict_form57_temp = []
-            for response in list_response:
+                
                 output = response[0]['generated_text']
-                dict_form57_temp = parse_json_from_output(output)
-                list_dict_form57_temp.append(dict_form57_temp)
+                dict_form57 = parse_json_from_output(output)
 
-            ############ merge transcripts into one
-            messages = [
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "image", "image": image},
-                        {"type": "text", "text": PROMPT_DICT_FORM57},
-                        {"type": "text", "text": '\n\n'.join(map(lambda x: json.dumps(x, indent=4), list_dict_form57_temp))}
-                    ],
-                }
-            ]
-            with utils.Timer(path_form57_json):
-                response = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config_search)
-            
-            output = response[0]['generated_text']
-            dict_form57 = parse_json_from_output(output)
-            
+                if dict_form57:
+                    break
+        
             with open(path_form57_json, 'w') as f:
                 json.dump(dict_form57, f, indent=4)
 
@@ -642,9 +663,9 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
                 dict_form57_group = json.load(f)
                 
         else:
-            while True:
-                list_response_group = []
-                for _ in range(n_generate):
+            list_dict_form57_group_temp = []
+            for i in range(n_generate):
+                while True:
                     messages = [
                         {
                             "role": "user",
@@ -655,18 +676,17 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
                             ]
                         },
                     ]
-                    with utils.Timer(path_form57_json_group):
+                    with utils.Timer(f'{i}\t' + path_form57_json_group):
                         response_group = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config_sample)
-                    list_response_group.append(response_group)
                 
-                list_dict_form57_group_temp = []
-                for response_group in list_response_group:
                     output = response_group[0]['generated_text']
-                    print(output)
                     dict_form57_group_temp = parse_json_from_output(output)
-                    list_dict_form57_group_temp.append(dict_form57_group_temp)
-                
-                ############ merge groupings into one
+                    if dict_form57_group_temp:
+                        break
+                list_dict_form57_group_temp.append(dict_form57_group_temp)
+            
+            ############ merge groupings into one
+            while True:
                 messages = [
                     {
                         "role": "user",
@@ -679,11 +699,14 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
                     }
                 ]
                 with utils.Timer(path_form57_json_group):
-                    response = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config_search)
+                    response = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config_sample)
                 
                 output = response[0]['generated_text']
                 dict_form57_group = parse_json_from_output(output)
-
+                
+                if not dict_form57_group:
+                    continue
+                
                 group_overlap = False
                 all_entry_idx = []
                 for _, list_entry_idx in dict_form57_group.items():

@@ -18,23 +18,23 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "--c_api",
     choices=['Huggingface', 'OpenAI', 'None'],
-    default="Huggingface",
+    default="None",
     help="API to use for processing"
 )
 
 parser.add_argument(
     "--c_model",
     type=str,
-    choices=['Qwen/Qwen2.5-VL-7B-Instruct', 'OpenGVLab/InternVL3-8B-hf', 'ByteDance-Seed/UI-TARS-1.5-7B', 'None'],
-    default='Qwen/Qwen2.5-VL-7B-Instruct',
-    # default='OpenGVLab/InternVL3-8B-hf',
+    # choices=['Qwen/Qwen2.5-VL-7B-Instruct', 'OpenGVLab/InternVL3-8B-hf', 'ByteDance-Seed/UI-TARS-1.5-7B', 'None'],
+    default='None',
+    # default='Qwen/Qwen2.5-VL-32B-Instruct',
     help="Model to use for processing"
 )
 
 parser.add_argument(
     "--c_n_generate",
     type=int,
-    default=4,
+    default=0,
     # action="store_true",
     help="Number of generations"
 )
@@ -43,7 +43,7 @@ parser.add_argument(
     "--c_json_source",
     type=str,
     choices=['csv', 'pdf', 'img'],
-    default='img',
+    default='csv',
     help="Source of JSON data"
 )
 
@@ -51,8 +51,8 @@ parser.add_argument(
     "--r_question_batch",
     type=str,
     choices=['single', 'group'],
-    # default='single',
-    default='group',
+    default='single',
+    # default='group',
     help="Batching strategy for questions"
 )
 
@@ -109,6 +109,9 @@ path_df_form57_retrieval = os.path.join(path_dir_config_result, FN_DF_FORM57_RET
 path_df_test_set = os.path.join(DIR_DATA_ROOT, FN_DF_TEST_SET)
 path_dict_col_idx_name = os.path.join(DIR_DATA_ROOT, FN_DICT_COL_IDX_NAME)
 
+print(path_dir_config_json)
+print(path_dir_config_result)
+
 print('------------Setting path DONE!!------------')
 
 ############### convert to json
@@ -152,5 +155,5 @@ from utils import get_acc_table
 
 # list_answer_type_selected = ['choice', 'digit', 'str', 'list', 'etc']
 list_answer_type_selected = ['choice']
-df_acc = get_acc_table(path_form57_csv, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected)
+df_acc = get_acc_table(path_form57_csv, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
 df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
