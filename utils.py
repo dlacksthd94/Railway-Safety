@@ -29,7 +29,9 @@ class Timer:
         s = total_seconds % 60               # still a float now
         return f"{h:02d}:{m:02d}:{s:06.3f}"   # e.g. 00:01:02.357
 
-def get_acc_table(path_form57_csv, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected):
+def get_acc_table(path_form57_csv, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config_conversion):
+    _, _, _, json_source = config_conversion.to_tuple()
+
     df_form57_csv = pd.read_csv(path_form57_csv)
     df_form57_csv = df_form57_csv[df_form57_csv['State Name'] == 'CALIFORNIA']
     df_form57_csv['hash_id'] = df_form57_csv.apply(utils_scrape.hash_row, axis=1)
@@ -38,24 +40,50 @@ def get_acc_table(path_form57_csv, path_dict_col_idx_name, df_match, dict_form57
 
     with open(path_dict_col_idx_name, 'r') as f:
         dict_col_idx_name = json5.load(f)
-
-    dict_idx_answer_type = {
-        'digit': {"14": "Estimated Vehicle Speed", "18": "Railroad Car Unit Position", "21": "Temperature",
-                  "28": "Number of Locomotive Units", "29": "Number of Cars", "38": "User Age", "47": "Vehicle Damage Cost", "48": "Number Vehicle Occupants", "50": "Number People On Train"},
-        'str': {"1": "Railroad Name", "2": "Other Railroad Name", "3": "Maintenance Railroad Name", "7": "Nearest Station", "9": "County Name", "11": "City Name", "26": "Track Name", "27": "Track Class"},
-        'list': {"5": ["Date", "Month", "Day", "Incident Year"], "6": ["Time", "Hour", "Minute", "AM/PM"], "12": ["Highway Name", "Public/Private"],
-                 "20c": ["Hazmat Released Name", "Hazmat Released Quantity", "Hazmat Released Measure"], "30": ["Train Speed", "Estimated/Recorded Speed"],
-                 "46": ["Crossing Users Killed", "Crossing Users Injured"], "49": ["Employees Killed", "Employees Injured"], "52": ["Passengers Killed", "Passengers Injured"]},
-        'choice': {"13": "Highway User Code", "15": "Vehicle Direction Code", "16": "Highway User Position Code",
-                   "17": "Equipment Involved Code", "19": "Equipment Struck Code",
-                   "20a": "Hazmat Involvement Code", "20b": "Hazmat Released by Code",
-                   "22": "Visibility Code", "23": "Weather Condition Code",
-                   "24": "Equipment Type Code", "25": "Track Type Code", "31": "Train Direction Code",
-                   "34": "Roadway Condition Code", "35": "Crossing Warning Location Code", "36": "Warning Connected To Signal", "37": "Crossing Illuminated",
-                   "39": "User Sex", "40": "User Struck By Second Train", "41": "Highway User Action Code", "42": "Driver Passed Vehicle", "43": "View Obstruction Code",
-                   "44": "Driver Condition Code", "45": "Driver In Vehicle"},
-        'etc': {"10": "State Name"}
-    }
+    
+    if json_source in ['img', 'pdf']:
+        dict_idx_answer_type = {
+            'digit': {"14": "Estimated Vehicle Speed", "18": "Railroad Car Unit Position", "21": "Temperature",
+                    "28": "Number of Locomotive Units", "29": "Number of Cars", "38": "User Age", "47": "Vehicle Damage Cost", "48": "Number Vehicle Occupants", "50": "Number People On Train"},
+            'str': {"1": "Railroad Name", "2": "Other Railroad Name", "3": "Maintenance Railroad Name", "7": "Nearest Station", "9": "County Name", "11": "City Name", "26": "Track Name", "27": "Track Class"},
+            'list': {"5": ["Date", "Month", "Day", "Incident Year"], "6": ["Time", "Hour", "Minute", "AM/PM"], "12": ["Highway Name", "Public/Private"],
+                    "20c": ["Hazmat Released Name", "Hazmat Released Quantity", "Hazmat Released Measure"], "30": ["Train Speed", "Estimated/Recorded Speed"],
+                    "46": ["Crossing Users Killed", "Crossing Users Injured"], "49": ["Employees Killed", "Employees Injured"], "52": ["Passengers Killed", "Passengers Injured"]},
+            'choice': {"13": "Highway User Code", "15": "Vehicle Direction Code", "16": "Highway User Position Code",
+                    "17": "Equipment Involved Code", "19": "Equipment Struck Code",
+                    "20a": "Hazmat Involvement Code", "20b": "Hazmat Released by Code",
+                    "22": "Visibility Code", "23": "Weather Condition Code",
+                    "24": "Equipment Type Code", "25": "Track Type Code", "31": "Train Direction Code",
+                    "34": "Roadway Condition Code", "35": "Crossing Warning Location Code", "36": "Warning Connected To Signal", "37": "Crossing Illuminated",
+                    "39": "User Sex", "40": "User Struck By Second Train", "41": "Highway User Action Code", "42": "Driver Passed Vehicle", "43": "View Obstruction Code",
+                    "44": "Driver Condition Code", "45": "Driver In Vehicle"},
+            'etc': {"10": "State Name"}
+        }
+    elif json_source == 'csv':
+        dict_idx_answer_type = {
+            'digit': {'30': 'Estimated Vehicle Speed', '34': 'Railroad Car Unit Position', '41': 'Temperature',
+                      '48': 'Number of Locomotive Units', '49': 'Number of Cars', '83': 'User Age', '93': 'Vehicle Damage Cost', '94': 'Number Vehicle Occupants', '97': 'Number People On Train'},
+            'str': {'1': 'Railroad Name', '5': 'Other Railroad Name', '9': 'Maintenance Railroad Name', '21': 'Nearest Station', '24': 'County Name', '26': 'City Name', '46': 'Track Name', '47': 'Track Class'},
+            'list': {'14': 'Date', '15': 'Month', '16': 'Day', '3': 'Incident Year',
+                     '20': 'Time', '17': 'Hour', '18': 'Minute', '19': 'AM/PM',
+                     '27': 'Highway Name', '28': 'Public/Private',
+                     '38': 'Hazmat Released Name', '39': 'Hazmat Released Quantity', '40': 'Hazmat Released Measure',
+                     '50': 'Train Speed', '51': 'Estimated/Recorded Speed',
+                     '91': 'Crossing Users Killed', '92': 'Crossing Users Injured',
+                     '95': 'Employees Killed', '96': 'Employees Injured',
+                     '99': 'Passengers Killed', '100': 'Passengers Injured'},
+            'choice': {'29': 'Highway User Code', '31': 'Vehicle Direction Code', '32': 'Highway User Position Code',
+                       '33': 'Equipment Involved Code', '35': 'Equipment Struck Code',
+                       '36': 'Hazmat Involvement Code', '37': 'Hazmat Released by Code',
+                       '42': 'Visibility Code', '43': 'Weather Condition Code',
+                       '44': 'Equipment Type Code', '45': 'Track Type Code', '52': 'Train Direction Code',
+                       '79': 'Roadway Condition Code', '80': 'Crossing Warning Location Code', '81': 'Warning Connected To Signal', '82': 'Crossing Illuminated',
+                       '84': 'User Sex', '85': 'User Struck By Second Train', '86': 'Highway User Action Code', '87': 'Driver Passed Vehicle', '88': 'View Obstruction Code',
+                       '89': 'Driver Condition Code', '90': 'Driver In Vehicle'},
+            'etc': {'25': 'State Name'}
+        }
+    else:
+        raise ValueError(f"Unsupported json_source: {json_source}")
 
     # choose only choice-answer idx
     dict_idx_selected = {k: v for answer_type_selected in list_answer_type_selected for k, v in dict_idx_answer_type[answer_type_selected].items()}
@@ -99,8 +127,7 @@ def get_acc_table(path_form57_csv, path_dict_col_idx_name, df_match, dict_form57
                 else:
                     raise f"no col like {col_idx}: {col_name}"
             list_score_temp.append(acc_temp)
-            print(f'{acc_temp}\t{retrieval}=={label.squeeze()}\t{col_name}')
-        # print(row_match['rd_url'])
-        print('--------------------------------------------------')
+        #     print(f'{acc_temp}\t{retrieval}=={label.squeeze()}\t{col_name}')
+        # print('--------------------------------------------------')
         df_acc.loc[idx_match, list(dict_idx_selected.keys())] = list_score_temp
     return df_acc
