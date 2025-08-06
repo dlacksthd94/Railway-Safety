@@ -21,6 +21,7 @@ parser.add_argument(
     choices=['Huggingface', 'OpenAI', 'None'],
     # default="None",
     default="Huggingface",
+    # default='OpenAI',
     help="API to use for processing"
 )
 
@@ -30,6 +31,7 @@ parser.add_argument(
     # choices=['Qwen/Qwen2.5-VL-7B-Instruct', 'OpenGVLab/InternVL3-8B-hf', 'ByteDance-Seed/UI-TARS-1.5-7B', 'None'],
     # default='None',
     default='Qwen/Qwen2.5-VL-32B-Instruct',
+    # default='o4-mini',
     help="Model to use for processing"
 )
 
@@ -160,4 +162,14 @@ from utils import get_acc_table
 list_answer_type_selected = ['choice']
 df_acc = get_acc_table(path_form57_csv, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
 acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
-print(acc)
+print('choice:\t', acc)
+
+list_answer_type_selected = ['digit']
+df_acc = get_acc_table(path_form57_csv, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
+acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
+print('digit:\t', acc)
+
+list_answer_type_selected = ['choice', 'digit']
+df_acc = get_acc_table(path_form57_csv, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
+acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
+print('choice + digit:\t', acc)

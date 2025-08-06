@@ -73,7 +73,71 @@ The output should be in JSON format, with no additional annotations or explanati
 ```
 """
 
+def json_to_str(json_obj):
+    if isinstance(json_obj, dict):
+        return_str = json.dumps(json_obj, indent=4)
+    elif isinstance(json_obj, list):
+        return_str = '\n\n'.join(map(lambda x: json.dumps(x, indent=4), json_obj))
+    else:
+        raise ValueError("Unsupported JSON object type")
+    return return_str
+
+def generate_openai(client, model_path, content):
+    response = client.responses.create(
+        model=model_path,
+        input=[
+            {
+                "role": "user",
+                "content": content
+            },
+        ],
+    )
+    return response
+
+def transcribe_openai(client, model_path, content, n_generate):
+    list_response = []
+    for i in range(n_generate):
+        while True:
+            with utils.Timer(f'{i}\t' + model_path):
+                response = generate_openai(client, model_path, content)
+            output = response.output_text
+            dict_form57 = parse_json_from_output(output)
+
+            if dict_form57 and list(dict_form57.values())[0].get('name', None) != None and list(dict_form57.values())[0].get('choices', None) != None:
+                break            
+        
+        list_response.append(dict_form57)
+    return list_response
+
+def group_openai(client, model_path, content, n_generate):
+    list_response = []
+    for i in range(n_generate):
+        while True:
+            with utils.Timer(f'{i}\t' + model_path):
+                response = generate_openai(client, model_path, content)
+            output = response.output_text
+            dict_form57_group = parse_json_from_output(output)
+
+            group_overlap = False
+            all_entry_idx = []
+            for _, list_entry_idx in dict_form57_group.items():
+                for entry_idx in list_entry_idx:
+                    if entry_idx not in all_entry_idx:
+                        all_entry_idx.append(entry_idx)
+                    else:
+                        group_overlap = True
+                        break
+            if dict_form57_group and not group_overlap:
+                break
+        
+        list_response.append(dict_form57_group)
+    return list_response
+
 def parse_json_from_output(output):
+    """Parse JSON from the output text of OpenAI response.
+    If the output is a plain JSON string, it parses that directly.
+    Otherwise, find the code block containing JSON and parse it.
+    """
     try:
         if '```' in output:
             json_start_index = output.index('```')
@@ -85,7 +149,7 @@ def parse_json_from_output(output):
         else:
             dict_form57 = json.loads(output)
     except:
-        dict_form57 = ''
+        dict_form57 = {}
     return dict_form57
 
 def csv_to_json(path_form57_csv, path_form57_json):
@@ -450,126 +514,49 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
                 dict_form57 = json.load(f)
 
         else:
-            ############ transcribe pdf N times
-            response = client.chat.completions.create(
-                model=model_path,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": [
-                            { "type": "text", "text": PROMPT_DICT_FORM57_TEMP},
-                            { "type": "file", "file": {"file_id": pdf_file.id} },
-                        ]
-                    },
-                ],
-                n=n_generate,
-                # seed=0,
-                # temperature=0,
-            )
+            ############ transcribe the form N times
+            content = [
+                {"type": "input_text", "text": PROMPT_DICT_FORM57_TEMP},
+                {"type": "input_file", "file_id": pdf_file.id},
+            ]
+            list_dict_form57_temp = transcribe_openai(client, model_path, content, n_generate)
 
-            list_dict_form57_temp = []
-            for choice in response.choices:
-                output = choice.message.content
-                dict_form57_temp = parse_json_from_output(output)
-                list_dict_form57_temp.append(dict_form57_temp)
-
-            ############ merge transcripts into one
-            while True:
-                response = client.responses.create(
-                    model=model_path,
-                    input=[
-                        {
-                            "role": "user",
-                            "content": [
-                                { "type": "input_file", "file_id": pdf_file.id },
-                                { "type": "input_text", "text": PROMPT_DICT_FORM57},
-                                { "type": "input_text", "text": str(list_dict_form57_temp)}
-                            ]
-                        }
-                    ],
-                )
-                # print(response.output_text)
-
-                output = response.output_text
-                dict_form57 = parse_json_from_output(output)
-
-                if not (dict_form57.get('name', False) and dict_form57.get('choices', False)):
-                    continue
-                
-                if dict_form57:
-                    break
-
+            ############ merge the transcripts into one
+            content = [
+                {"type": "input_file", "file_id": pdf_file.id},
+                {"type": "input_text", "text": PROMPT_DICT_FORM57},
+                {"type": "input_text", "text": json_to_str(list_dict_form57_temp)}
+            ]
+            list_dict_form57 = transcribe_openai(client, model_path, content, n_generate=1)
+            dict_form57 = list_dict_form57[0]
+            
             with open(path_form57_json, 'w') as f:
                 json.dump(dict_form57, f, indent=4)
         
-        ############ categorize the entries
+        ############ group the entries
         if os.path.exists(path_form57_json_group):
             with open(path_form57_json_group, 'r') as f:
                 dict_form57_group = json.load(f)
                 
         else:
-            messages = [
-                {
-                    "role": "user",
-                    "content": [
-                        { "type": "text", "text": PROMPT_DICT_FORM57_GROUP_TEMP},
-                        { "type": "file", "file": {"file_id": pdf_file.id} },
-                        { "type": "text", "text": str(dict_form57)}
-                    ]
-                },
+            ############ group the entries N times
+            content = [
+                {"type": "input_text", "text": PROMPT_DICT_FORM57_GROUP_TEMP},
+                {"type": "input_file", "file_id": pdf_file.id},
+                {"type": "input_text", "text": json_to_str(dict_form57)}
             ]
-            with utils.Timer(path_form57_json):
-                response = client.chat.completions.create(
-                    model=model_path,
-                    messages=messages,
-                    n=n_generate,
-                    # seed=0,
-                    # temperature=0,
-                )
-
-            list_dict_form57_group_temp = []
-            for choice in response.choices:
-                output = choice.message.content
-                dict_form57_group_temp = parse_json_from_output(output)
-                list_dict_form57_group_temp.append(dict_form57_group_temp)
-
+            list_dict_form57_group_temp = group_openai(client, model_path, content, n_generate)
+            
             ############ merge groupings into one
-            while True:
-                messages = [
-                    {
-                        "role": "user",
-                        "content": [
-                            { "type": "input_file", "file_id": pdf_file.id },
-                            { "type": "input_text", "text": PROMPT_DICT_FORM57_GROUP},
-                            { "type": "input_text", "text": str(dict_form57)},
-                            { "type": "input_text", "text": str(list_dict_form57_group_temp)}
-                        ]
-                    }
-                ]
-                with utils.Timer(path_form57_json):
-                    response = client.responses.create(
-                        model=model_path,
-                        input=messages
-                    )
+            content = [
+                {"type": "input_file", "file_id": pdf_file.id},
+                {"type": "input_text", "text": PROMPT_DICT_FORM57_GROUP},
+                {"type": "input_text", "text": json_to_str(dict_form57)},
+                {"type": "input_text", "text": json_to_str(list_dict_form57_group_temp)}
+            ]
+            list_dict_form57_group = group_openai(client, model_path, content, n_generate=1)
+            dict_form57_group = list_dict_form57_group[0]
 
-                output = response.output_text
-                dict_form57_group = parse_json_from_output(output)
-
-                if not dict_form57_group:
-                    continue
-                
-                group_overlap = False
-                all_entry_idx = []
-                for _, list_entry_idx in dict_form57_group.items():
-                    for entry_idx in list_entry_idx:
-                        if entry_idx not in all_entry_idx:
-                            all_entry_idx.append(entry_idx)
-                        else:
-                            group_overlap = True
-                            break
-                if not group_overlap:
-                    break
-                
             with open(path_form57_json_group, 'w') as f:
                 json.dump(dict_form57_group, f, indent=4)
     
@@ -638,26 +625,33 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
                 dict_form57 = json.load(f)
         
         else:
-            list_dict_form57_temp = []
+            content = [
+                {"type": "image", "image": image},
+                {"type": "text", "text": PROMPT_DICT_FORM57_TEMP},
+            ]
+            list_dict_form57_temp = transcribe_hf(pipe, model_path, content, n_generate, generation_config_sample)
+        def generate_hf(pipe, content, generation_config):
+            messages = [
+                {
+                    "role": "user",
+                    "content": content,
+                }
+            ]
+            response = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config)
+            return response
+        
+        def transcribe_hf(pipe, model_path, content, n_generate, generation_config):
+            list_response = []
             for i in range(n_generate):
                 while True:
-                    messages = [
-                        {
-                            "role": "user",
-                            "content": [
-                                {"type": "image", "image": image},
-                                {"type": "text", "text": PROMPT_DICT_FORM57_TEMP},
-                            ],
-                        }
-                    ]
-                    with utils.Timer(f'{i}\t' + path_form57_json):
-                        response = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config_sample)
-
+                    with utils.Timer(f'{i}\t' + model_path):
+                        generate_hf(pipe, content, generation_config)
                     output = response[0]['generated_text']
-                    dict_form57_temp = parse_json_from_output(output)
-                    if dict_form57_temp:
+                    dict_form57 = parse_json_from_output(output)
+                    
+                    if dict_form57:
                         break
-                list_dict_form57_temp.append(dict_form57_temp)
+                list_response.append(dict_form57)
 
             ############ merge transcripts into one
             while True:
@@ -761,132 +755,62 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
         API_key = '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'
         client = OpenAI(api_key=API_key)
 
+        with open(path_form57_img, "rb") as f:
+            img_file = client.files.create(
+                file=f,
+                purpose="vision"
+            )
+
         ############ transcribe
         if os.path.exists(path_form57_json):
             with open(path_form57_json, 'r') as f:
                 dict_form57 = json.load(f)
 
         else:
-            ############ transcribe pdf N times
-            response = client.chat.completions.create(
-                model=model_path,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": [
-                            { "type": "text", "text": PROMPT_DICT_FORM57_TEMP},
-                            { "type": "file", "file": {"file_id": pdf_file.id} },
-                        ]
-                    },
-                ],
-                n=n_generate,
-                # seed=0,
-                # temperature=0,
-            )
+            ############ transcribe the form N times
+            content = [
+                {"type": "input_text", "text": PROMPT_DICT_FORM57_TEMP},
+                {"type": "input_image", "file_id": img_file.id},
+            ]
+            list_dict_form57_temp = transcribe_openai(client, model_path, content, n_generate)
 
-            list_dict_form57_temp = []
-            for choice in response.choices:
-                output = choice.message.content
-                dict_form57_temp = parse_json_from_output(output)
-                list_dict_form57_temp.append(dict_form57_temp)
-
-            ############ merge transcripts into one
-            while True:
-                response = client.responses.create(
-                    model=model_path,
-                    input=[
-                        {
-                            "role": "user",
-                            "content": [
-                                { "type": "input_file", "file_id": pdf_file.id },
-                                { "type": "input_text", "text": PROMPT_DICT_FORM57},
-                                { "type": "input_text", "text": str(list_dict_form57_temp)}
-                            ]
-                        }
-                    ],
-                )
-                # print(response.output_text)
-
-                output = response.output_text
-                dict_form57 = parse_json_from_output(output)
-
-                if not (dict_form57.get('name', False) and dict_form57.get('choices', False)):
-                    continue
-                
-                if dict_form57:
-                    break
-
+            ############ merge the transcripts into one
+            content = [
+                {"type": "input_image", "file_id": img_file.id},
+                {"type": "input_text", "text": PROMPT_DICT_FORM57},
+                {"type": "input_text", "text": json_to_str(list_dict_form57_temp)}
+            ]
+            list_dict_form57 = transcribe_openai(client, model_path, content, n_generate=1)
+            dict_form57 = list_dict_form57[0]
+            
             with open(path_form57_json, 'w') as f:
                 json.dump(dict_form57, f, indent=4)
         
-        ############ categorize the entries
+        ############ group the entries
         if os.path.exists(path_form57_json_group):
             with open(path_form57_json_group, 'r') as f:
                 dict_form57_group = json.load(f)
                 
         else:
-            messages = [
-                {
-                    "role": "user",
-                    "content": [
-                        { "type": "text", "text": PROMPT_DICT_FORM57_GROUP_TEMP},
-                        { "type": "file", "file": {"file_id": pdf_file.id} },
-                        { "type": "text", "text": str(dict_form57)}
-                    ]
-                },
+            ############ group the entries N times
+            content = [
+                {"type": "input_text", "text": PROMPT_DICT_FORM57_GROUP_TEMP},
+                {"type": "input_image", "file_id": img_file.id},
+                {"type": "input_text", "text": json_to_str(dict_form57)}
             ]
-            with utils.Timer(path_form57_json):
-                response = client.chat.completions.create(
-                    model=model_path,
-                    messages=messages,
-                    n=n_generate,
-                    # seed=0,
-                    # temperature=0,
-                )
-
-            list_dict_form57_group_temp = []
-            for choice in response.choices:
-                output = choice.message.content
-                dict_form57_group_temp = parse_json_from_output(output)
-                list_dict_form57_group_temp.append(dict_form57_group_temp)
-
+            list_dict_form57_group_temp = group_openai(client, model_path, content, n_generate)
+            
             ############ merge groupings into one
-            while True:
-                messages = [
-                    {
-                        "role": "user",
-                        "content": [
-                            { "type": "input_file", "file_id": pdf_file.id },
-                            { "type": "input_text", "text": PROMPT_DICT_FORM57_GROUP},
-                            { "type": "input_text", "text": str(dict_form57)},
-                            { "type": "input_text", "text": str(list_dict_form57_group_temp)}
-                        ]
-                    }
-                ]
-                with utils.Timer(path_form57_json):
-                    response = client.responses.create(
-                        model=model_path,
-                        input=messages
-                    )
+            content = [
+                {"type": "input_image", "file_id": img_file.id},
+                {"type": "input_text", "text": PROMPT_DICT_FORM57_GROUP},
+                {"type": "input_text", "text": json_to_str(dict_form57)},
+                {"type": "input_text", "text": json_to_str(list_dict_form57_group_temp)}
+            ]
+            
+            list_dict_form57_group = group_openai(client, model_path, content, n_generate=1)
+            dict_form57_group = list_dict_form57_group[0]
 
-                output = response.output_text
-                dict_form57_group = parse_json_from_output(output)
-
-                if not dict_form57_group:
-                    continue
-                
-                group_overlap = False
-                all_entry_idx = []
-                for _, list_entry_idx in dict_form57_group.items():
-                    for entry_idx in list_entry_idx:
-                        if entry_idx not in all_entry_idx:
-                            all_entry_idx.append(entry_idx)
-                        else:
-                            group_overlap = True
-                            break
-                if not group_overlap:
-                    break
-                
             with open(path_form57_json_group, 'w') as f:
                 json.dump(dict_form57_group, f, indent=4)
     
