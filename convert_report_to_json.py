@@ -10,7 +10,7 @@ import utils
 from PIL import Image
 
 PROMPT_DICT_FORM57_TEMP = """
-Transcribe all fields in JSON format:
+Transcribe all fields in strict JSON format:
 ```json
 {
     "<field_id>": {
@@ -82,25 +82,45 @@ def json_to_str(json_obj):
         raise ValueError("Unsupported JSON object type")
     return return_str
 
-def generate_openai(client, model_path, content):
-    response = client.responses.create(
-        model=model_path,
-        input=[
-            {
-                "role": "user",
-                "content": content
-            },
-        ],
-    )
-    return response
+def generate_openai(client, model_path, content, generattion_config):
+    messages = [
+        {
+            "role": "user",
+            "content": content,
+        },
+    ]
+    response = client.responses.create(model=model_path, input=messages)
+    output = response.output_text
+    return output
 
-def transcribe_openai(client, model_path, content, n_generate):
+def generate_hf(pipe, model_path, content, generation_config):
+    messages = [
+        {
+            "role": "user",
+            "content": content,
+        },
+    ]
+    response = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config)
+    output = response[0]['generated_text']
+    return output
+
+def select_generate_func(api):
+    if api == 'OpenAI':
+        generate_func = generate_openai
+    elif api == 'Huggingface':
+        generate_func = generate_hf
+    else:
+        raise ValueError(f"Unsupported API: {api}")
+    return generate_func
+
+def transcribe_entries(api, generator, model_path, content, n_generate, generation_config=None):
+    generate_func = select_generate_func(api)
+    
     list_response = []
     for i in range(n_generate):
         while True:
             with utils.Timer(f'{i}\t' + model_path):
-                response = generate_openai(client, model_path, content)
-            output = response.output_text
+                output = generate_func(generator, model_path, content, generation_config)
             dict_form57 = parse_json_from_output(output)
 
             if dict_form57 and list(dict_form57.values())[0].get('name', None) != None and list(dict_form57.values())[0].get('choices', None) != None:
@@ -109,13 +129,14 @@ def transcribe_openai(client, model_path, content, n_generate):
         list_response.append(dict_form57)
     return list_response
 
-def group_openai(client, model_path, content, n_generate):
+def group_entries(api, generator, model_path, content, n_generate, generation_config=None):
+    generate_func = select_generate_func(api)
+    
     list_response = []
     for i in range(n_generate):
         while True:
             with utils.Timer(f'{i}\t' + model_path):
-                response = generate_openai(client, model_path, content)
-            output = response.output_text
+                output = generate_func(generator, model_path, content, generation_config)
             dict_form57_group = parse_json_from_output(output)
 
             group_overlap = False
@@ -519,7 +540,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
                 {"type": "input_text", "text": PROMPT_DICT_FORM57_TEMP},
                 {"type": "input_file", "file_id": pdf_file.id},
             ]
-            list_dict_form57_temp = transcribe_openai(client, model_path, content, n_generate)
+            list_dict_form57_temp = transcribe_entries(client, model_path, content, n_generate, generation_config=None)
 
             ############ merge the transcripts into one
             content = [
@@ -527,7 +548,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
                 {"type": "input_text", "text": PROMPT_DICT_FORM57},
                 {"type": "input_text", "text": json_to_str(list_dict_form57_temp)}
             ]
-            list_dict_form57 = transcribe_openai(client, model_path, content, n_generate=1)
+            list_dict_form57 = transcribe_entries(client, model_path, content, n_generate=1, generation_config=None)
             dict_form57 = list_dict_form57[0]
             
             with open(path_form57_json, 'w') as f:
@@ -545,7 +566,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
                 {"type": "input_file", "file_id": pdf_file.id},
                 {"type": "input_text", "text": json_to_str(dict_form57)}
             ]
-            list_dict_form57_group_temp = group_openai(client, model_path, content, n_generate)
+            list_dict_form57_group_temp = group_entries(client, model_path, content, n_generate, generation_config=None)
             
             ############ merge groupings into one
             content = [
@@ -554,7 +575,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
                 {"type": "input_text", "text": json_to_str(dict_form57)},
                 {"type": "input_text", "text": json_to_str(list_dict_form57_group_temp)}
             ]
-            list_dict_form57_group = group_openai(client, model_path, content, n_generate=1)
+            list_dict_form57_group = group_entries(client, model_path, content, n_generate=1, generation_config=None)
             dict_form57_group = list_dict_form57_group[0]
 
             with open(path_form57_json_group, 'w') as f:
@@ -620,6 +641,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
 
         pipe = pipeline(model=model_path, device_map=device, model_kwargs=quant_config)
 
+        ############### transcribe entries
         if os.path.exists(path_form57_json):
             with open(path_form57_json, 'r') as f:
                 dict_form57 = json.load(f)
@@ -629,54 +651,18 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
                 {"type": "image", "image": image},
                 {"type": "text", "text": PROMPT_DICT_FORM57_TEMP},
             ]
-            list_dict_form57_temp = transcribe_hf(pipe, model_path, content, n_generate, generation_config_sample)
-        def generate_hf(pipe, content, generation_config):
-            messages = [
-                {
-                    "role": "user",
-                    "content": content,
-                }
-            ]
-            response = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config)
-            return response
+            list_dict_form57_temp = transcribe_entries(api, pipe, model_path, content, n_generate, generation_config_sample)
         
-        def transcribe_hf(pipe, model_path, content, n_generate, generation_config):
-            list_response = []
-            for i in range(n_generate):
-                while True:
-                    with utils.Timer(f'{i}\t' + model_path):
-                        generate_hf(pipe, content, generation_config)
-                    output = response[0]['generated_text']
-                    dict_form57 = parse_json_from_output(output)
-                    
-                    if dict_form57:
-                        break
-                list_response.append(dict_form57)
-
             ############ merge transcripts into one
-            while True:
-                messages = [
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "image", "image": image},
-                            {"type": "text", "text": PROMPT_DICT_FORM57},
-                            {"type": "text", "text": '\n\n'.join(map(lambda x: json.dumps(x, indent=4), list_dict_form57_temp))}
-                        ],
-                    }
-                ]
-                with utils.Timer(path_form57_json):
-                    response = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config_sample)
-                
-                output = response[0]['generated_text']
-                dict_form57 = parse_json_from_output(output)
+            content = [
+                {"type": "image", "image": image},
+                {"type": "text", "text": PROMPT_DICT_FORM57},
+                {"type": "text", "text": json_to_str(list_dict_form57_temp)}
+            ]
 
-                if not (dict_form57.get('name', False) and dict_form57.get('choices', False)):
-                    continue
+            list_dict_form57 = transcribe_entries(api, pipe, model_path, content, n_generate=1, generation_config=generation_config_sample)
+            dict_form57 = list_dict_form57[0]
 
-                if dict_form57:
-                    break
-        
             with open(path_form57_json, 'w') as f:
                 json.dump(dict_form57, f, indent=4)
 
@@ -686,62 +672,23 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
                 dict_form57_group = json.load(f)
                 
         else:
-            list_dict_form57_group_temp = []
-            for i in range(n_generate):
-                while True:
-                    messages = [
-                        {
-                            "role": "user",
-                            "content": [
-                                { "type": "text", "text": PROMPT_DICT_FORM57_GROUP_TEMP},
-                                { "type": "image", "image": image},
-                                { "type": "text", "text": json.dumps(dict_form57, indent=4)}
-                            ]
-                        },
-                    ]
-                    with utils.Timer(f'{i}\t' + path_form57_json_group):
-                        response_group = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config_sample)
-                
-                    output = response_group[0]['generated_text']
-                    dict_form57_group_temp = parse_json_from_output(output)
-                    if dict_form57_group_temp:
-                        break
-                list_dict_form57_group_temp.append(dict_form57_group_temp)
+            content = [
+                { "type": "text", "text": PROMPT_DICT_FORM57_GROUP_TEMP},
+                { "type": "image", "image": image},
+                { "type": "text", "text": json_to_str(dict_form57)}
+            ]
+            list_dict_form57_group_temp = group_entries(api, pipe, model_path, content, n_generate, generation_config_sample)
             
             ############ merge groupings into one
-            while True:
-                messages = [
-                    {
-                        "role": "user",
-                        "content": [
-                            { "type": "image", "image": image},
-                            { "type": "text", "text": PROMPT_DICT_FORM57_GROUP},
-                            { "type": "text", "text": json.dumps(dict_form57, indent=4)},
-                            { "type": "text", "text": '\n\n'.join(map(lambda x: json.dumps(x, indent=4), list_dict_form57_group_temp))}
-                        ]
-                    }
-                ]
-                with utils.Timer(path_form57_json_group):
-                    response = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config_sample)
-                
-                output = response[0]['generated_text']
-                dict_form57_group = parse_json_from_output(output)
-                
-                if not dict_form57_group:
-                    continue
-                
-                group_overlap = False
-                all_entry_idx = []
-                for _, list_entry_idx in dict_form57_group.items():
-                    for entry_idx in list_entry_idx:
-                        if entry_idx not in all_entry_idx:
-                            all_entry_idx.append(entry_idx)
-                        else:
-                            group_overlap = True
-                            break
-                if not group_overlap:
-                    break
-            
+            content = [
+                { "type": "image", "image": image},
+                { "type": "text", "text": PROMPT_DICT_FORM57_GROUP},
+                { "type": "text", "text": json.dumps(dict_form57, indent=4)},
+                { "type": "text", "text": json_to_str(list_dict_form57_group_temp)}
+            ]
+            list_dict_form57_group = group_entries(api, pipe, model_path, content, n_generate=1, generation_config=generation_config_sample)
+            dict_form57_group = list_dict_form57_group[0]
+
             with open(path_form57_json_group, 'w') as f:
                 json.dump(dict_form57_group, f, indent=4)
             
@@ -772,7 +719,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
                 {"type": "input_text", "text": PROMPT_DICT_FORM57_TEMP},
                 {"type": "input_image", "file_id": img_file.id},
             ]
-            list_dict_form57_temp = transcribe_openai(client, model_path, content, n_generate)
+            list_dict_form57_temp = transcribe_entries(api, client, model_path, content, n_generate, generation_config=None)
 
             ############ merge the transcripts into one
             content = [
@@ -780,7 +727,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
                 {"type": "input_text", "text": PROMPT_DICT_FORM57},
                 {"type": "input_text", "text": json_to_str(list_dict_form57_temp)}
             ]
-            list_dict_form57 = transcribe_openai(client, model_path, content, n_generate=1)
+            list_dict_form57 = transcribe_entries(api, client, model_path, content, n_generate=1, generation_config=None)
             dict_form57 = list_dict_form57[0]
             
             with open(path_form57_json, 'w') as f:
@@ -798,7 +745,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
                 {"type": "input_image", "file_id": img_file.id},
                 {"type": "input_text", "text": json_to_str(dict_form57)}
             ]
-            list_dict_form57_group_temp = group_openai(client, model_path, content, n_generate)
+            list_dict_form57_group_temp = group_entries(api, client, model_path, content, n_generate, generation_config=None)
             
             ############ merge groupings into one
             content = [
@@ -807,8 +754,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
                 {"type": "input_text", "text": json_to_str(dict_form57)},
                 {"type": "input_text", "text": json_to_str(list_dict_form57_group_temp)}
             ]
-            
-            list_dict_form57_group = group_openai(client, model_path, content, n_generate=1)
+            list_dict_form57_group = group_entries(api, client, model_path, content, n_generate=1, generation_config=None)
             dict_form57_group = list_dict_form57_group[0]
 
             with open(path_form57_json_group, 'w') as f:
