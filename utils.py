@@ -109,7 +109,8 @@ def get_acc_table(path_form57_csv, path_dict_col_idx_name, df_match, dict_form57
                     # must use a fine-grained metric
                     pass
                 elif col_idx in dict_idx_answer_type['digit']:
-                    pass
+                    if isinstance(retrieval, str) and retrieval.isdigit():
+                        retrieval = float(retrieval)
                     acc_temp = (retrieval == label.squeeze())
                 elif col_idx in dict_idx_answer_type['choice']:
                     choices = dict_form57[col_idx]['choices']
