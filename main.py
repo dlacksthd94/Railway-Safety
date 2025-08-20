@@ -30,8 +30,10 @@ parser.add_argument(
     type=str,
     # choices=['Qwen/Qwen2.5-VL-7B-Instruct', 'OpenGVLab/InternVL3-8B-hf', 'ByteDance-Seed/UI-TARS-1.5-7B', 'None'],
     # default='None',
-    # default='Qwen/Qwen2.5-VL-32B-Instruct',
     default='Qwen/Qwen2.5-VL-7B-Instruct',
+    # default='Qwen/Qwen2.5-VL-32B-Instruct',
+    # default='OpenGVLab/InternVL3-8B-hf',
+    # default='google/gemma-3-27b-it',
     # default='o4-mini',
     help="Model to use for processing"
 )
@@ -40,6 +42,7 @@ parser.add_argument(
     "--c_n_generate",
     type=int,
     default=4,
+    # default=3,
     # action="store_true",
     help="Number of generations"
 )

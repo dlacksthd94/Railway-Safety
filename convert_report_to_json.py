@@ -9,54 +9,51 @@ import time
 import utils
 from PIL import Image
 
-PROMPT_DICT_FORM57_TEMP = """
-Transcribe all fields in strict JSON format:
-```json
+DICT_FORM57_JSON_FORMAT = """```json
 {
-    "<field_id>": {
-        "name": "<field label>",
+    "<field idx>": {
+        "name": "<field name>",
         "choices": {
-            "<choice_key>": "<choice_label>",
+            "<choice code>":  "<choice label>",
+            ...
         }
     },
+    ...
 }
-```
+```"""
+
+DICT_FORM57_GROUP_JSON_FORMAT = """```json
+{
+    "<group name>": ["<field idx>", "<field idx>", ...],
+    "<group name>": ["<field idx>", "<field idx>", ...],
+    ...
+}
+```"""
+
+PROMPT_DICT_FORM57_TEMP = f"""
+Transcribe all fields strictly following the JSON format:
+{DICT_FORM57_JSON_FORMAT}
 """
 
-PROMPT_DICT_FORM57 = """
+PROMPT_DICT_FORM57 = f"""
 I'll provide you with the following:
 1. The original form PDF/image.
 2. A list of imperfect JSON transcription attempts of that same form.
-Merge and correct them into a single transcription in JSON format:
-```json
-{
-    "<field_id>": {
-        "name": "<field label>",
-        "choices": {
-            "<choice_key>": "<choice_label>",
-        }
-    },
-}
-```
+Merge and correct them into a single transcription strictly following the JSON format:
+{DICT_FORM57_JSON_FORMAT}
 """
 
-PROMPT_DICT_FORM57_GROUP_TEMP = """
+PROMPT_DICT_FORM57_GROUP_TEMP = f"""
 I'll provide you with the following:
 1. The original form PDF/image.
 2. An accurate transcription of the form.
 Please categorize the fields into semantic groups considering the layout of the form.
 Ensure that each field belongs to only one group (i.e., no overlapping groups).
 The output should be in JSON format, with no additional annotations or explanations:
-```json
-{
-    "<group name>": ["<field idx>", "<field idx>", ...],
-    "<group name>": ["<field idx>", "<field idx>", ...],
-    ...
-}
-```
+{DICT_FORM57_GROUP_JSON_FORMAT}
 """
 
-PROMPT_DICT_FORM57_GROUP = """
+PROMPT_DICT_FORM57_GROUP = f"""
 I'll provide you with the following:
 1. The original form PDF/image.
 2. An accurate transcription of the form.
@@ -64,13 +61,7 @@ I'll provide you with the following:
 Please categorize the fields into semantic groups considering the layout of the form.
 Ensure that each field belongs to only one group (i.e., no overlapping groups).
 The output should be in JSON format, with no additional annotations or explanations:
-```json
-{
-    "<group name>": ["<field idx>", "<field idx>", ...],
-    "<group name>": ["<field idx>", "<field idx>", ...],
-    ...
-}
-```
+{DICT_FORM57_GROUP_JSON_FORMAT}
 """
 
 def json_to_str(json_obj):
@@ -113,6 +104,65 @@ def select_generate_func(api):
         raise ValueError(f"Unsupported API: {api}")
     return generate_func
 
+def parse_json_from_output(output):
+    """Parse JSON from the output text of OpenAI response.
+    If the output is a plain JSON string, it parses that directly.
+    Otherwise, find the code block containing JSON and parse it.
+    """
+    try:
+        if '```' in output:
+            json_start_index = output.index('```')
+            json_end_index = output.rindex('```')
+            str_form57 = output[json_start_index:json_end_index].strip('`')
+            if str_form57.startswith('json'):
+                str_form57 = str_form57.replace('json', '', 1)
+            dict_form57 = json.loads(str_form57)
+        else:
+            dict_form57 = json.loads(output)
+    except:
+        dict_form57 = {}
+    return dict_form57
+
+def check_dict_kv_type(dict_, k_type, v_type):
+    for k, v in dict_.items():
+        if not isinstance(k, k_type) or not isinstance(v, v_type):
+            return False
+    return True
+
+def validate_transcription_format(dict_form57):
+    """Check if the format of the transcription is valid.
+    """
+    if dict_form57 == {}:
+        return False
+    if not check_dict_kv_type(dict_form57, str, dict):
+        return False
+    cnt_invalid = 0
+    for entry in dict_form57.values():
+        # if (('name' not in entry or not isinstance(entry['name'], str))
+        #     or ('choices' in entry and (not isinstance(entry['choices'], dict) or not check_dict_kv_type(entry['choices'], str, str)))):
+        if ('name' not in entry or 'choices' not in entry
+            or not isinstance(entry['name'], str) or not isinstance(entry['choices'], dict)
+            or not check_dict_kv_type(entry['choices'], str, str)):
+            cnt_invalid += 1
+            # print(entry)
+    if cnt_invalid/len(dict_form57) > 0.05:
+        return False
+    else:
+        return True
+
+def validate_grouping_format(dict_form57_group):
+    """Check if the format of the grouping is valid.
+    """
+    if dict_form57_group == {}:
+        return False
+    if not check_dict_kv_type(dict_form57_group, str, list):
+        return False
+    for group in dict_form57_group.values():
+        for entry_idx in group:
+            if not isinstance(entry_idx, str):
+                return False
+    return True
+
 def transcribe_entries(api, generator, model_path, content, n_generate, generation_config=None):
     generate_func = select_generate_func(api)
     
@@ -123,7 +173,7 @@ def transcribe_entries(api, generator, model_path, content, n_generate, generati
                 output = generate_func(generator, model_path, content, generation_config)
             dict_form57 = parse_json_from_output(output)
 
-            if dict_form57 and list(dict_form57.values())[0].get('name', None) != None and list(dict_form57.values())[0].get('choices', None) != None:
+            if validate_transcription_format(dict_form57):
                 break            
         
         list_response.append(dict_form57)
@@ -153,25 +203,6 @@ def group_entries(api, generator, model_path, content, n_generate, generation_co
         
         list_response.append(dict_form57_group)
     return list_response
-
-def parse_json_from_output(output):
-    """Parse JSON from the output text of OpenAI response.
-    If the output is a plain JSON string, it parses that directly.
-    Otherwise, find the code block containing JSON and parse it.
-    """
-    try:
-        if '```' in output:
-            json_start_index = output.index('```')
-            json_end_index = output.rindex('```')
-            str_form57 = output[json_start_index:json_end_index].strip('`')
-            if str_form57.startswith('json'):
-                str_form57 = str_form57.replace('json', '', 1)
-            dict_form57 = json.loads(str_form57)
-        else:
-            dict_form57 = json.loads(output)
-    except:
-        dict_form57 = {}
-    return dict_form57
 
 def csv_to_json(path_form57_csv, path_form57_json):
     
@@ -604,7 +635,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             # 'OpenGVLab/InternVL3-8B': {}, #must be used with custom code to correctly load the model
             # 'OpenGVLab/InternVL3-8B-Instruct': {}, #must be used with custom code to correctly load the model
             'OpenGVLab/InternVL3-8B-hf': {'load_in_8bit': True, 'torch_dtype': torch.float32}, # good
-            'OpenGVLab/InternVL3-14B-hf': {'load_in_8bit': True, 'torch_dtype': torch.float32},
+            'OpenGVLab/InternVL3-14B-hf': {'load_in_4bit': True, 'torch_dtype': torch.float32},
             'OpenGVLab/InternVL3-38B-hf': {'load_in_4bit': True, 'torch_dtype': torch.float32},
             # 'microsoft/Phi-3.5-vision-instruct': {}, #error
             # 'google/gemma-3-4b-it': {}, # bad
@@ -631,6 +662,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             'ByteDance-Seed/UI-TARS-1.5-7B': {}, # good
             # 'ByteDance/Sa2VA-26B': {'load_in_8bit': True}, # must be used with custom code to correctly load the model
             # 'allenai/Molmo-7B-D-0924': {}, # must be used with custom code to correctly load the model
+            # 'microsoft/layoutlmv3-large': {}, # maximum input size is 512 tokens / needs OCR / focused on small-sized receipts and invoices
         }
         device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
@@ -639,7 +671,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
         generation_config_sample = {**generation_config_base, 'do_sample': True}#, 'temperature': 1, 'top_p': 0.95} # sample or beam sample
         generation_config_search = {**generation_config_base, 'do_sample': False} # greedy search or beam search
 
-        pipe = pipeline(model=model_path, device_map=device, model_kwargs=quant_config)
+        pipe = pipeline(model=model_path, device_map='auto', model_kwargs=quant_config)
 
         ############### transcribe entries
         if os.path.exists(path_form57_json):
@@ -764,3 +796,34 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
         raise ValueError(f"Unsupported API: {api}")
 
     return dict_form57, dict_form57_group
+
+if __name__ == '__main__':
+    news = """06.14.2023 | 5:27 PM | SANTA ANA - Train and vehicle traffic was halted after a pedestrian was struck and killed by a Metrolink train, Wednesday evening.
+
+    The collision involving a train and pedestrian was reported on the railroad tracks near the intersection of East 17th Street and North Lincoln Avenue around 5:27 PM.
+
+    When authorities arrived they located a pedestrian down on the railroad tracks and pronounced them deceased.
+
+    The Metrolink train that struck the pedestrian stopped nearby prompting vehicle and train traffic to be stopped until further notice.
+
+    It was unclear why the pedestrian was on the train trucks and authorities are continuing to investigate the fatal crash."""
+    prompt = """
+    From the news article, retrieve information that can populate the report form.
+    The output format should be like:
+    [entry id]: [answer]
+    If information is not reported in the news article, answer with UNKNOWN.
+    If the entry has multiple choices, answer only with its code(id)."""
+    content = [
+        {"type": "image", "image": image},
+        {"type": "text", "text": news},
+        {"type": "text", "text": prompt},
+    ]
+    generate_func = select_generate_func(api)
+    
+    with utils.Timer(model_path):
+        output = generate_func(pipe, model_path, content, generation_config_sample)
+        print(output)
+
+    dict_form57 = parse_json_from_output(output)
+
+    validate_transcription_format(dict_form57)

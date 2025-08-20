@@ -3,37 +3,19 @@
         "name": "Name of Reporting Railroad",
         "choices": {}
     },
-    "1a": {
-        "name": "Alphabetic Code",
-        "choices": {}
-    },
-    "1b": {
-        "name": "Railroad Accident/Incident No.",
-        "choices": {}
-    },
     "2": {
         "name": "Name of Other Railroad or Other Entity Filing for Equipment Involved in Train Accident/Incident",
-        "choices": {}
-    },
-    "2a": {
-        "name": "Alphabetic Code",
-        "choices": {}
-    },
-    "2b": {
-        "name": "Railroad Accident/Incident No.",
-        "choices": {}
+        "choices": {
+            "a": "Alphabetical Code",
+            "b": "Railroad Accident/Incident No."
+        }
     },
     "3": {
-        "name": "Name of Railroad or Other Entity Responsible for Track Maintenance (single entry)",
-        "choices": {}
-    },
-    "3a": {
-        "name": "Alphabetic Code",
-        "choices": {}
-    },
-    "3b": {
-        "name": "Railroad Accident/Incident No.",
-        "choices": {}
+        "name": "Name of Railroad or Other Entity Responsible for Track Maintenance",
+        "choices": {
+            "a": "Alphabetical Code",
+            "b": "Railroad Accident/Incident No."
+        }
     },
     "4": {
         "name": "U.S. DOT Grade Crossing Identification Number",
@@ -67,7 +49,7 @@
         "choices": {}
     },
     "10": {
-        "name": "State Code Abbr.",
+        "name": "State Abbrev.",
         "choices": {}
     },
     "11": {
@@ -82,7 +64,7 @@
         }
     },
     "13": {
-        "name": "Type",
+        "name": "Highway User Involved",
         "choices": {
             "A": "Auto",
             "B": "Truck",
@@ -93,12 +75,12 @@
             "G": "School bus",
             "H": "Motorcycle",
             "J": "Other motor vehicle",
-            "K": "Pedestrian",
+            "K": "Peasant",
             "M": "Other (specify)"
         }
     },
     "14": {
-        "name": "Vehicle Speed (est. mph at impact)",
+        "name": "Vehicle Speed (est. mph) at impact",
         "choices": {}
     },
     "15": {
@@ -120,35 +102,6 @@
             "5": "Blocked on crossing by gates"
         }
     },
-    "17": {
-        "name": "Equipment",
-        "choices": {
-            "A": "Train pulling - RCL",
-            "B": "Train pushing - RCL",
-            "C": "Train standing - RCL",
-            "D": "EMU Locomotive(s)",
-            "E": "DMU Locomotive(s)",
-            "1": "Train (units pulling)",
-            "2": "Train (units pushing)",
-            "3": "Train (standing)",
-            "4": "Car(s) (moving)",
-            "5": "Car(s) (standing)",
-            "6": "Light loco(s) (moving)",
-            "7": "Light loco(s) (standing)",
-            "8": "Other (specify)"
-        }
-    },
-    "18": {
-        "name": "Position of Car Unit in Train",
-        "choices": {}
-    },
-    "19": {
-        "name": "Circumstance",
-        "choices": {
-            "1": "Rail equipment struck highway user",
-            "2": "Rail equipment struck by highway user"
-        }
-    },
     "20a": {
         "name": "Was the highway user and/or rail equipment involved in the impact transporting hazardous materials?",
         "choices": {
@@ -158,23 +111,14 @@
             "4": "Neither"
         }
     },
-    "20b": {
-        "name": "Was there a hazardous materials release by",
-        "choices": {
-            "1": "Highway user",
-            "2": "Rail equipment",
-            "3": "Both",
-            "4": "Neither"
-        }
-    },
     "20c": {
-        "name": "State here the name and quantity of the hazardous material released, if any.",
+        "name": "State here the name and quantity of the hazardous materials released, if any.",
         "choices": {}
     },
     "21": {
         "name": "Temperature (Specify if minus)",
         "choices": {
-            "\u00b0F": ""
+            "\u00b0F": "\u00b0F"
         }
     },
     "22": {
@@ -183,7 +127,11 @@
             "1": "Dawn",
             "2": "Day",
             "3": "Dusk",
-            "4": "Dark"
+            "4": "Dark",
+            "5": "Rain",
+            "6": "Fog",
+            "7": "Sleet",
+            "8": "Snow"
         }
     },
     "23": {
@@ -203,17 +151,14 @@
             "1": "Freight Train",
             "2": "Passenger Train-Pulling",
             "3": "Commuter Train-Pulling",
-            "4": "Work train",
+            "4": "Work Train",
             "5": "Single Car",
-            "6": "Cut of cars",
-            "7": "Yard/switching",
-            "8": "Light loco(s)",
-            "9": "Maint./inspect. Car",
-            "A": "Spec. MOW Equip.",
-            "B": "Passenger Train-Pushing",
-            "C": "Commuter Train-Pushing",
+            "9": "Maint/Inspect Car",
             "D": "EMU",
-            "E": "DMU"
+            "A": "Spec. Mow Equip.",
+            "C": "Light loco(s)",
+            "B": "Passenger Train-Pushing",
+            "D1": "DMU Locomotive(s)"
         }
     },
     "25": {
@@ -221,7 +166,7 @@
         "choices": {
             "1": "Main",
             "2": "Yard",
-            "3": "Siding",
+            "3": "Sidling",
             "4": "Industry"
         }
     },
@@ -242,17 +187,18 @@
         "choices": {}
     },
     "30": {
-        "name": "Consist Speed (Recorded speed, R - Recorded if available, E - Estimated MPH)",
+        "name": "Consist Speed (Recorded speed, estimated if available)",
         "choices": {
-            "MPH": ""
+            "E": "Recorded",
+            "R": "Estimated"
         }
     },
     "31": {
         "name": "Time Table Direction",
         "choices": {
             "1": "North",
-            "2": "South",
-            "3": "East",
+            "2": "East",
+            "3": "South",
             "4": "West"
         }
     },
@@ -262,31 +208,14 @@
             "1": "Gates",
             "2": "Cantilever FLS",
             "3": "Standard FLS",
-            "4": "Wig wags",
-            "5": "Hwy. traffic signals",
-            "6": "Audible",
+            "4": "Wigwags",
+            "5": "Highway Traffic Signals",
             "7": "Crossbucks",
-            "8": "Stop signs",
+            "8": "Flagged by Crew",
             "9": "Watchman",
-            "10": "Flagged by crew",
-            "11": "None"
-        }
-    },
-    "33": {
-        "name": "Signaled Crossing Warning",
-        "choices": {
-            "See reverse side for instructions and codes": ""
-        }
-    },
-    "34": {
-        "name": "Roadway Conditions",
-        "choices": {
-            "A": "Dry",
-            "B": "Wet",
-            "C": "Snow/slush",
-            "D": "Ice",
-            "E": "Sand, Mud, Dirt, Oil, Gravel",
-            "F": "Water (Standing, Moving)"
+            "10": "Flagged by Crew",
+            "11": "Other (specify)",
+            "12": "None"
         }
     },
     "35": {
@@ -294,7 +223,7 @@
         "choices": {
             "1": "Both sides",
             "2": "Side of vehicle approach",
-            "3": "Opposite side of vehicle approach"
+            "3": "Opposite Side of vehicle approach"
         }
     },
     "36": {
@@ -308,44 +237,50 @@
     "37": {
         "name": "Crossing Illuminated by Street Lights or Special Lights",
         "choices": {
+            "L": "Yes",
             "1": "Yes",
             "2": "No",
             "3": "Unknown"
         }
     },
     "38": {
-        "name": "Highway User's Gender",
+        "name": "Highway User's Gender and Age",
         "choices": {
             "1": "Male",
-            "2": "Female"
+            "2": "Female",
+            "Code": ""
         }
     },
     "39": {
-        "name": "Highway User's Age",
-        "choices": {
-            "1": "Male",
-            "2": "Female"
-        }
-    },
-    "40": {
         "name": "Highway User Went Behind or in Front of Train and Struck or was Struck by Second Train",
         "choices": {
             "1": "Yes",
             "2": "No",
-            "3": "Unknown"
+            "3": "Unknown",
+            "Code": ""
+        }
+    },
+    "40": {
+        "name": "Highway User Went Around or in Front of Train and Struck or was Struck by Second Train",
+        "choices": {
+            "1": "Yes",
+            "2": "No",
+            "3": "Unknown",
+            "Code": ""
         }
     },
     "41": {
         "name": "Highway User",
         "choices": {
-            "1": "Went around the gate",
+            "1": "Went around User",
             "2": "Stopped and then proceeded",
-            "3": "Did not stop",
-            "4": "Went thru the gate",
+            "3": "Did not stop and proceeded",
+            "4": "Stopped on crossing",
             "5": "Other (specify)",
-            "6": "Went around/thru temporary barricade",
-            "7": "Suicide/Attempted suicide",
-            "8": "Went thru the gate"
+            "6": "Went around/thru",
+            "7": "Went thru the gate",
+            "8": "Suicide/Attempted suicide",
+            "Code": ""
         }
     },
     "42": {
@@ -353,7 +288,8 @@
         "choices": {
             "1": "Yes",
             "2": "No",
-            "3": "Unknown"
+            "3": "Unknown",
+            "Code": ""
         }
     },
     "43": {
@@ -366,22 +302,25 @@
             "5": "Vegetation",
             "6": "Highway vehicles",
             "7": "Other (specify)",
-            "8": "Not obstructed"
+            "8": "Not obstructed",
+            "Code": ""
         }
     },
     "44": {
-        "name": "Driver was",
-        "choices": {
-            "1": "Killed",
-            "2": "Injured",
-            "3": "Uninjured"
-        }
-    },
-    "45": {
         "name": "Was Driver in the Vehicle?",
         "choices": {
             "1": "Yes",
-            "2": "No"
+            "2": "No",
+            "Code": ""
+        }
+    },
+    "45": {
+        "name": "Casualties to:",
+        "choices": {
+            "1": "Killed",
+            "2": "Injured",
+            "3": "Uninjured",
+            "Code": ""
         }
     },
     "46": {
@@ -405,7 +344,7 @@
         "choices": {}
     },
     "51": {
-        "name": "Is a Rail Equipment Accident/ Incident Report Being Filed?",
+        "name": "Is a Rail Equipment Accident/Incident Report Being Filed?",
         "choices": {
             "1": "Yes",
             "2": "No"
@@ -416,10 +355,12 @@
         "choices": {}
     },
     "53a": {
-        "name": "Special Study Block Video Taken?",
+        "name": "Special Study Block",
         "choices": {
-            "Yes": "",
-            "No": ""
+            "Video Taken? Yes": "Yes",
+            "Video Taken? No": "No",
+            "Video Used? Yes": "Yes",
+            "Video Used? No": "No"
         }
     },
     "53b": {
@@ -427,8 +368,10 @@
         "choices": {}
     },
     "54": {
-        "name": "Narrative Description (Be specific, and continue on separate sheet if necessary)",
-        "choices": {}
+        "name": "Narrative Description",
+        "choices": {
+            "description": "Be specific, and continue on separate sheet if necessary"
+        }
     },
     "55": {
         "name": "Typed Name & Title",

@@ -1,5 +1,5 @@
 {
-    "General Information": [
+    "Identification": [
         "1",
         "1a",
         "1b",
@@ -19,16 +19,12 @@
         "11",
         "12"
     ],
-    "Railroad Details": [
+    "Incident Details": [
         "13",
         "14",
         "15",
         "16",
-        "17",
-        "18",
-        "19",
         "20a",
-        "20b",
         "20c",
         "21",
         "22",
@@ -42,23 +38,19 @@
         "30",
         "31",
         "32",
-        "33",
-        "34",
         "35",
         "36",
         "37"
     ],
-    "Accident Circumstances": [
+    "Personnel and Equipment": [
+        "38",
+        "39",
         "40",
         "41",
         "42",
         "43",
         "44",
-        "45"
-    ],
-    "Highway User Details": [
-        "38",
-        "39",
+        "45",
         "46",
         "47",
         "48",
@@ -67,10 +59,12 @@
         "51",
         "52"
     ],
-    "Additional Information": [
+    "Special Reports": [
         "53a",
         "53b",
-        "54",
+        "54"
+    ],
+    "Form Completion": [
         "55",
         "56",
         "57"

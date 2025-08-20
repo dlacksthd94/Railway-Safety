@@ -269,7 +269,8 @@
             "8": "Stop signs",
             "9": "Watchman",
             "10": "Flagged by crew",
-            "11": "None"
+            "11": "None",
+            "12": "Other (specify)"
         }
     },
     "33": {
@@ -345,7 +346,7 @@
             "5": "Other (specify)",
             "6": "Went around/thru temporary barricade",
             "7": "Suicide/Attempted suicide",
-            "8": "Went thru the gate"
+            "8": "Went on crossing"
         }
     },
     "42": {
