@@ -33,10 +33,12 @@ CONFIG_TF = copy.deepcopy(trafilatura.settings.DEFAULT_CONFIG)
 CONFIG_TF['DEFAULT']['DOWNLOAD_TIMEOUT'] = str(TIMEOUT)
 
 class Scrape():
-    def __init__(self, columns):
+    def __init__(self, config_df_record_news, config_df_news_articles):
         self.driver = None
-        self.df = None
-        self.columns = columns
+        self.df_record_news = None
+        self.df_news_articles = None
+        self.config_df_record_news = config_df_record_news
+        self.config_df_news_articles = config_df_news_articles
         self.query1 = None
         self.query2 = None
         self.rail_company = None
@@ -68,24 +70,38 @@ class Scrape():
         self.date_to = params['date_to']
         self.incident_id = params['incident_id']
 
-    def load_df(self, path_df_cal):
-        if os.path.exists(path_df_cal):
-            self.df = pd.read_csv(path_df_cal, parse_dates=['pub_date'])
+    def load_df_record_news(self):
+        path_df_record_news = self.config_df_record_news['path']
+        if os.path.exists(path_df_record_news):
+            self.df_record_news = pd.read_csv(path_df_record_news)
         else:
-            self.df = pd.DataFrame(columns=self.columns)
-            self.df.to_csv(path_df_cal, index=False)
-
-    def append_df(self, df_temp):
-        self.df = pd.concat([self.df, df_temp]).reset_index(drop=True)
-
-    def save_df(self, path_df_cal):
-        self.df.to_csv(path_df_cal, index=False)
+            self.df_record_news = pd.DataFrame(columns=self.config_df_record_news['columns'])
+            self.df_record_news.to_csv(path_df_record_news, index=False)
+    
+    def load_df_news_articles(self):
+        path_df_news_articles = self.config_df_news_articles['path']
+        if os.path.exists(path_df_news_articles):
+            self.df_news_articles = pd.read_csv(path_df_news_articles, parse_dates=['pub_date'])
+        else:
+            self.df_news_articles = pd.DataFrame(columns=self.config_df_news_articles['columns'])
+            self.df_news_articles.to_csv(path_df_news_articles, index=False)
+    
+    def append_df_record_news(self, df_temp):
+        self.df_record_news = pd.concat([self.df_record_news, df_temp]).reset_index(drop=True)
+        
+    def save_df_record_news(self):
+        path_df_record_news = self.config_df_record_news['path']
+        self.df_record_news.to_csv(path_df_record_news, index=False)
+    
+    def save_df_news_articles(self):
+        path_df_news_articles = self.config_df_news_articles['path']
+        self.df_news_articles.to_csv(path_df_news_articles, index=False)
     
     def already_scraped(self):
         condition = (
-            (self.df['incident_id'] == self.incident_id) &
-            (self.df['query1'] == self.query1) &
-            (self.df['query2'] == self.query2)
+            (self.df_record_news['incident_id'] == self.incident_id) &
+            (self.df_record_news['query1'] == self.query1) &
+            (self.df_record_news['query2'] == self.query2)
         )
         return condition.any()
     
@@ -145,29 +161,35 @@ class Scrape():
         self.driver.save_screenshot('web_screenshot.png')
     
     def get_article(self, feed):
-        empty_row = [[self.query1, self.query2, self.county, self.state, self.city, self.highway, self.incident_id] + ['', '', '', ''] + [''] * 8]
-        df_result = pd.DataFrame(empty_row, columns=self.columns)
+        empty_row = [[self.query1, self.query2, self.county, self.state, self.city, self.highway, self.incident_id] + ['']]
+        df_result = pd.DataFrame(empty_row, columns=self.config_df_record_news['columns'])
         pbar_entry = tqdm(feed['entries'], total=len(feed['entries']), leave=False)
         for entry in pbar_entry:
-            self.driver.delete_all_cookies()
-            _ = self.driver.execute_cdp_cmd("Network.clearBrowserCache", {})
-            _ = self.driver.execute_cdp_cmd("Network.clearBrowserCookies", {})
+            # self.driver.delete_all_cookies()
+            # _ = self.driver.execute_cdp_cmd("Network.clearBrowserCache", {})
+            # _ = self.driver.execute_cdp_cmd("Network.clearBrowserCookies", {})
 
             try:
                 news_id = entry['id']
                 url = entry['link']
                 pub_date = pd.to_datetime(entry['published'])
                 title = entry['title']
-                if news_id in self.df['news_id'].values:
-                    continue
-                redirect_url, page_source = self.get_redirect_url(url)
-                content_np_url, content_np_html = self.extract_content_newspaper3k(redirect_url, page_source)
-                content_tf_url, content_tf_html = self.extract_content_trafilatura(redirect_url, page_source)
-                content_rd_url, content_rd_html = self.extract_content_readability(redirect_url, page_source)
-                content_gs_url, content_gs_html = self.extract_content_goose3(redirect_url, page_source)
-                row_data = [[self.query1, self.query2, self.county, self.state, self.city, self.highway, self.incident_id, news_id, redirect_url, pub_date, title, content_np_url, content_np_html, content_tf_url, content_tf_html, content_rd_url, content_rd_html, content_gs_url, content_gs_html]]
-                df_temp = pd.DataFrame(row_data, columns=self.columns)
-                df_result = pd.concat([df_result, df_temp])
+
+                if news_id not in self.df_news_articles['news_id'].values:
+                    redirect_url, page_source = self.get_redirect_url(url)
+                    content_np_url, content_np_html = self.extract_content_newspaper3k(redirect_url, page_source)
+                    content_tf_url, content_tf_html = self.extract_content_trafilatura(redirect_url, page_source)
+                    content_rd_url, content_rd_html = self.extract_content_readability(redirect_url, page_source)
+                    content_gs_url, content_gs_html = self.extract_content_goose3(redirect_url, page_source)
+
+                    row_news_articles = [[news_id, redirect_url, pub_date, title, content_np_url, content_np_html, content_tf_url, content_tf_html, content_rd_url, content_rd_html, content_gs_url, content_gs_html]]
+                    df_news_articles_temp = pd.DataFrame(row_news_articles, columns=self.config_df_news_articles['columns'])
+                    self.df_news_articles = pd.concat([self.df_news_articles, df_news_articles_temp])
+                    self.save_df_news_articles()
+                
+                row_record_news = [[self.query1, self.query2, self.county, self.state, self.city, self.highway, self.incident_id, news_id]]
+                df_record_news_temp = pd.DataFrame(row_record_news, columns=self.config_df_record_news['columns'])
+                df_result = pd.concat([df_result, df_record_news_temp])
             except:
                 self.quit_driver()
                 self.load_driver()

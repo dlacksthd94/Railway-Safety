@@ -6,12 +6,22 @@ import re
 import pandas as pd
 
 DATA_FOLDER = 'data/'
-FN_DF = 'df_news.csv'
-FN_DF_DATA = '250424 Highway-Rail Grade Crossing Incident Data (Form 57).csv'
-COLUMNS = ['query1', 'query2', 'county', 'state', 'city', 'highway', 'incident_id', 'news_id', 'url', 'pub_date', 'title', 'np_url', 'tf_url', 'rd_url', 'gs_url', 'np_html', 'tf_html', 'rd_html', 'gs_html']
+FN_DF_RECORD_NEWS = 'df_record_news.csv'
+FN_DF_NEWS_ARTICLES = 'df_news_articles.csv'
+FN_DF_DATA = '250821 Highway-Rail Grade Crossing Incident Data (Form 57).csv'
 
-path_df=DATA_FOLDER + FN_DF
+path_df_record_news = DATA_FOLDER + FN_DF_RECORD_NEWS
+path_df_news_articles = DATA_FOLDER + FN_DF_NEWS_ARTICLES
 path_df_data = DATA_FOLDER + FN_DF_DATA
+
+config_df_record_news = {
+    'path': path_df_record_news,
+    'columns': ['query1', 'query2', 'county', 'state', 'city', 'highway', 'incident_id', 'news_id'],
+}
+config_df_news_articles = {
+    'path': path_df_news_articles,
+    'columns': ['news_id', 'url', 'pub_date', 'title', 'np_url', 'tf_url', 'rd_url', 'gs_url', 'np_html', 'tf_html', 'rd_html', 'gs_html'],
+}
 
 df_data = pd.read_csv(path_df_data)
 # df_data = df_data[(df_data['State Name'] == 'CALIFORNIA') & (df_data['County Name'] == 'RIVERSIDE')]
@@ -22,9 +32,10 @@ df_data = df_data[df_data['Date'] >= '2000-01-01']
 list_prior_info = ['hash_id', 'Railroad Name', 'Date', 'Nearest Station', 'County Name', 'State Name', 'City Name', 'Highway Name', 'Public/Private', 'Highway User', 'Equipment Type'] # keywords useful for searching
 df_data = df_data.sort_values(['County Name', 'Date'], ascending=[True, False])
 
-scrape = utils_scrape.Scrape(COLUMNS)
-if scrape.df is None:
-    scrape.load_df(path_df)
+scrape = utils_scrape.Scrape(config_df_record_news, config_df_news_articles)
+if scrape.df_record_news is None or scrape.df_news_articles is None:
+    scrape.load_df_record_news()
+    scrape.load_df_news_articles()
 
 # list_query1 = ["train", "amtrak", "locomotive"]
 # list_query2 = ["accident", "incident", "crash", "collide", "hit", "strike", "injure", "kill", "derail"]
@@ -35,7 +46,7 @@ pbar_row = tqdm(df_data.iterrows(), total=df_data.shape[0])
 for i, row in pbar_row:
     row = row.fillna('')
     hash_id, rail_company, date, station, county, state, city, highway, private, vehicle_type, train_type = row[list_prior_info]
-    pbar_row.set_description(f'{county}, {city}, {highway}')
+    pbar_row.set_description(f'{county}, {city}')
 
     pbar_query1 = tqdm(list_query1, leave=False)
     for query1 in pbar_query1:
@@ -71,8 +82,9 @@ for i, row in pbar_row:
             
             scrape.load_driver()
             df_temp = scrape.get_article(feed)
-            scrape.append_df(df_temp)
-            scrape.save_df(path_df)
+            scrape.append_df_record_news(df_temp)
+            scrape.save_df_record_news()
             scrape.quit_driver()
 
-            time.sleep(10)
+            if df_temp.shape[0] <= 1:
+                time.sleep(7)
