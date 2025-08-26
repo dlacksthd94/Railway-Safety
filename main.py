@@ -84,12 +84,18 @@ DIR_DATA_ROOT = 'data'
 DIR_DATA_JSON = 'json'
 DIR_DATA_RESULT = 'result'
 
+FN_DF_RECORD = '250821 Highway-Rail Grade Crossing Incident Data (Form 57).csv'
+
+LIST_CRAWLER = ['np_url', 'tf_url', 'rd_url', 'gs_url', 'np_html', 'tf_html', 'rd_html', 'gs_html']
+FN_DF_RECORD_NEWS = 'df_record_news.csv'
+FN_DF_NEWS_ARTICLES = 'df_news_articles.csv'
+FN_DF_NEWS_ARTICLES_FILTER = 'df_news_articles_filter.csv'
+
 FN_DF_NEWS_LABEL = 'df_news_label.csv'
 
 NM_FORM57 = 'FRA F 6180.57 (Form 57) form only'
 FN_FORM57_PDF = f'{NM_FORM57}.pdf'
 FN_FORM57_IMG = f'{NM_FORM57}.jpg'
-FN_FORM57_CSV = '250424 Highway-Rail Grade Crossing Incident Data (Form 57).csv'
 
 FN_FORM57_JSON = f'form57.json'
 FN_FORM57_JSON_GROUP = f'form57_group.json'
@@ -108,8 +114,13 @@ dir_config_result = f'{config.retrieval.api}_{retrieval_model_replaced}_{config.
 path_dir_config_result = os.path.join(path_dir_config_json, DIR_DATA_RESULT, dir_config_result)
 make_dir(path_dir_config_result)
 
+path_df_record = os.path.join(DIR_DATA_ROOT, FN_DF_RECORD)
+
+path_df_record_news = os.path.join(DIR_DATA_ROOT, FN_DF_RECORD_NEWS)
+path_df_news_articles = os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_ARTICLES)
+path_df_news_articles_filter = os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_ARTICLES_FILTER)
+
 path_df_news_label = os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_LABEL)
-path_form57_csv = os.path.join(DIR_DATA_ROOT, FN_FORM57_CSV)
 path_form57_pdf = os.path.join(DIR_DATA_ROOT, FN_FORM57_PDF)
 path_form57_img = os.path.join(DIR_DATA_ROOT, FN_FORM57_IMG)
 path_form57_json = os.path.join(path_dir_config_json, FN_FORM57_JSON)
@@ -123,11 +134,17 @@ print(path_dir_config_result)
 
 print('------------Setting path DONE!!------------')
 
+###############
+from scrape_news import scrape_news
+df_record_news, df_news_articles = scrape_news(path_df_record_news, path_df_news_articles, path_df_record, LIST_CRAWLER)
+
+
+
 ############### convert to json
 from convert_report_to_json import csv_to_json, pdf_to_json, img_to_json
 
 if config.conversion.json_source == 'csv':
-    dict_form57 = csv_to_json(path_form57_csv, path_form57_json)
+    dict_form57 = csv_to_json(path_df_record, path_form57_json)
 elif config.conversion.json_source == 'pdf':
     dict_form57, dict_form57_group = pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, config.conversion)
 elif config.conversion.json_source == 'img':
@@ -165,16 +182,16 @@ from utils import get_acc_table
 # list_answer_type_selected = ['choice', 'digit', 'str', 'list', 'etc']
 
 list_answer_type_selected = ['choice']
-df_acc = get_acc_table(path_form57_csv, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
+df_acc = get_acc_table(path_df_record, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
 acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
 print('choice:\t', acc)
 
 list_answer_type_selected = ['digit']
-df_acc = get_acc_table(path_form57_csv, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
+df_acc = get_acc_table(path_df_record, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
 acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
 print('digit:\t', acc)
 
 list_answer_type_selected = ['choice', 'digit']
-df_acc = get_acc_table(path_form57_csv, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
+df_acc = get_acc_table(path_df_record, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
 acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
 print('choice + digit:\t', acc)
