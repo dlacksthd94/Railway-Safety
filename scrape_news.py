@@ -8,7 +8,7 @@ import pandas as pd
 def scrape_news(path_df_record_news, path_df_news_articles, path_df_record, list_crawlers):
     config_df_record_news = {
         'path': path_df_record_news,
-        'columns': ['query1', 'query2', 'county', 'state', 'city', 'highway', 'incident_id', 'news_id'],
+        'columns': ['query1', 'query2', 'county', 'state', 'city', 'highway', 'report_key', 'news_id'],
     }
     config_df_news_articles = {
         'path': path_df_news_articles,
@@ -21,7 +21,8 @@ def scrape_news(path_df_record_news, path_df_news_articles, path_df_record, list
     df_data['hash_id'] = df_data.apply(utils_scrape.hash_row, axis=1)
     df_data['Date'] = pd.to_datetime(df_data['Date'])
     df_data = df_data[df_data['Date'] >= '2000-01-01']
-    list_prior_info = ['hash_id', 'Railroad Name', 'Date', 'Nearest Station', 'County Name', 'State Name', 'City Name', 'Highway Name', 'Public/Private', 'Highway User', 'Equipment Type'] # keywords useful for searching
+    assert df_data['Report Key'].is_unique
+    list_prior_info = ['Report Key', 'Railroad Name', 'Date', 'Nearest Station', 'County Name', 'State Name', 'City Name', 'Highway Name', 'Public/Private', 'Highway User', 'Equipment Type'] # keywords useful for searching
     df_data = df_data.sort_values(['County Name', 'Date'], ascending=[True, False])
 
     scrape = utils_scrape.Scrape(config_df_record_news, config_df_news_articles)
@@ -61,12 +62,12 @@ def scrape_news(path_df_record_news, path_df_news_articles, path_df_record, list
                     # 'train_type': train_type,
                     'date_from': (date - pd.Timedelta(days=7)).strftime('%Y-%m-%d'),
                     'date_to': (date + pd.Timedelta(days=7)).strftime('%Y-%m-%d'),
-                    'incident_id': hash_id,
+                    'report_key': hash_id,
                 }
                 scrape.set_params(params)
 
                 if scrape.already_scraped():
-                    time.sleep(0.01)
+                    time.sleep(0.001)
                     continue
 
                 feed = scrape.get_RSS()

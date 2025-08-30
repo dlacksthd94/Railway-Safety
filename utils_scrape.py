@@ -52,7 +52,7 @@ class Scrape():
         self.train_type = None
         self.date_from = None
         self.date_to = None
-        self.incident_id = None
+        self.report_key = None
     
     def set_params(self, params):
         self.query1 = params['query1']
@@ -68,7 +68,7 @@ class Scrape():
         # self.train_type = params['train_type']
         self.date_from = params['date_from']
         self.date_to = params['date_to']
-        self.incident_id = params['incident_id']
+        self.report_key = params['report_key']
 
     def load_df_record_news(self):
         path_df_record_news = self.config_df_record_news['path']
@@ -99,7 +99,7 @@ class Scrape():
     
     def already_scraped(self):
         condition = (
-            (self.df_record_news['incident_id'] == self.incident_id) &
+            (self.df_record_news['report_key'] == self.report_key) &
             (self.df_record_news['query1'] == self.query1) &
             (self.df_record_news['query2'] == self.query2)
         )
@@ -161,7 +161,7 @@ class Scrape():
         self.driver.save_screenshot('web_screenshot.png')
     
     def get_article(self, feed):
-        empty_row = [[self.query1, self.query2, self.county, self.state, self.city, self.highway, self.incident_id] + ['']]
+        empty_row = [[self.query1, self.query2, self.county, self.state, self.city, self.highway, self.report_key] + ['']]
         df_result = pd.DataFrame(empty_row, columns=self.config_df_record_news['columns'])
         pbar_entry = tqdm(feed['entries'], total=len(feed['entries']), leave=False)
         for entry in pbar_entry:
@@ -182,12 +182,12 @@ class Scrape():
                     content_rd_url, content_rd_html = self.extract_content_readability(redirect_url, page_source)
                     content_gs_url, content_gs_html = self.extract_content_goose3(redirect_url, page_source)
 
-                    row_news_articles = [[news_id, redirect_url, pub_date, title, content_np_url, content_np_html, content_tf_url, content_tf_html, content_rd_url, content_rd_html, content_gs_url, content_gs_html]]
+                    row_news_articles = [[news_id, redirect_url, pub_date, title, content_np_url, content_tf_url, content_rd_url, content_gs_url, content_np_html, content_tf_html, content_rd_html, content_gs_html]]
                     df_news_articles_temp = pd.DataFrame(row_news_articles, columns=self.config_df_news_articles['columns'])
                     self.df_news_articles = pd.concat([self.df_news_articles, df_news_articles_temp])
                     self.save_df_news_articles()
                 
-                row_record_news = [[self.query1, self.query2, self.county, self.state, self.city, self.highway, self.incident_id, news_id]]
+                row_record_news = [[self.query1, self.query2, self.county, self.state, self.city, self.highway, self.report_key, news_id]]
                 df_record_news_temp = pd.DataFrame(row_record_news, columns=self.config_df_record_news['columns'])
                 df_result = pd.concat([df_result, df_record_news_temp])
             except:
@@ -218,7 +218,7 @@ class Scrape():
             article.parse()
             content_html = article.text
         except:
-            content_html
+            content_html = None
         return content_url, content_html
     
     def extract_content_trafilatura(self, redirect_url, page_source):
