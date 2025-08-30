@@ -19,8 +19,8 @@ parser.add_argument(
     "--c_api",
     type=str,
     choices=['Huggingface', 'OpenAI', 'None'],
-    # default="None",
-    default="Huggingface",
+    default="None",
+    # default="Huggingface",
     # default='OpenAI',
     help="API to use for processing"
 )
@@ -29,8 +29,8 @@ parser.add_argument(
     "--c_model",
     type=str,
     # choices=['Qwen/Qwen2.5-VL-7B-Instruct', 'OpenGVLab/InternVL3-8B-hf', 'ByteDance-Seed/UI-TARS-1.5-7B', 'None'],
-    # default='None',
-    default='Qwen/Qwen2.5-VL-7B-Instruct',
+    default='None',
+    # default='Qwen/Qwen2.5-VL-7B-Instruct',
     # default='Qwen/Qwen2.5-VL-32B-Instruct',
     # default='OpenGVLab/InternVL3-8B-hf',
     # default='google/gemma-3-27b-it',
@@ -41,7 +41,8 @@ parser.add_argument(
 parser.add_argument(
     "--c_n_generate",
     type=int,
-    default=4,
+    default=0,
+    # default=4,
     # default=3,
     # action="store_true",
     help="Number of generations"
@@ -51,8 +52,8 @@ parser.add_argument(
     "--c_json_source",
     type=str,
     choices=['csv', 'pdf', 'img'],
-    # default='csv',
-    default='img',
+    default='csv',
+    # default='img',
     help="Source of JSON data"
 )
 
@@ -60,13 +61,12 @@ parser.add_argument(
     "--r_question_batch",
     type=str,
     choices=['single', 'group'],
-    # default='single',
-    default='group',
+    default='single',
+    # default='group',
     help="Batching strategy for questions"
 )
 
 args = parser.parse_args()
-
 
 ############### config
 from config import Config, ConversionConfig, RetrievalConfig
@@ -89,6 +89,7 @@ FN_DF_RECORD = '250821 Highway-Rail Grade Crossing Incident Data (Form 57).csv'
 LIST_CRAWLER = ['np_url', 'tf_url', 'rd_url', 'gs_url', 'np_html', 'tf_html', 'rd_html', 'gs_html']
 FN_DF_RECORD_NEWS = 'df_record_news.csv'
 FN_DF_NEWS_ARTICLES = 'df_news_articles.csv'
+FN_DF_NEWS_ARTICLES_SCORE = 'df_news_articles_score.csv'
 FN_DF_NEWS_ARTICLES_FILTER = 'df_news_articles_filter.csv'
 
 FN_DF_NEWS_LABEL = 'df_news_label.csv'
@@ -118,6 +119,7 @@ path_df_record = os.path.join(DIR_DATA_ROOT, FN_DF_RECORD)
 
 path_df_record_news = os.path.join(DIR_DATA_ROOT, FN_DF_RECORD_NEWS)
 path_df_news_articles = os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_ARTICLES)
+path_df_news_articles_score = os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_ARTICLES_SCORE)
 path_df_news_articles_filter = os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_ARTICLES_FILTER)
 
 path_df_news_label = os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_LABEL)
@@ -136,9 +138,8 @@ print('------------Setting path DONE!!------------')
 
 ###############
 from scrape_news import scrape_news
+
 df_record_news, df_news_articles = scrape_news(path_df_record_news, path_df_news_articles, path_df_record, LIST_CRAWLER)
-
-
 
 ############### convert to json
 from convert_report_to_json import csv_to_json, pdf_to_json, img_to_json
@@ -164,13 +165,13 @@ assert os.path.exists(path_df_test_set)
 df_test_set = pd.read_csv(path_df_test_set)
 df_test_set = df_test_set[df_test_set['match'] == 1]
 
-df_test_set = df_test_set[['incident_id', 'news_id']]
+df_test_set = df_test_set[['report_key', 'news_id']]
 assert df_test_set['news_id'].is_unique, '==========Warning: News is not unique!!!==========='
 
 ############### match news and csv file
 df_match = df_retrieval.merge(
     df_test_set,
-    on=['incident_id','news_id'],
+    on=['report_key','news_id'],
     how='inner'
 )
 

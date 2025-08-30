@@ -64,10 +64,10 @@ def load_df_test_set():
         df_test_set['match'] = np.nan
 
         for idx, sr_retireval in df_retrieval.iterrows():
-            sr_retireval = sr_retireval[['incident_id', 'pub_date'] + list_col_idx]
-            incident_id = sr_retireval.pop('incident_id')
+            sr_retireval = sr_retireval[['report_key', 'pub_date'] + list_col_idx]
+            report_key = sr_retireval.pop('report_key')
             sr_retireval = sr_retireval.apply(as_float)
-            sr_form57_csv = df_form57_csv.loc[incident_id]
+            sr_form57_csv = df_form57_csv.loc[report_key]
             sr_form57_csv = sr_form57_csv[['Date'] + list_col_name]
             mask = sr_form57_csv.values == sr_retireval.values
             if not any(mask):
@@ -107,15 +107,15 @@ if idx < len(df_test_set):
     col_left, col_right = st.columns(2)
 
     with col_left:
-        sr_match = df_test_set.loc[idx, ['incident_id', 'pub_date'] + list_col_idx]
-        incident_id = sr_match.pop('incident_id')
+        sr_match = df_test_set.loc[idx, ['report_key', 'pub_date'] + list_col_idx]
+        report_key = sr_match.pop('report_key')
         if idx > 0:
-            incident_id_prev = df_test_set.loc[idx - 1, 'incident_id']
+            report_key_prev = df_test_set.loc[idx - 1, 'report_key']
         else:
-            incident_id_prev = None
+            report_key_prev = None
         sr_match = sr_match.apply(as_float)
         sr_match = pd.concat([sr_match, pd.Series([np.nan] * len(list_col_name_additional))])
-        sr_form57_csv = df_form57_csv.loc[incident_id]
+        sr_form57_csv = df_form57_csv.loc[report_key]
         sr_form57_csv = sr_form57_csv[['Date'] + list_col_name + list_col_name_additional]
         mask = sr_form57_csv.values == sr_match.values
         with st.form('### Comparison'):
@@ -123,7 +123,7 @@ if idx < len(df_test_set):
             day_name_csv, day_name_news = sr_form57_csv['Date'].day_name(), sr_match['pub_date'].day_name()
             df_compare.loc['day_name'] = [day_name_csv, day_name_news, day_name_csv == day_name_news]
             
-            if incident_id != incident_id_prev:
+            if report_key != report_key_prev:
                 st.session_state.i_color += 1
                 st.session_state.color = list_pastel[st.session_state.i_color % 2]
                 df_test_set.to_csv(path_df_test_set, index=False)

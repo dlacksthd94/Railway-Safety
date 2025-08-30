@@ -92,8 +92,8 @@ def get_acc_table(path_form57_csv, path_dict_col_idx_name, df_match, dict_form57
     df_acc = df_acc.drop('match', axis=1, errors='ignore')
     df_acc.loc[:, '1':] = np.nan
     for idx_match, row_match in tqdm(df_match.iterrows(), total=df_match.shape[0]):
-        incident_id = row_match['incident_id']
-        row_csv = df_form57_csv[df_form57_csv['hash_id'] == incident_id]
+        report_key = row_match['report_key']
+        row_csv = df_form57_csv[df_form57_csv['hash_id'] == report_key]
         list_score_temp = []
         for col_idx, col_name in dict_idx_selected.items():
             retrieval = row_match[col_idx]
