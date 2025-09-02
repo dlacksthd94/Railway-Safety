@@ -19,8 +19,8 @@ parser.add_argument(
     "--c_api",
     type=str,
     choices=['Huggingface', 'OpenAI', 'None'],
-    default="None",
-    # default="Huggingface",
+    # default="None",
+    default="Huggingface",
     # default='OpenAI',
     help="API to use for processing"
 )
@@ -29,8 +29,8 @@ parser.add_argument(
     "--c_model",
     type=str,
     # choices=['Qwen/Qwen2.5-VL-7B-Instruct', 'OpenGVLab/InternVL3-8B-hf', 'ByteDance-Seed/UI-TARS-1.5-7B', 'None'],
-    default='None',
-    # default='Qwen/Qwen2.5-VL-7B-Instruct',
+    # default='None',
+    default='Qwen/Qwen2.5-VL-7B-Instruct',
     # default='Qwen/Qwen2.5-VL-32B-Instruct',
     # default='OpenGVLab/InternVL3-8B-hf',
     # default='google/gemma-3-27b-it',
@@ -41,8 +41,8 @@ parser.add_argument(
 parser.add_argument(
     "--c_n_generate",
     type=int,
-    default=0,
-    # default=4,
+    # default=0,
+    default=4,
     # default=3,
     # action="store_true",
     help="Number of generations"
@@ -52,8 +52,8 @@ parser.add_argument(
     "--c_json_source",
     type=str,
     choices=['csv', 'pdf', 'img'],
-    default='csv',
-    # default='img',
+    # default='csv',
+    default='img',
     help="Source of JSON data"
 )
 
@@ -61,8 +61,8 @@ parser.add_argument(
     "--r_question_batch",
     type=str,
     choices=['single', 'group'],
-    default='single',
-    # default='group',
+    # default='single',
+    default='group',
     help="Batching strategy for questions"
 )
 
@@ -141,6 +141,11 @@ from scrape_news import scrape_news
 
 df_record_news, df_news_articles = scrape_news(path_df_record_news, path_df_news_articles, path_df_record, LIST_CRAWLER)
 
+############### rule-based news filtering
+from filter_news import filter_news
+
+df_news_articles_filter = filter_news(path_df_news_articles, path_df_news_articles_score, path_df_news_articles_filter, LIST_CRAWLER)
+
 ############### convert to json
 from convert_report_to_json import csv_to_json, pdf_to_json, img_to_json
 
@@ -151,48 +156,48 @@ elif config.conversion.json_source == 'pdf':
 elif config.conversion.json_source == 'img':
     dict_form57, dict_form57_group = img_to_json(path_form57_img, path_form57_json, path_form57_json_group, config.conversion)
 
-print('------------Conversion DONE!!------------')
+# print('------------Conversion DONE!!------------')
 
-############### extract keywords
-from extract_keywords import extract_keywords
+# ############### extract keywords
+# from extract_keywords import extract_keywords
 
-df_retrieval = extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_label, config.retrieval)
+# df_retrieval = extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_label, config.retrieval)
 
-print('------------Retrieval DONE!!------------')
+# print('------------Retrieval DONE!!------------')
 
-############### made hand-annotated samples (ONLY ONE-TIME TASK)
-assert os.path.exists(path_df_test_set)
-df_test_set = pd.read_csv(path_df_test_set)
-df_test_set = df_test_set[df_test_set['match'] == 1]
+# ############### made hand-annotated samples (ONLY ONE-TIME TASK)
+# assert os.path.exists(path_df_test_set)
+# df_test_set = pd.read_csv(path_df_test_set)
+# df_test_set = df_test_set[df_test_set['match'] == 1]
 
-df_test_set = df_test_set[['report_key', 'news_id']]
-assert df_test_set['news_id'].is_unique, '==========Warning: News is not unique!!!==========='
+# df_test_set = df_test_set[['report_key', 'news_id']]
+# assert df_test_set['news_id'].is_unique, '==========Warning: News is not unique!!!==========='
 
-############### match news and csv file
-df_match = df_retrieval.merge(
-    df_test_set,
-    on=['report_key','news_id'],
-    how='inner'
-)
+# ############### match news and csv file
+# df_match = df_retrieval.merge(
+#     df_test_set,
+#     on=['report_key','news_id'],
+#     how='inner'
+# )
 
-print('------------Matching DONE!!------------')
+# print('------------Matching DONE!!------------')
 
-############### calculate the accuracy
-from utils import get_acc_table
+# ############### calculate the accuracy
+# from utils import get_acc_table
 
-# list_answer_type_selected = ['choice', 'digit', 'str', 'list', 'etc']
+# # list_answer_type_selected = ['choice', 'digit', 'str', 'list', 'etc']
 
-list_answer_type_selected = ['choice']
-df_acc = get_acc_table(path_df_record, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
-acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
-print('choice:\t', acc)
+# list_answer_type_selected = ['choice']
+# df_acc = get_acc_table(path_df_record, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
+# acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
+# print('choice:\t', acc)
 
-list_answer_type_selected = ['digit']
-df_acc = get_acc_table(path_df_record, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
-acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
-print('digit:\t', acc)
+# list_answer_type_selected = ['digit']
+# df_acc = get_acc_table(path_df_record, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
+# acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
+# print('digit:\t', acc)
 
-list_answer_type_selected = ['choice', 'digit']
-df_acc = get_acc_table(path_df_record, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
-acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
-print('choice + digit:\t', acc)
+# list_answer_type_selected = ['choice', 'digit']
+# df_acc = get_acc_table(path_df_record, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
+# acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
+# print('choice + digit:\t', acc)
