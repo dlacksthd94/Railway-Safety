@@ -187,14 +187,22 @@ import utils
 from convert_report_to_json import select_generate_func
 
 api = 'Huggingface'
-# model_path = 'Qwen/Qwen2.5-VL-7B-Instruct'
-model_path = 'Qwen/Qwen2.5-VL-32B-Instruct'
+# model_path = 'Qwen/Qwen2.5-VL-32B-Instruct'
+model_path = 'Qwen/Qwen2.5-VL-72B-Instruct'
+# model_path = 'OpenGVLab/InternVL3_5-38B-HF'
+# model_path = 'google/gemma-3-27b-it'
+# model_path = 'llava-hf/llava-v1.6-34b-hf'
 
 dict_model_config = {
     # 'Qwen/Qwen2.5-VL-7B-Instruct': {},
     # 'Qwen/Qwen2.5-VL-32B-Instruct': {'load_in_4bit': True},
-    'Qwen/Qwen2.5-VL-32B-Instruct': {'load_in_8bit': True},
-    # 'Qwen/Qwen2.5-VL-32B-Instruct': {},
+    # 'Qwen/Qwen2.5-VL-32B-Instruct': {'load_in_8bit': True},
+    'Qwen/Qwen2.5-VL-32B-Instruct': {},
+    'Qwen/Qwen2.5-VL-72B-Instruct': {'load_in_8bit': True},
+    # 'OpenGVLab/InternVL3-38B-hf': {'load_in_8bit': True},
+    'OpenGVLab/InternVL3_5-38B-HF': {},
+    'google/gemma-3-27b-it': {},
+    'llava-hf/llava-v1.6-34b-hf': {},
 }
 quant_config = dict_model_config[model_path]
 device = 'auto'
@@ -202,30 +210,54 @@ device = 'auto'
 pipe = pipeline(model=model_path, device_map=device, model_kwargs=quant_config)
 generate_func = select_generate_func(api)
 
-# field = '5. Date of Accident/Incident'
-# field = '6. Time of Accident/Incident'
-# field = '12. Highway Name or Number'
-field = '46. Highway-Rail Crossing Users'
+# # field = '5. Date of Accident/Incident'
+# # field = '6. Time of Accident/Incident'
+# # field = '12. Highway Name or Number'
+# # field = '46. Highway-Rail Crossing Users'
 # field = '49. Railroad Employees'
-# field = '52. Passengers on Train'
-prompt = f"""Briefly describe "{field}" field in the context of its adjecent fields."""
-with utils.Timer(model_path):
-    output = generate_func(pipe, model_path, [{"type": "image", "image": image}, {"type": "text", "text": prompt},], generation_config_search)
-    print(output)
+# # field = '52. Passengers on Train'
+# prompt = f"""Each field of the form has areas to write or mark the answers.
+# Identify every answer place associated with the "{field}" field."""
+# # prompt = f"""Break down every answer place required for the "{field}" field, based in the image."""
+# # prompt = f"""Briefly describe "{field}" field in the context of its adjecent fields."""
+# with utils.Timer(model_path):
+#     output = generate_func(pipe, model_path, [{"type": "image", "image": image}, {"type": "text", "text": prompt},], generation_config_search)
+#     print(output)
 
-prompt = f""""{output}
+# prompt = f"""Break down every answer place of "{field}" that is required to be written or marked.
+# Include choices only when it is provided in the form.
+# Strictly follow the JSON format:""" + \
+# """
+# ```
+# "answer_places": {
+#     "<answer place name>": {
+#         "type": "<free-text/digit/single choice/multiple choice>",
+#         "choices": {
+#             "<choice code>": "<choice name>",
+#         },
+#     },
+# }
+# ```
+# """
+# with utils.Timer(model_path):
+#     output = generate_func(pipe, model_path, [{"type": "image", "image": image}, {"type": "text", "text": prompt},], generation_config_search)
+#     print(output)
 
-Based on the provided description, break down every answer place of "{field}" that is required to be written or marked.
-Include choices only when it is provided in the form.
-Strictly follow the JSON format:""" + \
-"""
-```
-"answer_places": {
-    "<answer place name>": {
-        "type": "<free-text/digit/single choice/multiple choice>",
-        "choices": {
-            "<choice code>": "<choice name>",
-        },
+prompt = """Identify the indices and names of all entries.
+For each entry, break down every answer place that is required to write or mark.
+Strictly follow the JSON format:
+```json
+{
+    "<entry idx>": {
+        "name": "<entry name>",
+        "answer_places": [
+            "<answer place name>": {
+                "type": "<free-text/digit/single choice/multiple choice>",
+                "choices": {
+                    "<choice code>": "<choice name>",
+                },
+            },
+        ]
     },
 }
 ```
@@ -233,3 +265,6 @@ Strictly follow the JSON format:""" + \
 with utils.Timer(model_path):
     output = generate_func(pipe, model_path, [{"type": "image", "image": image}, {"type": "text", "text": prompt},], generation_config_search)
     print(output)
+
+with open('transcription.txt', 'w') as f:
+    f.write(str(output))

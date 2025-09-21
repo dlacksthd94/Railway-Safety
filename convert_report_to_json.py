@@ -9,29 +9,45 @@ import time
 import utils
 from PIL import Image
 
+# DICT_FORM57_JSON_FORMAT = """```json
+# {
+#     "<entry idx>": {
+#         "name": "<entry name>",
+#         "choices": {
+#             "<choice code>":  "<choice label>",
+#         },
+#     },
+# }
+# ```"""
+
 DICT_FORM57_JSON_FORMAT = """```json
 {
-    "<field idx>": {
+    "<field index>": {
         "name": "<field name>",
-        "choices": {
-            "<choice code>":  "<choice label>",
-            ...
+        "answer_places": {
+            "<answer place name>": {
+                "type": "<free-text/digit/single choice/multiple choice>",
+                "choices": {
+                    "<choice code>": "<choice name>",
+                },
+            },
         }
     },
-    ...
 }
 ```"""
 
 DICT_FORM57_GROUP_JSON_FORMAT = """```json
 {
-    "<group name>": ["<field idx>", "<field idx>", ...],
-    "<group name>": ["<field idx>", "<field idx>", ...],
+    "<group name>": ["<entry idx>", "<entry idx>", ...],
+    "<group name>": ["<entry idx>", "<entry idx>", ...],
     ...
 }
 ```"""
 
 PROMPT_DICT_FORM57_TEMP = f"""
-Transcribe all fields strictly following the JSON format:
+Identify the indices and names of all fields.
+For each field, break down every answer place that is required to write or mark.
+Strictly follow the JSON format:
 {DICT_FORM57_JSON_FORMAT}
 """
 
@@ -73,7 +89,7 @@ def json_to_str(json_obj):
         raise ValueError("Unsupported JSON object type")
     return return_str
 
-def generate_openai(client, model_path, content, generattion_config):
+def generate_openai(client, model_path, content, generation_config=None):
     messages = [
         {
             "role": "user",
@@ -140,10 +156,22 @@ def validate_transcription_format(dict_form57):
     for entry in dict_form57.values():
         # if (('name' not in entry or not isinstance(entry['name'], str))
         #     or ('choices' in entry and (not isinstance(entry['choices'], dict) or not check_dict_kv_type(entry['choices'], str, str)))):
-        if ('name' not in entry or 'choices' not in entry
-            or not isinstance(entry['name'], str) or not isinstance(entry['choices'], dict)
-            or not check_dict_kv_type(entry['choices'], str, str)):
+        # if ('name' not in entry or 'choices' not in entry
+        #     or not isinstance(entry['name'], str) or not isinstance(entry['choices'], dict)
+        #     or not check_dict_kv_type(entry['choices'], str, str)):
+        #     cnt_invalid += 1
+        #     # print(entry)
+        if not ('name' in entry and 'answer_places' in entry and isinstance(entry['name'], str) and isinstance(entry['answer_places'], dict)):
             cnt_invalid += 1
+        else:
+            if not check_dict_kv_type(entry['answer_places'], str, dict):
+                cnt_invalid += 1
+            else:
+                for ap in entry['answer_places'].values():
+                    if ( (not ('type' in ap and isinstance(ap['type'], str)))
+                        or ('choices' in ap and not check_dict_kv_type(ap['choices'], str, str)) ):
+                        cnt_invalid += 1
+                        break
             # print(entry)
     if cnt_invalid/len(dict_form57) > 0.05:
         return False
@@ -626,7 +654,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
     if api == 'Huggingface':
         import torch
         import gc
-        from transformers import pipeline, BitsAndBytesConfig
+        from transformers import pipeline
 
         dict_model_config = {
             'Qwen/Qwen2.5-VL-7B-Instruct': {'torch_dtype': torch.float16}, # good
@@ -664,7 +692,6 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             # 'allenai/Molmo-7B-D-0924': {}, # must be used with custom code to correctly load the model
             # 'microsoft/layoutlmv3-large': {}, # maximum input size is 512 tokens / needs OCR / focused on small-sized receipts and invoices
         }
-        device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
         quant_config = dict_model_config[model_path]
         generation_config_base = {'max_new_tokens': 4096}
@@ -741,9 +768,11 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             )
 
         ############ transcribe
-        if os.path.exists(path_form57_json):
-            with open(path_form57_json, 'r') as f:
-                dict_form57 = json.load(f)
+        path_form57_json_temp = path_form57_json.replace('.json', '') + '_temp.json'
+        
+        if os.path.exists(path_form57_json_temp):
+            with open(path_form57_json_temp, 'r') as f:
+                list_dict_form57_temp = json.load(f)
 
         else:
             ############ transcribe the form N times
@@ -753,6 +782,14 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             ]
             list_dict_form57_temp = transcribe_entries(api, client, model_path, content, n_generate, generation_config=None)
 
+            with open(path_form57_json_temp, 'w') as f:
+                json.dump(list_dict_form57_temp, f, indent=4)
+            
+        if os.path.exists(path_form57_json):
+            with open(path_form57_json, 'r') as f:
+                dict_form57 = json.load(f)
+            
+        else:
             ############ merge the transcripts into one
             content = [
                 {"type": "input_image", "file_id": img_file.id},
@@ -766,8 +803,10 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
                 json.dump(dict_form57, f, indent=4)
         
         ############ group the entries
-        if os.path.exists(path_form57_json_group):
-            with open(path_form57_json_group, 'r') as f:
+        path_form57_json_group_temp = path_form57_json_group.replace('.json', '') + '_temp.json'
+
+        if os.path.exists(path_form57_json_group_temp):
+            with open(path_form57_json_group_temp, 'r') as f:
                 dict_form57_group = json.load(f)
                 
         else:
@@ -778,7 +817,15 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
                 {"type": "input_text", "text": json_to_str(dict_form57)}
             ]
             list_dict_form57_group_temp = group_entries(api, client, model_path, content, n_generate, generation_config=None)
-            
+
+            with open(path_form57_json_group_temp, 'w') as f:
+                json.dump(list_dict_form57_group_temp, f, indent=4)
+        
+        if os.path.exists(path_form57_json_group):
+            with open(path_form57_json_group, 'r') as f:
+                dict_form57_group = json.load(f)
+        
+        else:
             ############ merge groupings into one
             content = [
                 {"type": "input_image", "file_id": img_file.id},
@@ -798,32 +845,27 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
     return dict_form57, dict_form57_group
 
 if __name__ == '__main__':
-    news = """06.14.2023 | 5:27 PM | SANTA ANA - Train and vehicle traffic was halted after a pedestrian was struck and killed by a Metrolink train, Wednesday evening.
-
-    The collision involving a train and pedestrian was reported on the railroad tracks near the intersection of East 17th Street and North Lincoln Avenue around 5:27 PM.
-
-    When authorities arrived they located a pedestrian down on the railroad tracks and pronounced them deceased.
-
-    The Metrolink train that struck the pedestrian stopped nearby prompting vehicle and train traffic to be stopped until further notice.
-
-    It was unclear why the pedestrian was on the train trucks and authorities are continuing to investigate the fatal crash."""
-    prompt = """
-    From the news article, retrieve information that can populate the report form.
-    The output format should be like:
-    [entry id]: [answer]
-    If information is not reported in the news article, answer with UNKNOWN.
-    If the entry has multiple choices, answer only with its code(id)."""
-    content = [
-        {"type": "image", "image": image},
-        {"type": "text", "text": news},
-        {"type": "text", "text": prompt},
-    ]
-    generate_func = select_generate_func(api)
+    # dict_form57 = parse_json_from_output(output)
+    # validate_transcription_format(dict_form57)
     
+    answer_format = """```
+    "answer_places": {
+        "<answer place name>": {
+            "type": "<free-text/digit/single choice/multiple choice>",
+            "choices": {
+                "<choice code>": "<choice name>",
+            },
+        },
+    }
+    ```"""
+    target_field = '41. Highway User'
+    target_field = '43. View of Track Obscured by (primary obstruction)'
+    target_field = '52. Passengers on Train'
+    prompt = f"""Within the field "{target_field}", break down every answer place that is required to write or mark.
+    Strictly follow the JSON format:
+    {answer_format}
+    """
     with utils.Timer(model_path):
-        output = generate_func(pipe, model_path, content, generation_config_sample)
-        print(output)
-
-    dict_form57 = parse_json_from_output(output)
-
-    validate_transcription_format(dict_form57)
+        # print(generate_hf(pipe, model_path, [{"type": "image", "image": image}, {"type": "text", "text": prompt},], generation_config_search)) # HF
+        print(generate_openai(client, model_path, [{"type": "input_image", "file_id": img_file.id}, {"type": "input_text", "text": prompt},])) # OpenAI
+    

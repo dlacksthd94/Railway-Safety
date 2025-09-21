@@ -1,5 +1,5 @@
 {
-    "Reporting Railroad Info": [
+    "Railroad Reporting Entities": [
         "1",
         "1a",
         "1b",
@@ -10,7 +10,7 @@
         "3a",
         "3b"
     ],
-    "Location Date Time": [
+    "Crossing Location and Identification": [
         "4",
         "5",
         "6",
@@ -18,22 +18,20 @@
         "8",
         "9",
         "10",
-        "10_code",
         "11",
-        "12",
-        "12_ownership"
+        "12"
     ],
-    "Highway User Involved": [
+    "Highway User Information": [
         "13",
         "14",
         "15",
         "16"
     ],
-    "Rail Equipment Involved": [
+    "Rail Equipment Information": [
         "17",
         "18"
     ],
-    "Collision Circumstance & Hazardous Materials": [
+    "Incident Circumstances": [
         "19",
         "20a",
         "20b",
@@ -42,10 +40,9 @@
     "Environmental Conditions": [
         "21",
         "22",
-        "23",
-        "34"
+        "23"
     ],
-    "Rail Equipment Consist Details": [
+    "Train Consist Details": [
         "24",
         "25",
         "26",
@@ -55,14 +52,15 @@
         "30",
         "31"
     ],
-    "Crossing Warning Devices": [
+    "Crossing Warning and Roadway Conditions": [
         "32",
         "33",
+        "34",
         "35",
         "36",
         "37"
     ],
-    "Highway User Actions & Obstructions": [
+    "Highway User Actions and Visibility": [
         "38",
         "39",
         "40",
@@ -70,11 +68,9 @@
         "42",
         "43"
     ],
-    "Driver Status & Presence": [
+    "Casualties and Damage": [
         "44",
-        "45"
-    ],
-    "Casualties and Damages": [
+        "45",
         "46",
         "47",
         "48",
@@ -83,12 +79,12 @@
         "51",
         "52"
     ],
-    "Special Study": [
+    "Special Study Block": [
         "53a",
-        "53a_video_used",
-        "53b"
+        "53b",
+        "53c"
     ],
-    "Narrative and Signature": [
+    "Narrative and Certification": [
         "54",
         "55",
         "56",

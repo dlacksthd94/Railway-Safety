@@ -20,8 +20,8 @@ parser.add_argument(
     type=str,
     choices=['Huggingface', 'OpenAI', 'None'],
     # default="None",
-    default="Huggingface",
-    # default='OpenAI',
+    # default="Huggingface",
+    default='OpenAI',
     help="API to use for processing"
 )
 
@@ -30,11 +30,15 @@ parser.add_argument(
     type=str,
     # choices=['Qwen/Qwen2.5-VL-7B-Instruct', 'OpenGVLab/InternVL3-8B-hf', 'ByteDance-Seed/UI-TARS-1.5-7B', 'None'],
     # default='None',
-    default='Qwen/Qwen2.5-VL-7B-Instruct',
+    # default='Qwen/Qwen2.5-VL-7B-Instruct',
     # default='Qwen/Qwen2.5-VL-32B-Instruct',
     # default='OpenGVLab/InternVL3-8B-hf',
     # default='google/gemma-3-27b-it',
-    # default='o4-mini',
+    # default='gpt-5-mini', # 5 6 12 13x 17 24 30 32 41x 43 46x 49x 52x / 5 6 12 13x 17x 24x 30 32 41 43 46x 49x 52x
+    # default='gpt-5', # 5 6 12 13 17 24 30x 32x 41x 43x 46 49 52 / 5 6 12 13x 17 24 30 32 41 43 46 49 52
+    default='o4-mini', # 5 6 12 13x 17 24 30 32 41 43 46 49 52 / 5 6x 12x 13x 17x 24x 30x 32x 41x 43x 46x 49x 52x
+    # default='o3', # 5 6 12 13x 17x 24x 30 32 41x 43 46 49x 52 / 5 6 12 13x 17x 24x 30 32 41x 43x 46 49x 52x
+    # default='o1', # 5 6 12 13x 17x 24x 30x 32x 41x 43x 46 49x 52x
     help="Model to use for processing"
 )
 
@@ -42,6 +46,7 @@ parser.add_argument(
     "--c_n_generate",
     type=int,
     # default=0,
+    # default=1,
     default=4,
     # default=3,
     # action="store_true",
@@ -94,6 +99,7 @@ FN_DF_NEWS_ARTICLES_FILTER = 'df_news_articles_filter.csv'
 
 FN_DF_NEWS_LABEL = 'df_news_label.csv'
 
+# NM_FORM57 = 'FRA F 6180.57 (Form 57) form only'
 NM_FORM57 = 'FRA F 6180.57 (Form 57) form only'
 FN_FORM57_PDF = f'{NM_FORM57}.pdf'
 FN_FORM57_IMG = f'{NM_FORM57}.jpg'
@@ -136,15 +142,15 @@ print(path_dir_config_result)
 
 print('------------Setting path DONE!!------------')
 
-###############
-from scrape_news import scrape_news
+# ###############
+# from scrape_news import scrape_news
 
-df_record_news, df_news_articles = scrape_news(path_df_record_news, path_df_news_articles, path_df_record, LIST_CRAWLER)
+# df_record_news, df_news_articles = scrape_news(path_df_record_news, path_df_news_articles, path_df_record, LIST_CRAWLER)
 
-############### rule-based news filtering
-from filter_news import filter_news
+# ############### rule-based news filtering
+# from filter_news import filter_news
 
-df_news_articles_filter = filter_news(path_df_news_articles, path_df_news_articles_score, path_df_news_articles_filter, LIST_CRAWLER)
+# df_news_articles_filter = filter_news(path_df_news_articles, path_df_news_articles_score, path_df_news_articles_filter, LIST_CRAWLER)
 
 ############### convert to json
 from convert_report_to_json import csv_to_json, pdf_to_json, img_to_json
@@ -156,14 +162,14 @@ elif config.conversion.json_source == 'pdf':
 elif config.conversion.json_source == 'img':
     dict_form57, dict_form57_group = img_to_json(path_form57_img, path_form57_json, path_form57_json_group, config.conversion)
 
-# print('------------Conversion DONE!!------------')
+print('------------Conversion DONE!!------------')
 
-# ############### extract keywords
-# from extract_keywords import extract_keywords
+############### extract keywords
+from extract_keywords import extract_keywords
 
-# df_retrieval = extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_label, config.retrieval)
+df_retrieval = extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_label, config.retrieval)
 
-# print('------------Retrieval DONE!!------------')
+print('------------Retrieval DONE!!------------')
 
 # ############### made hand-annotated samples (ONLY ONE-TIME TASK)
 # assert os.path.exists(path_df_test_set)
