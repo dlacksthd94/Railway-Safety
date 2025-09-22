@@ -7,12 +7,30 @@ from tqdm import tqdm
 import os
 from itertools import chain
 import re
+from PIL import Image
 
-COLUMNS_CONTENT = ['np_url', 'tf_url', 'rd_url', 'gs_url', 'np_html', 'tf_html', 'rd_html', 'gs_html']
-COLUMNS_LABEL = ['label_np_url', 'label_tf_url', 'label_rd_url', 'label_gs_url', 'label_np_html', 'label_tf_html', 'label_rd_html', 'label_gs_html']
-DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+def to_answer_places(dict_form57):
+    dict_answer_places = {}
+    dict_idx_mapping = {}
+    for entry_idx, entry in dict_form57.items():
+        entry_name = entry['name']
+        answer_places = entry['answer_places']
+        dict_idx_mapping[entry_idx] = []
+        if len(answer_places) == 1:
+            answer_place_name = next(iter(answer_places.keys()))
+            answer_place_info = next(iter(answer_places.values()))
+            dict_answer_places[entry_idx] = {'answer_place_name': answer_place_name, 'answer_place_info': answer_place_info}
+            dict_idx_mapping[entry_idx].append(entry_idx)
+        elif len(answer_places) > 1:
+            for suffix, (answer_place_name, answer_place_info) in enumerate(answer_places.items(), start=1):
+                entry_idx_suffix = entry_idx + '_' + str(suffix)
+                dict_answer_places[entry_idx_suffix] = {'answer_place_name': answer_place_name, 'answer_place_info': answer_place_info}
+                dict_idx_mapping[entry_idx].append(entry_idx_suffix)
+        else:
+            assert False, 'why # of answer places < 1?'
+    return dict_answer_places, dict_idx_mapping
 
-def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_label, config_retrieval):
+def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_articles_filter, config_retrieval):
     _, model, n_generate, question_batch = config_retrieval.to_tuple()
 
     with open(path_form57_json, 'r') as f:
@@ -22,48 +40,24 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
         with open(path_form57_json_group, 'r') as f:
             dict_form57_group = json.load(f)
 
-    list_col = list(dict_form57)
+    dict_answer_places, dict_idx_mapping = to_answer_places(dict_form57)
+    list_answer_places = list(dict_answer_places.keys())
 
-    SCRAPE_VERSION = 'rd_url'
     if os.path.exists(path_df_form57_retrieval):
         df_retrieval = pd.read_csv(path_df_form57_retrieval)
-        df_retrieval[list_col] = df_retrieval[list_col].fillna('')
+        df_retrieval[list_answer_places] = df_retrieval[list_answer_places].fillna('')
     else:
-        df_label = pd.read_csv(path_df_news_label)
-        df_label = df_label[(df_label[COLUMNS_LABEL] == 1).any(axis=1)]
-        sr_content = df_label[SCRAPE_VERSION]
-        mask = df_label['label_' + SCRAPE_VERSION] == 1
-        df_retrieval = df_label.drop(COLUMNS_CONTENT + COLUMNS_LABEL, axis=1)
-        df_retrieval[SCRAPE_VERSION] = sr_content
-        df_retrieval = df_retrieval[mask]
-        df_retrieval.loc[:, list_col] = ''
+        df_news_articles_filter = pd.read_csv(path_df_news_articles_filter)
+        df_retrieval = df_news_articles_filter.copy(deep=True)
+        df_retrieval[list_answer_places] = ''
 
-    dict_model = {
-        'microsoft/Phi-4-mini-instruct': {
-            'max_new_tokens': 512,
-            'truncation': True,
-            'use_cache': True,
-        },
-        "deepseek-ai/DeepSeek-R1-Distill-Llama-8B": {
-            'max_new_tokens': 512,
-            'truncation': True,
-            'use_cache': True,
-            'do_sample': False,
-        },
-        'Qwen/Qwen2.5-7B-Instruct-1M': {
-            'max_new_tokens': 512,
-            'truncation': True,
-            'use_cache': True,
-        },
-        'nvidia/Llama-3.1-Nemotron-Nano-8B-v1': {
-            'max_new_tokens': 512,
-            'truncation': True,
-            'use_cache': True,
-        },
+    config = {
+        'max_new_tokens': 512,
+        'truncation': True,
+        'use_cache': True,
+        'do_sample': False,
     }
-
-    config = dict_model[model]
-    pipe = pipeline(model=model, device_map=DEVICE, **config)
+    pipe = pipeline(model=model, device_map='auto', **config)
     if pipe.generation_config.pad_token_id is None:
         pipe.generation_config.pad_token_id = pipe.tokenizer.eos_token_id
     if pipe.generation_config.temperature == 0 or pipe.generation_config.do_sample == False:
@@ -74,18 +68,20 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
     ############ extract information using csv-version json
 
     question_base = (
-            "From the context, answer the following question: "
+            "From the given context, answer each question according to its specified answer type: "
         )
     answer_format = (
-        "The answer should be short and without explanation.\n"
-        "If options are provided, answer only with codes without labels.\n"
-        "If you cannot find the relevant information, answer with 'Unknown'."
+        "Do not provide explanations.\n"
+        "If no information is available for a question, respond with 'Unknown'."
+        "The output format must be:\n"
+        '(entry_index): answer'
     )
 
     for idx_content, row in tqdm(df_retrieval.iterrows(), total=df_retrieval.shape[0]):
         if row.iat[-1]:
             continue
-        content = row[SCRAPE_VERSION]
+        title = row['title']
+        content = row['content']
         
         if question_batch == 'single':
             for entry_idx, entry in tqdm(dict_form57.items(), leave=False):
@@ -93,7 +89,7 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
                 options = str(entry.get('choices', ''))
                 
                 question = question_base + '\n' + f'({entry_idx}): ' + name + f'(options: {options})' + '\n' + answer_format
-                prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n"
+                prompt = f"Context:\n{title}\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n"
                 
                 output = pipe(prompt)#, max_new_tokens=30)
                 answer = output[0]['generated_text'].split('Answer:\n')[-1]
@@ -104,22 +100,39 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
         elif question_batch == 'group':
             for group_name, group in tqdm(dict_form57_group.items(), leave=False):
                 question = question_base + '\n'
-                for entry_idx in tqdm(group, leave=False):
-                    entry = dict_form57[entry_idx]
-                    name = entry.get('name', '')
-                    options = str(entry.get('choices', ''))
-                    question += f'({entry_idx}): ' + name + f'(options: {options})' + '\n'
-                question += answer_format
-                prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n({group[0]}):"
-                
-                output = pipe(prompt)#, max_new_tokens=30)
-                answer = output[0]['generated_text'].split('Answer:\n')[-1]
-
-                dict_answer = dict(re.findall(r'\((.+)\):\s*([^\n]+)', answer))
-                # pprint(dict_answer)
-
                 for entry_idx in group:
-                    df_retrieval.loc[idx_content, entry_idx] = dict_answer.get(entry_idx, '')
+                    entry = dict_form57[entry_idx]
+                    entry_name = entry['name']
+                    for entry_idx_suffix in dict_idx_mapping[entry_idx]:
+                        answer_place = dict_answer_places[entry_idx_suffix]
+                        description = f"({answer_place['answer_place_name']})" if len(dict_idx_mapping[entry_idx]) > 1 else ''
+                        answer_place_info = answer_place['answer_place_info']
+                    # question += f'({entry_idx}{entry_idx_suffix}): ' + entry_name + f'({answer_place_name})' + f' {str(answer_place_info)}' + '\n'
+                        question += f'({entry_idx_suffix}): ' + entry_name + description + f' {str(answer_place_info)}' + '\n'
+                question += answer_format
+                answer_start_idx = dict_idx_mapping[group[0]][0]
+                prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n({answer_start_idx}):"
+                
+                try:
+                    output = pipe(prompt)#, max_new_tokens=30)
+                    answer = output[0]['generated_text'].split('Answer:\n')[-1]
+
+                    dict_answer = dict(re.findall(r'\((.+)\):\s*([^\n]+)', answer))
+
+                    # print(question)
+                    # print()
+                    # print(answer)
+                    # print()
+                    # pprint(dict_answer)
+                    # print()
+
+                    list_entry_idx_suffix = list(chain.from_iterable([dict_idx_mapping[entry_idx] for entry_idx in group]))
+                    for entry_idx_suffix in list_entry_idx_suffix:
+                        answer = dict_answer.get(entry_idx_suffix, '')
+                        df_retrieval.loc[idx_content, entry_idx_suffix] = answer
+                        
+                except:
+                    pass
             # df_retrieval.loc[idx_content, :].to_dict()
 
         if idx_content % 10 == 0:

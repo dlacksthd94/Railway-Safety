@@ -20,8 +20,8 @@ parser.add_argument(
     type=str,
     choices=['Huggingface', 'OpenAI', 'None'],
     # default="None",
-    # default="Huggingface",
-    default='OpenAI',
+    default="Huggingface",
+    # default='OpenAI',
     help="API to use for processing"
 )
 
@@ -31,12 +31,12 @@ parser.add_argument(
     # choices=['Qwen/Qwen2.5-VL-7B-Instruct', 'OpenGVLab/InternVL3-8B-hf', 'ByteDance-Seed/UI-TARS-1.5-7B', 'None'],
     # default='None',
     # default='Qwen/Qwen2.5-VL-7B-Instruct',
-    # default='Qwen/Qwen2.5-VL-32B-Instruct',
+    default='Qwen/Qwen2.5-VL-32B-Instruct',
     # default='OpenGVLab/InternVL3-8B-hf',
     # default='google/gemma-3-27b-it',
     # default='gpt-5-mini', # 5 6 12 13x 17 24 30 32 41x 43 46x 49x 52x / 5 6 12 13x 17x 24x 30 32 41 43 46x 49x 52x
     # default='gpt-5', # 5 6 12 13 17 24 30x 32x 41x 43x 46 49 52 / 5 6 12 13x 17 24 30 32 41 43 46 49 52
-    default='o4-mini', # 5 6 12 13x 17 24 30 32 41 43 46 49 52 / 5 6x 12x 13x 17x 24x 30x 32x 41x 43x 46x 49x 52x
+    # default='o4-mini', # 5 6 12 13x 17 24 30 32 41 43 46 49 52 / 5 6x 12x 13x 17x 24x 30x 32x 41x 43x 46x 49x 52x
     # default='o3', # 5 6 12 13x 17x 24x 30 32 41x 43 46 49x 52 / 5 6 12 13x 17x 24x 30 32 41x 43x 46 49x 52x
     # default='o1', # 5 6 12 13x 17x 24x 30x 32x 41x 43x 46 49x 52x
     help="Model to use for processing"
@@ -77,7 +77,11 @@ args = parser.parse_args()
 from config import Config, ConversionConfig, RetrievalConfig
 
 config_conversion = ConversionConfig(api=args.c_api, model=args.c_model, n_generate=args.c_n_generate, json_source=args.c_json_source)
-config_retrieval = RetrievalConfig(api='Huggingface', model='microsoft/Phi-4-mini-instruct', n_generate=1, question_batch=args.r_question_batch)
+config_retrieval = RetrievalConfig(api='Huggingface', model='microsoft/Phi-4-mini-instruct', n_generate=1, question_batch=args.r_question_batch) # bad
+# config_retrieval = RetrievalConfig(api='Huggingface', model='microsoft/phi-4', n_generate=1, question_batch=args.r_question_batch) # bad
+# config_retrieval = RetrievalConfig(api='Huggingface', model='microsoft/Phi-4-reasoning-plus', n_generate=1, question_batch=args.r_question_batch) # bad
+# config_retrieval = RetrievalConfig(api='Huggingface', model='Qwen/Qwen3-14B', n_generate=1, question_batch=args.r_question_batch) # bad
+# config_retrieval = RetrievalConfig(api='Huggingface', model='Qwen/Qwen3-32B', n_generate=1, question_batch=args.r_question_batch)
 config = Config(conversion=config_conversion, retrieval=config_retrieval)
 
 print('------------Configuration DONE!!------------')
@@ -167,7 +171,7 @@ print('------------Conversion DONE!!------------')
 ############### extract keywords
 from extract_keywords import extract_keywords
 
-df_retrieval = extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_label, config.retrieval)
+df_retrieval = extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_articles_filter, config.retrieval)
 
 print('------------Retrieval DONE!!------------')
 
