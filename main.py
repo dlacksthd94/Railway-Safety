@@ -30,10 +30,9 @@ parser.add_argument(
     type=str,
     # choices=['Qwen/Qwen2.5-VL-7B-Instruct', 'OpenGVLab/InternVL3-8B-hf', 'ByteDance-Seed/UI-TARS-1.5-7B', 'None'],
     # default='None',
-    # default='Qwen/Qwen2.5-VL-7B-Instruct',
-    default='Qwen/Qwen2.5-VL-32B-Instruct',
-    # default='OpenGVLab/InternVL3-8B-hf',
-    # default='google/gemma-3-27b-it',
+    default='Qwen/Qwen2.5-VL-72B-Instruct',
+    # default='OpenGVLab/InternVL3-78B-hf',
+    # default='OpenGVLab/InternVL3_5-38B-HF',
     # default='gpt-5-mini', # 5 6 12 13x 17 24 30 32 41x 43 46x 49x 52x / 5 6 12 13x 17x 24x 30 32 41 43 46x 49x 52x
     # default='gpt-5', # 5 6 12 13 17 24 30x 32x 41x 43x 46 49 52 / 5 6 12 13x 17 24 30 32 41 43 46 49 52
     # default='o4-mini', # 5 6 12 13x 17 24 30 32 41 43 46 49 52 / 5 6x 12x 13x 17x 24x 30x 32x 41x 43x 46x 49x 52x
@@ -47,8 +46,8 @@ parser.add_argument(
     type=int,
     # default=0,
     # default=1,
-    default=4,
-    # default=3,
+    # default=4,
+    default=3,
     # action="store_true",
     help="Number of generations"
 )
@@ -77,11 +76,10 @@ args = parser.parse_args()
 from config import Config, ConversionConfig, RetrievalConfig
 
 config_conversion = ConversionConfig(api=args.c_api, model=args.c_model, n_generate=args.c_n_generate, json_source=args.c_json_source)
-config_retrieval = RetrievalConfig(api='Huggingface', model='microsoft/Phi-4-mini-instruct', n_generate=1, question_batch=args.r_question_batch) # bad
-# config_retrieval = RetrievalConfig(api='Huggingface', model='microsoft/phi-4', n_generate=1, question_batch=args.r_question_batch) # bad
-# config_retrieval = RetrievalConfig(api='Huggingface', model='microsoft/Phi-4-reasoning-plus', n_generate=1, question_batch=args.r_question_batch) # bad
-# config_retrieval = RetrievalConfig(api='Huggingface', model='Qwen/Qwen3-14B', n_generate=1, question_batch=args.r_question_batch) # bad
-# config_retrieval = RetrievalConfig(api='Huggingface', model='Qwen/Qwen3-32B', n_generate=1, question_batch=args.r_question_batch)
+# config_retrieval = RetrievalConfig(api='Huggingface', model='microsoft/Phi-4-mini-instruct', n_generate=1, question_batch=args.r_question_batch) # bad
+config_retrieval = RetrievalConfig(api='Huggingface', model='microsoft/phi-4', n_generate=1, question_batch=args.r_question_batch)
+# "Qwen/Qwen3-4B ~ 32B" and "openai/gpt-oss-20b" take too long and too verbose
+
 config = Config(conversion=config_conversion, retrieval=config_retrieval)
 
 print('------------Configuration DONE!!------------')

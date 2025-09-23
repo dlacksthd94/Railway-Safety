@@ -8,6 +8,7 @@ import utils_scrape
 import time
 import utils
 from PIL import Image
+import ast
 
 # DICT_FORM57_JSON_FORMAT = """```json
 # {
@@ -25,8 +26,8 @@ DICT_FORM57_JSON_FORMAT = """```json
     "<field index>": {
         "name": "<field name>",
         "answer_places": {
-            "<answer place name>": {
-                "type": "<free-text/digit/single choice/multiple choice>",
+            "<answer place name in a few words>": {
+                "answer_type": "<free-text/digit/single choice>",
                 "choices": {
                     "<choice code>": "<choice name>",
                 },
@@ -132,9 +133,12 @@ def parse_json_from_output(output):
             str_form57 = output[json_start_index:json_end_index].strip('`')
             if str_form57.startswith('json'):
                 str_form57 = str_form57.replace('json', '', 1)
-            dict_form57 = json.loads(str_form57)
         else:
-            dict_form57 = json.loads(output)
+            str_form57 = output
+        try:
+            dict_form57 = json.loads(str_form57)
+        except:
+            dict_form57 = ast.literal_eval(str_form57)
     except:
         dict_form57 = {}
     return dict_form57
@@ -164,12 +168,12 @@ def validate_transcription_format(dict_form57):
         if not ('name' in entry and 'answer_places' in entry and isinstance(entry['name'], str) and isinstance(entry['answer_places'], dict)):
             cnt_invalid += 1
         else:
-            if not check_dict_kv_type(entry['answer_places'], str, dict):
+            if not (entry['answer_places'] and check_dict_kv_type(entry['answer_places'], str, dict)):
                 cnt_invalid += 1
             else:
                 for ap in entry['answer_places'].values():
-                    if ( (not ('type' in ap and isinstance(ap['type'], str)))
-                        or ('choices' in ap and not check_dict_kv_type(ap['choices'], str, str)) ):
+                    if ( (not ('answer_type' in ap and isinstance(ap['answer_type'], str)))
+                        or ('choices' in ap and not (check_dict_kv_type(ap['choices'], str, str) and len(ap['choices']) != 1)) ):
                         cnt_invalid += 1
                         break
             # print(entry)
@@ -202,7 +206,7 @@ def transcribe_entries(api, generator, model_path, content, n_generate, generati
             dict_form57 = parse_json_from_output(output)
 
             if validate_transcription_format(dict_form57):
-                break            
+                break
         
         list_response.append(dict_form57)
     return list_response
@@ -657,18 +661,21 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
         from transformers import pipeline
 
         dict_model_config = {
-            'Qwen/Qwen2.5-VL-7B-Instruct': {'torch_dtype': torch.float16}, # good
-            'Qwen/Qwen2.5-VL-32B-Instruct': {'load_in_4bit': True},
+            # 'Qwen/Qwen2.5-VL-7B-Instruct': {}, # good
+            'Qwen/Qwen2.5-VL-32B-Instruct': {},
+            'Qwen/Qwen2.5-VL-72B-Instruct': {'load_in_8bit': True},
             # 'microsoft/GUI-Actor-7B-Qwen2.5-VL': {}, # bad
             # 'OpenGVLab/InternVL3-8B': {}, #must be used with custom code to correctly load the model
             # 'OpenGVLab/InternVL3-8B-Instruct': {}, #must be used with custom code to correctly load the model
-            'OpenGVLab/InternVL3-8B-hf': {'load_in_8bit': True, 'torch_dtype': torch.float32}, # good
-            'OpenGVLab/InternVL3-14B-hf': {'load_in_4bit': True, 'torch_dtype': torch.float32},
-            'OpenGVLab/InternVL3-38B-hf': {'load_in_4bit': True, 'torch_dtype': torch.float32},
+            # 'OpenGVLab/InternVL3-8B-hf': {}, # good
+            # 'OpenGVLab/InternVL3-14B-hf': {},
+            'OpenGVLab/InternVL3-38B-hf': {},
+            'OpenGVLab/InternVL3-78B-hf': {'load_in_8bit': True},
+            'OpenGVLab/InternVL3_5-38B-HF': {},
             # 'microsoft/Phi-3.5-vision-instruct': {}, #error
             # 'google/gemma-3-4b-it': {}, # bad
-            'google/gemma-3-12b-it': {'load_in_8bit': True},
-            'google/gemma-3-27b-it': {'load_in_8bit': True},
+            'google/gemma-3-12b-it': {},
+            'google/gemma-3-27b-it': {},
             # 'microsoft/OmniParser-v2.0': {}, #error
             # 'U4R/StructTable-base': {}, #StructEqTable. cannot use chat template input
             # 'U4R/StructTable-InternVL2-1B': {}, #StructEqTable. must be used with custom code to correctly load the model
@@ -680,7 +687,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             'llava-hf/vip-llava-13b-hf': {'load_in_8bit': True},
             # 'llava-hf/llava-v1.6-vicuna-7b-hf': {}, # bad
             # 'llava-hf/llava-v1.6-mistral-7b-hf': {}, # bad
-            'llava-hf/llava-v1.6-34b-hf': {'load_in_4bit': True},
+            'llava-hf/llava-v1.6-34b-hf': {},
             # 'llava-hf/llava-interleave-qwen-7b-hf': {}, # bad
             # 'llava-hf/llama3-llava-next-8b-hf': {}, # bad
             # 'allenai/olmOCR-7B-0225-preview': {}, #olmOCR(OLMo OCR)
@@ -694,50 +701,72 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
         }
 
         quant_config = dict_model_config[model_path]
-        generation_config_base = {'max_new_tokens': 4096}
+        generation_config_base = {'max_new_tokens': 8192}
         generation_config_sample = {**generation_config_base, 'do_sample': True}#, 'temperature': 1, 'top_p': 0.95} # sample or beam sample
         generation_config_search = {**generation_config_base, 'do_sample': False} # greedy search or beam search
 
         pipe = pipeline(model=model_path, device_map='auto', model_kwargs=quant_config)
-
-        ############### transcribe entries
-        if os.path.exists(path_form57_json):
-            with open(path_form57_json, 'r') as f:
-                dict_form57 = json.load(f)
         
+        ############### transcribe
+        path_form57_json_temp = path_form57_json.replace('.json', '') + '_temp.json'
+        
+        if os.path.exists(path_form57_json_temp):
+            with open(path_form57_json_temp, 'r') as f:
+                list_dict_form57_temp = json.load(f)
+
         else:
+            ############ transcribe the form N times
             content = [
                 {"type": "image", "image": image},
                 {"type": "text", "text": PROMPT_DICT_FORM57_TEMP},
             ]
             list_dict_form57_temp = transcribe_entries(api, pipe, model_path, content, n_generate, generation_config_sample)
+
+            with open(path_form57_json_temp, 'w') as f:
+                json.dump(list_dict_form57_temp, f, indent=4)
+            
+        if os.path.exists(path_form57_json):
+            with open(path_form57_json, 'r') as f:
+                dict_form57 = json.load(f)
         
-            ############ merge transcripts into one
+        else:
+            ############ merge the transcripts into one
             content = [
                 {"type": "image", "image": image},
                 {"type": "text", "text": PROMPT_DICT_FORM57},
                 {"type": "text", "text": json_to_str(list_dict_form57_temp)}
             ]
 
-            list_dict_form57 = transcribe_entries(api, pipe, model_path, content, n_generate=1, generation_config=generation_config_sample)
+            list_dict_form57 = transcribe_entries(api, pipe, model_path, content, n_generate=1, generation_config=generation_config_search)
             dict_form57 = list_dict_form57[0]
 
             with open(path_form57_json, 'w') as f:
                 json.dump(dict_form57, f, indent=4)
 
-        ############ categorize the entries
-        if os.path.exists(path_form57_json_group):
-            with open(path_form57_json_group, 'r') as f:
-                dict_form57_group = json.load(f)
+        ############ group the entries
+        path_form57_json_group_temp = path_form57_json_group.replace('.json', '') + '_temp.json'
+
+        if os.path.exists(path_form57_json_group_temp):
+            with open(path_form57_json_group_temp, 'r') as f:
+                list_dict_form57_group_temp = json.load(f)
                 
         else:
+            ############ categorize the entries
             content = [
                 { "type": "text", "text": PROMPT_DICT_FORM57_GROUP_TEMP},
                 { "type": "image", "image": image},
                 { "type": "text", "text": json_to_str(dict_form57)}
             ]
             list_dict_form57_group_temp = group_entries(api, pipe, model_path, content, n_generate, generation_config_sample)
+
+            with open(path_form57_json_group_temp, 'w') as f:
+                json.dump(list_dict_form57_group_temp, f, indent=4)
             
+        if os.path.exists(path_form57_json_group):
+            with open(path_form57_json_group, 'r') as f:
+                dict_form57_group = json.load(f)
+        
+        else:
             ############ merge groupings into one
             content = [
                 { "type": "image", "image": image},
@@ -745,7 +774,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
                 { "type": "text", "text": json.dumps(dict_form57, indent=4)},
                 { "type": "text", "text": json_to_str(list_dict_form57_group_temp)}
             ]
-            list_dict_form57_group = group_entries(api, pipe, model_path, content, n_generate=1, generation_config=generation_config_sample)
+            list_dict_form57_group = group_entries(api, pipe, model_path, content, n_generate=1, generation_config=generation_config_search)
             dict_form57_group = list_dict_form57_group[0]
 
             with open(path_form57_json_group, 'w') as f:
@@ -807,7 +836,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
 
         if os.path.exists(path_form57_json_group_temp):
             with open(path_form57_json_group_temp, 'r') as f:
-                dict_form57_group = json.load(f)
+                list_dict_form57_group_temp = json.load(f)
                 
         else:
             ############ group the entries N times
