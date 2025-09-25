@@ -60,7 +60,7 @@ def scrape_news(path_df_record_news, path_df_news_articles, path_df_record, list
                     'private': private,
                     # 'vehicle_type': vehicle_type,
                     # 'train_type': train_type,
-                    'date_from': (date - pd.Timedelta(days=7)).strftime('%Y-%m-%d'),
+                    'date_from': (date - pd.Timedelta(days=1)).strftime('%Y-%m-%d'),
                     'date_to': (date + pd.Timedelta(days=7)).strftime('%Y-%m-%d'),
                     'report_key': hash_id,
                 }

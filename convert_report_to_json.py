@@ -663,7 +663,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
         dict_model_config = {
             # 'Qwen/Qwen2.5-VL-7B-Instruct': {}, # good
             'Qwen/Qwen2.5-VL-32B-Instruct': {},
-            'Qwen/Qwen2.5-VL-72B-Instruct': {'load_in_8bit': True},
+            'Qwen/Qwen2.5-VL-72B-Instruct': {'load_in_4bit': True},
             # 'microsoft/GUI-Actor-7B-Qwen2.5-VL': {}, # bad
             # 'OpenGVLab/InternVL3-8B': {}, #must be used with custom code to correctly load the model
             # 'OpenGVLab/InternVL3-8B-Instruct': {}, #must be used with custom code to correctly load the model
@@ -687,7 +687,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             'llava-hf/vip-llava-13b-hf': {'load_in_8bit': True},
             # 'llava-hf/llava-v1.6-vicuna-7b-hf': {}, # bad
             # 'llava-hf/llava-v1.6-mistral-7b-hf': {}, # bad
-            'llava-hf/llava-v1.6-34b-hf': {},
+            'llava-hf/llava-v1.6-34b-hf': {'dtype': torch.float16},
             # 'llava-hf/llava-interleave-qwen-7b-hf': {}, # bad
             # 'llava-hf/llama3-llava-next-8b-hf': {}, # bad
             # 'allenai/olmOCR-7B-0225-preview': {}, #olmOCR(OLMo OCR)
@@ -706,7 +706,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
         generation_config_search = {**generation_config_base, 'do_sample': False} # greedy search or beam search
 
         pipe = pipeline(model=model_path, device_map='auto', model_kwargs=quant_config)
-        
+
         ############### transcribe
         path_form57_json_temp = path_form57_json.replace('.json', '') + '_temp.json'
         
@@ -787,7 +787,8 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
     elif api == 'OpenAI':
         from openai import OpenAI
 
-        API_key = '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'
+        # API_key = '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' # hong
+        API_key = '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' # lim
         client = OpenAI(api_key=API_key)
 
         with open(path_form57_img, "rb") as f:
