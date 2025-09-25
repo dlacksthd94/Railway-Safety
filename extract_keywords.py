@@ -8,29 +8,30 @@ import os
 from itertools import chain
 import re
 from PIL import Image
+import json5
 
 def to_answer_places(dict_form57):
     dict_answer_places = {}
-    dict_idx_mapping = {}
+    dict_idx_ap = {}
     for entry_idx, entry in dict_form57.items():
         entry_name = entry['name']
         answer_places = entry['answer_places']
-        dict_idx_mapping[entry_idx] = []
+        dict_idx_ap[entry_idx] = []
         if len(answer_places) == 1:
             answer_place_name = next(iter(answer_places.keys()))
             answer_place_info = next(iter(answer_places.values()))
             dict_answer_places[entry_idx] = {'answer_place_name': answer_place_name, 'answer_place_info': answer_place_info}
-            dict_idx_mapping[entry_idx].append(entry_idx)
+            dict_idx_ap[entry_idx].append(entry_idx)
         elif len(answer_places) > 1:
             for suffix, (answer_place_name, answer_place_info) in enumerate(answer_places.items(), start=1):
                 entry_idx_suffix = entry_idx + '_' + str(suffix)
                 dict_answer_places[entry_idx_suffix] = {'answer_place_name': answer_place_name, 'answer_place_info': answer_place_info}
-                dict_idx_mapping[entry_idx].append(entry_idx_suffix)
+                dict_idx_ap[entry_idx].append(entry_idx_suffix)
         else:
             assert False, 'why # of answer places < 1?'
-    return dict_answer_places, dict_idx_mapping
+    return dict_answer_places, dict_idx_ap
 
-def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_articles_filter, config_retrieval):
+def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_articles_filter, path_dict_answer_places, config_retrieval):
     _, model, n_generate, question_batch = config_retrieval.to_tuple()
 
     with open(path_form57_json, 'r') as f:
@@ -40,8 +41,11 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
         with open(path_form57_json_group, 'r') as f:
             dict_form57_group = json.load(f)
 
-    dict_answer_places, dict_idx_mapping = to_answer_places(dict_form57)
+    dict_answer_places, dict_idx_ap = to_answer_places(dict_form57)
     list_answer_places = list(dict_answer_places.keys())
+
+    with open(path_dict_answer_places, 'w') as f:
+        json.dump(dict_answer_places, f, indent=4)
 
     if os.path.exists(path_df_form57_retrieval):
         df_retrieval = pd.read_csv(path_df_form57_retrieval)
@@ -78,7 +82,7 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
     )
 
     for idx_content, row in tqdm(df_retrieval.iterrows(), total=df_retrieval.shape[0]):
-        if row.iat[-1]:
+        if (row != '').sum() / len(row) > 0.8:
             continue
         title = row['title']
         content = row['content']
@@ -103,14 +107,14 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
                 for entry_idx in group:
                     entry = dict_form57[entry_idx]
                     entry_name = entry['name']
-                    for entry_idx_suffix in dict_idx_mapping[entry_idx]:
+                    for entry_idx_suffix in dict_idx_ap[entry_idx]:
                         answer_place = dict_answer_places[entry_idx_suffix]
-                        description = f"({answer_place['answer_place_name']})" if len(dict_idx_mapping[entry_idx]) > 1 else ''
+                        description = f"({answer_place['answer_place_name']})" if len(dict_idx_ap[entry_idx]) > 1 else ''
                         answer_place_info = answer_place['answer_place_info']
                     # question += f'({entry_idx}{entry_idx_suffix}): ' + entry_name + f'({answer_place_name})' + f' {str(answer_place_info)}' + '\n'
                         question += f'({entry_idx_suffix}): ' + entry_name + description + f' {str(answer_place_info)}' + '\n'
                 question += answer_format
-                answer_start_idx = dict_idx_mapping[group[0]][0]
+                answer_start_idx = dict_idx_ap[group[0]][0]
                 prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n({answer_start_idx}):"
                 
                 try:
@@ -126,7 +130,7 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
                     # pprint(dict_answer)
                     # print()
 
-                    list_entry_idx_suffix = list(chain.from_iterable([dict_idx_mapping[entry_idx] for entry_idx in group]))
+                    list_entry_idx_suffix = list(chain.from_iterable([dict_idx_ap[entry_idx] for entry_idx in group]))
                     for entry_idx_suffix in list_entry_idx_suffix:
                         answer = dict_answer.get(entry_idx_suffix, '')
                         df_retrieval.loc[idx_content, entry_idx_suffix] = answer
