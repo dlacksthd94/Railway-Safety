@@ -8,6 +8,7 @@ import os
 import torch
 import gc
 from itertools import combinations
+from utils import text_binary_classification, text_generation
 
 pd.set_option('display.max_colwidth', 30)
 
@@ -16,18 +17,6 @@ pd.set_option('display.max_colwidth', 30)
 MODEL_PATH = 'Qwen/Qwen2.5-7B-Instruct-1M'
 # DEVICE = 'cuda:1'
 DEVICE = 'auto'
-
-def text_binary_classification(pipe, prompt, dict_answer_choice, num_sim):
-    list_output = pipe(prompt, max_new_tokens=1, num_return_sequences=num_sim, return_full_text=False)
-    list_answer = list(map(lambda output: output['generated_text'].upper(), list_output))
-    list_answer_filter = list(filter(lambda answer: answer in dict_answer_choice, list_answer))
-    list_answer_map = list(map(lambda answer: dict_answer_choice[answer], list_answer_filter))
-    return list_answer_map
-
-def text_generation(pipe, prompt, max_new_tokens=4096):
-    output = pipe(prompt, max_new_tokens=max_new_tokens, return_full_text=False)
-    answer = output[0]['generated_text']
-    return answer
 
 def check_article(df_news_articles_score, list_skip, list_crawler, list_crawler_score, dict_answer_choice, question, num_sim=1):
     """

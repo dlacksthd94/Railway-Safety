@@ -19,8 +19,8 @@ parser.add_argument(
     "--c_api",
     type=str,
     choices=['Huggingface', 'OpenAI', 'None'],
-    # default="None",
-    default="Huggingface",
+    default="None",
+    # default="Huggingface",
     # default='OpenAI',
     help="API to use for processing"
 )
@@ -29,25 +29,21 @@ parser.add_argument(
     "--c_model",
     type=str,
     # choices=['Qwen/Qwen2.5-VL-7B-Instruct', 'OpenGVLab/InternVL3-8B-hf', 'ByteDance-Seed/UI-TARS-1.5-7B', 'None'],
-    # default='None',
-    default='Qwen/Qwen2.5-VL-72B-Instruct',
-    # default='OpenGVLab/InternVL3-78B-hf',
+    default='None',
     # default='OpenGVLab/InternVL3_5-38B-HF',
-    # default='gpt-5-mini', # 5 6 12 13x 17 24 30 32 41x 43 46x 49x 52x / 5 6 12 13x 17x 24x 30 32 41 43 46x 49x 52x
-    # default='gpt-5', # 5 6 12 13 17 24 30x 32x 41x 43x 46 49 52 / 5 6 12 13x 17 24 30 32 41 43 46 49 52
-    # default='o4-mini', # 5 6 12 13x 17 24 30 32 41 43 46 49 52 / 5 6x 12x 13x 17x 24x 30x 32x 41x 43x 46x 49x 52x
-    # default='o3', # 5 6 12 13x 17x 24x 30 32 41x 43 46 49x 52 / 5 6 12 13x 17x 24x 30 32 41x 43x 46 49x 52x
-    # default='o1', # 5 6 12 13x 17x 24x 30x 32x 41x 43x 46 49x 52x
+    # default='Qwen/Qwen2.5-VL-72B-Instruct',
+    # default='llava-hf/llava-v1.6-34b-hf',
+    # default='o4-mini', # o1, o3, gpt-4.1 slightly poor (error in choice lists) / gpt-5 poor (too many errors) / gpt-4o very poor (not even completed)
+    # default='o3-pro',
     help="Model to use for processing"
 )
 
 parser.add_argument(
     "--c_n_generate",
     type=int,
-    # default=0,
+    default=0,
     # default=1,
     # default=4,
-    default=3,
     # action="store_true",
     help="Number of generations"
 )
@@ -56,17 +52,17 @@ parser.add_argument(
     "--c_json_source",
     type=str,
     choices=['csv', 'pdf', 'img'],
-    # default='csv',
-    default='img',
+    default='csv',
+    # default='img',
     help="Source of JSON data"
 )
 
 parser.add_argument(
     "--r_question_batch",
     type=str,
-    choices=['single', 'group'],
-    # default='single',
-    default='group',
+    choices=['one_pass', 'single', 'group'],
+    default='single',
+    # default='group',
     help="Batching strategy for questions"
 )
 
@@ -111,8 +107,10 @@ FN_FORM57_JSON_GROUP = f'form57_group.json'
 
 FN_DF_FORM57_RETRIEVAL = f'df_form57_retrieval.csv'
 
-FN_DF_TEST_SET = 'df_test_set.csv'
-FN_DICT_COL_IDX_NAME = 'dict_col_idx_name.jsonc'
+FN_DF_MATCH = 'df_match.csv'
+FN_DICT_ANSWER_PLACES = 'dict_answer_places.jsonc'
+FN_DICT_IDX_MAPPING = 'dict_idx_mapping.jsonc'
+FN_DICT_COL_INDEXING = 'dict_col_indexing.jsonc'
 
 conversion_model_replaced = config.conversion.model.replace('/', '@')
 retrieval_model_replaced = config.retrieval.model.replace('/', '@')
@@ -136,8 +134,11 @@ path_form57_img = os.path.join(DIR_DATA_ROOT, FN_FORM57_IMG)
 path_form57_json = os.path.join(path_dir_config_json, FN_FORM57_JSON)
 path_form57_json_group = os.path.join(path_dir_config_json, FN_FORM57_JSON_GROUP)
 path_df_form57_retrieval = os.path.join(path_dir_config_result, FN_DF_FORM57_RETRIEVAL)
-path_df_test_set = os.path.join(DIR_DATA_ROOT, FN_DF_TEST_SET)
-path_dict_col_idx_name = os.path.join(DIR_DATA_ROOT, FN_DICT_COL_IDX_NAME)
+
+path_df_match = os.path.join(DIR_DATA_ROOT, FN_DF_MATCH)
+path_dict_answer_places = os.path.join(path_dir_config_json, FN_DICT_ANSWER_PLACES)
+path_dict_idx_mapping = os.path.join(path_dir_config_json, FN_DICT_IDX_MAPPING)
+path_dict_col_indexing = os.path.join(DIR_DATA_ROOT, FN_DICT_COL_INDEXING)
 
 print(path_dir_config_json)
 print(path_dir_config_result)
@@ -169,43 +170,45 @@ print('------------Conversion DONE!!------------')
 ############### extract keywords
 from extract_keywords import extract_keywords
 
-df_retrieval = extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_articles_filter, config.retrieval)
+df_retrieval = extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_articles_filter, path_dict_answer_places, config.retrieval)
 
 print('------------Retrieval DONE!!------------')
 
-# ############### made hand-annotated samples (ONLY ONE-TIME TASK)
-# assert os.path.exists(path_df_test_set)
-# df_test_set = pd.read_csv(path_df_test_set)
-# df_test_set = df_test_set[df_test_set['match'] == 1]
+############### match samples manually via `match_record_news.py` (ONLY ONE-TIME TASK)
+assert os.path.exists(path_df_match)
+df_match = pd.read_csv(path_df_match)
+df_match = df_match[df_match['match'] == 1]
 
-# df_test_set = df_test_set[['report_key', 'news_id']]
-# assert df_test_set['news_id'].is_unique, '==========Warning: News is not unique!!!==========='
+# df_match = df_match[['report_key', 'news_id']]
+# assert df_match['news_id'].is_unique, '==========Warning: News is not unique!!!==========='
 
 # ############### match news and csv file
-# df_match = df_retrieval.merge(
-#     df_test_set,
+# df_merge = df_retrieval.merge(
+#     df_match,
 #     on=['report_key','news_id'],
 #     how='inner'
 # )
 
-# print('------------Matching DONE!!------------')
+print('------------Matching DONE!!------------')
 
-# ############### calculate the accuracy
-# from utils import get_acc_table
+############### calculate the accuracy
+from utils import get_acc_table
 
-# # list_answer_type_selected = ['choice', 'digit', 'str', 'list', 'etc']
+assert os.path.exists(path_dict_idx_mapping), "Must map index names shared accross the models with form transcription manually"
 
-# list_answer_type_selected = ['choice']
-# df_acc = get_acc_table(path_df_record, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
-# acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
-# print('choice:\t', acc)
+list_answer_type_selected = ['digit', 'free-text', 'choice']
 
-# list_answer_type_selected = ['digit']
-# df_acc = get_acc_table(path_df_record, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
-# acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
-# print('digit:\t', acc)
+list_answer_type_selected = ['choice']
+df_acc = get_acc_table(path_df_record, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_match, list_answer_type_selected, config)
+acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
+print('choice:\t', acc)
 
-# list_answer_type_selected = ['choice', 'digit']
-# df_acc = get_acc_table(path_df_record, path_dict_col_idx_name, df_match, dict_form57, list_answer_type_selected, config.conversion)
-# acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
-# print('choice + digit:\t', acc)
+list_answer_type_selected = ['free-text']
+df_acc = get_acc_table(path_df_record, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_match, list_answer_type_selected, config)
+acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
+print('free-text:\t', acc)
+
+list_answer_type_selected = ['digit']
+df_acc = get_acc_table(path_df_record, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_match, list_answer_type_selected, config)
+acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
+print('digit:\t', acc)
