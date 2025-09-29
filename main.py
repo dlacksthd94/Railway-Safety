@@ -6,6 +6,9 @@ import json5
 import numpy as np
 import tqdm
 
+print('###########################################################################')
+print('###########################################################################')
+
 parser = argparse.ArgumentParser(
     description="Run main.py"
 )
@@ -19,9 +22,9 @@ parser.add_argument(
     "--c_api",
     type=str,
     choices=['Huggingface', 'OpenAI', 'None'],
-    default="None",
+    # default="None",
     # default="Huggingface",
-    # default='OpenAI',
+    default='OpenAI',
     help="API to use for processing"
 )
 
@@ -29,11 +32,11 @@ parser.add_argument(
     "--c_model",
     type=str,
     # choices=['Qwen/Qwen2.5-VL-7B-Instruct', 'OpenGVLab/InternVL3-8B-hf', 'ByteDance-Seed/UI-TARS-1.5-7B', 'None'],
-    default='None',
+    # default='None',
     # default='OpenGVLab/InternVL3_5-38B-HF',
     # default='Qwen/Qwen2.5-VL-72B-Instruct',
     # default='llava-hf/llava-v1.6-34b-hf',
-    # default='o4-mini', # o1, o3, gpt-4.1 slightly poor (error in choice lists) / gpt-5 poor (too many errors) / gpt-4o very poor (not even completed)
+    default='o4-mini', # o1, o3, gpt-4.1 slightly poor (error in choice lists) / gpt-5 poor (too many errors) / gpt-4o very poor (not even completed)
     # default='o3-pro',
     help="Model to use for processing"
 )
@@ -41,9 +44,9 @@ parser.add_argument(
 parser.add_argument(
     "--c_n_generate",
     type=int,
-    default=0,
+    # default=0,
     # default=1,
-    # default=4,
+    default=4,
     # action="store_true",
     help="Number of generations"
 )
@@ -52,8 +55,8 @@ parser.add_argument(
     "--c_json_source",
     type=str,
     choices=['csv', 'pdf', 'img'],
-    default='csv',
-    # default='img',
+    # default='csv',
+    default='img',
     help="Source of JSON data"
 )
 
@@ -61,8 +64,8 @@ parser.add_argument(
     "--r_question_batch",
     type=str,
     choices=['one_pass', 'single', 'group'],
-    default='single',
-    # default='group',
+    # default='single',
+    default='group',
     help="Batching strategy for questions"
 )
 
@@ -170,7 +173,7 @@ print('------------Conversion DONE!!------------')
 ############### extract keywords
 from extract_keywords import extract_keywords
 
-df_retrieval = extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_articles_filter, path_dict_answer_places, config.retrieval)
+df_retrieval = extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_articles_filter, path_df_match, path_dict_answer_places, config)
 
 print('------------Retrieval DONE!!------------')
 
@@ -179,36 +182,45 @@ assert os.path.exists(path_df_match)
 df_match = pd.read_csv(path_df_match)
 df_match = df_match[df_match['match'] == 1]
 
-# df_match = df_match[['report_key', 'news_id']]
-# assert df_match['news_id'].is_unique, '==========Warning: News is not unique!!!==========='
-
-# ############### match news and csv file
-# df_merge = df_retrieval.merge(
-#     df_match,
-#     on=['report_key','news_id'],
-#     how='inner'
-# )
-
 print('------------Matching DONE!!------------')
+
+# ############### merge news-record pair and retrieval results
+assert df_match['news_id'].is_unique and df_retrieval['news_id'].is_unique, '==========Warning: News is not unique!!!==========='
+
+idx_content_match = df_match.columns.get_loc('content')
+df_match = df_match.iloc[:, :idx_content_match + 1]
+
+df_retrieval_drop = df_retrieval.set_index('news_id')
+idx_content_retrieval = df_retrieval_drop.columns.get_loc('content')
+df_retrieval_drop = df_retrieval_drop.iloc[:, idx_content_retrieval + 1:]
+
+df_merge = df_match.merge(df_retrieval_drop, left_on='news_id', right_index=True, how='inner')
+
+print('------------Merging DONE!!------------')
 
 ############### calculate the accuracy
 from utils import get_acc_table
 
 assert os.path.exists(path_dict_idx_mapping), "Must map index names shared accross the models with form transcription manually"
 
-list_answer_type_selected = ['digit', 'free-text', 'choice']
-
-list_answer_type_selected = ['choice']
-df_acc = get_acc_table(path_df_record, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_match, list_answer_type_selected, config)
+list_answer_type_selected = ['digit', 'text', 'choice']
+df_acc = get_acc_table(path_df_record, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_merge, list_answer_type_selected, config)
 acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
-print('choice:\t', acc)
+print('digit + text + choice:\t', acc)
 
-list_answer_type_selected = ['free-text']
-df_acc = get_acc_table(path_df_record, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_match, list_answer_type_selected, config)
-acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
-print('free-text:\t', acc)
+# list_answer_type_selected = ['digit']
+# df_acc = get_acc_table(path_df_record, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_merge, list_answer_type_selected, config)
+# acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
+# print('digit:\t', acc)
 
-list_answer_type_selected = ['digit']
-df_acc = get_acc_table(path_df_record, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_match, list_answer_type_selected, config)
-acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
-print('digit:\t', acc)
+# list_answer_type_selected = ['choice']
+# df_acc = get_acc_table(path_df_record, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_merge, list_answer_type_selected, config)
+# acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
+# print('choice:\t', acc)
+
+# list_answer_type_selected = ['text']
+# df_acc = get_acc_table(path_df_record, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_merge, list_answer_type_selected, config)
+# acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
+# print('text:\t', acc)
+
+print('------------accuracy DONE!!------------')
