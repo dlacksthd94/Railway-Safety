@@ -8,6 +8,7 @@ import pandas as pd
 import os
 import json
 import json5
+from utils import as_float, lower_str
 
 st.set_page_config(layout='wide')
 
@@ -24,18 +25,6 @@ path_df_record_news = os.path.join(DIR_DATA_ROOT, 'df_record_news.csv')
 path_df_match = os.path.join(DIR_DATA_ROOT, 'df_match.csv')
 path_dict_idx_mapping = os.path.join(DIR_CONV_MODEL, 'dict_idx_mapping.jsonc')
 path_dict_col_indexing = os.path.join(DIR_DATA_ROOT, 'dict_col_indexing.jsonc')
-
-def as_float(val):
-    try:
-        return float(val)
-    except:
-        return val
-
-def lower_str(val):
-    if isinstance(val, str):
-        return val.lower()
-    else:
-        return val
 
 with open(path_dict_col_indexing, 'r') as f:
     dict_col_indexing = json5.load(f)
