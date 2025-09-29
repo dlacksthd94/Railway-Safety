@@ -2,6 +2,7 @@ import pandas as pd
 import json
 from transformers import pipeline
 import torch
+import gc
 from pprint import pprint
 from tqdm import tqdm
 import os
@@ -31,8 +32,8 @@ def to_answer_places(dict_form57):
             assert False, 'why # of answer places < 1?'
     return dict_answer_places, dict_idx_ap
 
-def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_articles_filter, path_dict_answer_places, config_retrieval):
-    _, model, n_generate, question_batch = config_retrieval.to_tuple()
+def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_articles_filter, path_df_match, path_dict_answer_places, config):
+    _, model, n_generate, question_batch = config.retrieval.to_tuple()
 
     with open(path_form57_json, 'r') as f:
         dict_form57 = json.load(f)
@@ -50,6 +51,11 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
     if os.path.exists(path_df_form57_retrieval):
         df_retrieval = pd.read_csv(path_df_form57_retrieval)
         df_retrieval[list_answer_places] = df_retrieval[list_answer_places].fillna('')
+    elif os.path.exists(path_df_match):
+        df_match = pd.read_csv(path_df_match)
+        df_match = df_match[df_match['match'] == 1]
+        df_retrieval = df_match[['news_id', 'url', 'pub_date', 'title', 'content']].copy(deep=True)
+        df_retrieval[list_answer_places] = ''
     else:
         df_news_articles_filter = pd.read_csv(path_df_news_articles_filter)
         df_retrieval = df_news_articles_filter.copy(deep=True)
@@ -88,19 +94,38 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
         content = row['content']
         
         if question_batch == 'single':
-            for entry_idx, entry in tqdm(dict_form57.items(), leave=False):
-                name = entry.get('name', '')
-                options = str(entry.get('choices', ''))
+            for entry_idx in tqdm(dict_form57.keys(), leave=False):
+                entry = dict_form57[entry_idx]
+                entry_name = entry['name']
+                for entry_idx_suffix in dict_idx_ap[entry_idx]:
+                    question = question_base + '\n'
+                    answer_place = dict_answer_places[entry_idx_suffix]
+                    description = f"({answer_place['answer_place_name']})" if len(dict_idx_ap[entry_idx]) > 1 else ''
+                    answer_place_info = answer_place['answer_place_info']
+                    question += f'({entry_idx_suffix}): ' + entry_name + description + f' {str(answer_place_info)}' + '\n'
+                    question += answer_format
+                    answer_start_idx = dict_idx_ap[entry_idx][0]
+                    prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n({answer_start_idx}):"
                 
-                question = question_base + '\n' + f'({entry_idx}): ' + name + f'(options: {options})' + '\n' + answer_format
-                prompt = f"Context:\n{title}\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n"
-                
-                output = pipe(prompt)#, max_new_tokens=30)
-                answer = output[0]['generated_text'].split('Answer:\n')[-1]
+                    try:
+                        output = pipe(prompt, max_new_tokens=30)
+                        answers = output[0]['generated_text'].split('Answer:\n')[-1]
 
-                df_retrieval.loc[idx_content, entry_idx] = answer
-            # df_retrieval.loc[idx_content, :].to_dict()
+                        dict_answer = dict(re.findall(r'\((.+)\):\s*([^\n]+)', answers))
 
+                        # print(question)
+                        # print()
+                        # print(answers)
+                        # print()
+                        # pprint(dict_answer)
+                        # print()
+
+                        answer = dict_answer.get(entry_idx_suffix, '')
+                        df_retrieval.loc[idx_content, entry_idx_suffix] = answer
+                            
+                    except:
+                        pass
+                    
         elif question_batch == 'group':
             for group_name, group in tqdm(dict_form57_group.items(), leave=False):
                 question = question_base + '\n'
@@ -111,17 +136,18 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
                         answer_place = dict_answer_places[entry_idx_suffix]
                         description = f"({answer_place['answer_place_name']})" if len(dict_idx_ap[entry_idx]) > 1 else ''
                         answer_place_info = answer_place['answer_place_info']
-                    # question += f'({entry_idx}{entry_idx_suffix}): ' + entry_name + f'({answer_place_name})' + f' {str(answer_place_info)}' + '\n'
+                        # question += f'({entry_idx}{entry_idx_suffix}): ' + entry_name + f'({answer_place_name})' + f' {str(answer_place_info)}' + '\n'
                         question += f'({entry_idx_suffix}): ' + entry_name + description + f' {str(answer_place_info)}' + '\n'
                 question += answer_format
                 answer_start_idx = dict_idx_ap[group[0]][0]
+                # prompt = f"Context:\n{title}\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n"
                 prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n({answer_start_idx}):"
                 
                 try:
                     output = pipe(prompt)#, max_new_tokens=30)
-                    answer = output[0]['generated_text'].split('Answer:\n')[-1]
+                    answers = output[0]['generated_text'].split('Answer:\n')[-1]
 
-                    dict_answer = dict(re.findall(r'\((.+)\):\s*([^\n]+)', answer))
+                    dict_answer = dict(re.findall(r'\((.+)\):\s*([^\n]+)', answers))
 
                     # print(question)
                     # print()
@@ -143,4 +169,9 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
             df_retrieval.to_csv(path_df_form57_retrieval, index=False)
 
     df_retrieval.to_csv(path_df_form57_retrieval, index=False)
+
+    del pipe
+    gc.collect()
+    torch.cuda.empty_cache()
+
     return df_retrieval
