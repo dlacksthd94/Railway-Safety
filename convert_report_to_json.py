@@ -12,10 +12,11 @@ import ast
 
 # DICT_FORM57_JSON_FORMAT = """```json
 # {
-#     "<entry idx>": {
-#         "name": "<entry name>",
+#     "<field index>": {
+#         "name": "<field name>",
+#         "answer_type": "<free-text/digit/single choice>",
 #         "choices": {
-#             "<choice code>":  "<choice label>",
+#             "<choice code>":  "<choice name>",
 #         },
 #     },
 # }
@@ -245,7 +246,6 @@ def csv_to_json(path_form57_csv, path_form57_json):
     else:
         df_data = pd.read_csv(path_form57_csv)
         df_data = df_data[df_data['State Name'] == 'CALIFORNIA']
-        df_data['hash_id'] = df_data.apply(utils_scrape.hash_row, axis=1)
         df_data['Date'] = pd.to_datetime(df_data['Date'])
         df_data = df_data[df_data['Date'] >= '2000-01-01']
 
@@ -281,16 +281,26 @@ def csv_to_json(path_form57_csv, path_form57_json):
                 dict_entry_choice[col] = {'1': 'Male', '2': 'Female'}
             elif col == 'Driver In Vehicle':
                 dict_entry_choice[col] = {'1': 'Yes', '2': 'No'}
+            elif col == 'AM/PM':
+                dict_entry_choice[col] = {'1': 'AM', '2': 'PM'}
+            elif col == 'Estimated/Recorded Speed':
+                dict_entry_choice[col] = {'1': 'R', '2': 'E'}
 
         ############ Convert into JSON
         list_col_wo_code = list(filter(lambda col: not col.endswith('Code'), list_col))
-        list_col_wo_code.remove('hash_id')
-        dict_form57 = {str(i): {'name': col} for i, col in enumerate(list_col_wo_code)}
+        list_not_use = list(range(53, 79)) + list(range(106, 130))
+        dict_form57 = {str(i): {'name': col} for i, col in enumerate(list_col_wo_code) if i not in list_not_use}
         for i, dict_meta_info in dict_form57.items():
             col = dict_meta_info['name']
+            dict_meta_info['answer_places'] = {col: {}}
             if col in dict_entry_choice:
                 choices = dict_entry_choice[col]
-                dict_form57[i]['choices'] = choices
+                dict_meta_info['answer_places'][col]['answer_type'] = 'single choice'
+                dict_meta_info['answer_places'][col]['choices'] = choices
+            elif pd.api.types.is_numeric_dtype(df_data[col]):
+                dict_meta_info['answer_places'][col]['answer_type'] = 'digit'
+            else:
+                dict_meta_info['answer_places'][col]['answer_type'] = 'free-text'
 
         with open(path_form57_json, 'w') as f:
             json.dump(dict_form57, f, indent=4)
