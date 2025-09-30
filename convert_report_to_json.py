@@ -5,10 +5,9 @@ import os
 from pprint import pprint
 import pandas as pd
 import utils_scrape
-import time
 import utils
 from PIL import Image
-import ast
+from utils import parse_json_from_output
 
 # DICT_FORM57_JSON_FORMAT = """```json
 # {
@@ -52,6 +51,12 @@ For each field, break down every answer place that is required to write or mark.
 Strictly follow the JSON format:
 {DICT_FORM57_JSON_FORMAT}
 """
+
+# PROMPT_DICT_FORM57_TEMP = f"""
+# Identify the indices and names of all fields.
+# Strictly follow the JSON format:
+# {DICT_FORM57_JSON_FORMAT}
+# """
 
 PROMPT_DICT_FORM57 = f"""
 I'll provide you with the following:
@@ -121,28 +126,6 @@ def select_generate_func(api):
     else:
         raise ValueError(f"Unsupported API: {api}")
     return generate_func
-
-def parse_json_from_output(output):
-    """Parse JSON from the output text of OpenAI response.
-    If the output is a plain JSON string, it parses that directly.
-    Otherwise, find the code block containing JSON and parse it.
-    """
-    try:
-        if '```' in output:
-            json_start_index = output.index('```')
-            json_end_index = output.rindex('```')
-            str_form57 = output[json_start_index:json_end_index].strip('`')
-            if str_form57.startswith('json'):
-                str_form57 = str_form57.replace('json', '', 1)
-        else:
-            str_form57 = output
-        try:
-            dict_form57 = json.loads(str_form57)
-        except:
-            dict_form57 = ast.literal_eval(str_form57)
-    except:
-        dict_form57 = {}
-    return dict_form57
 
 def check_dict_kv_type(dict_, k_type, v_type):
     for k, v in dict_.items():

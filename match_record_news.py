@@ -19,7 +19,6 @@ DIR_RESULT = os.path.join(DIR_CONV_MODEL, 'result')
 DIR_RETR_MODEL = os.path.join(DIR_RESULT, 'Huggingface_microsoft@phi-4_1_group')
 
 path_form57_csv = os.path.join(DIR_DATA_ROOT, '250821 Highway-Rail Grade Crossing Incident Data (Form 57).csv')
-# path_df_form57_retrieval = 'data/json/pdf_OpenAI_o4-mini_8/result/Huggingface_microsoft/Phi-4-mini-instruct_1_group/df_form57_retrieval.csv'
 path_df_form57_retrieval = os.path.join(DIR_RETR_MODEL, 'df_form57_retrieval.csv')
 path_df_record_news = os.path.join(DIR_DATA_ROOT, 'df_record_news.csv')
 path_df_match = os.path.join(DIR_DATA_ROOT, 'df_match.csv')

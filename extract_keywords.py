@@ -10,6 +10,8 @@ from itertools import chain
 import re
 from PIL import Image
 import json5
+from openai import OpenAI
+from utils import parse_json_from_output
 
 def to_answer_places(dict_form57):
     dict_answer_places = {}
@@ -32,25 +34,31 @@ def to_answer_places(dict_form57):
             assert False, 'why # of answer places < 1?'
     return dict_answer_places, dict_idx_ap
 
-def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_articles_filter, path_df_match, path_dict_answer_places, config):
+def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_articles_filter, path_df_match, path_dict_answer_places, path_form57_img, config):
+    _, _, _, json_source = config.conversion.to_tuple()
     _, model, n_generate, question_batch = config.retrieval.to_tuple()
 
-    with open(path_form57_json, 'r') as f:
-        dict_form57 = json.load(f)
+    if json_source == 'None':
+        list_answer_places = ["1", "2", "3", "4", "5_month", "5_day", "5_year", "6", "6_ampm", "7", "8", "9", "10", "11", "12", "12_ownership", 
+                              "13", "14", "15", "16", "17", "18", "19", "20a", "20b", "20c", 
+                              "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "30_record", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", 
+                              "44", "45", "46_killed", "46_injured", "47", "48", "49_killed", "49_injured", "50", "51", "52_killed", "52_injured", "53a", "53b", "54", "55", "56", "57"]
+    else:
+        with open(path_form57_json, 'r') as f:
+            dict_form57 = json.load(f)
+        dict_answer_places, dict_idx_ap = to_answer_places(dict_form57)
+        list_answer_places = list(dict_answer_places.keys())
+
+        with open(path_dict_answer_places, 'w') as f:
+            json.dump(dict_answer_places, f, indent=4)
     
     if question_batch == 'group':
         with open(path_form57_json_group, 'r') as f:
             dict_form57_group = json.load(f)
 
-    dict_answer_places, dict_idx_ap = to_answer_places(dict_form57)
-    list_answer_places = list(dict_answer_places.keys())
-
-    with open(path_dict_answer_places, 'w') as f:
-        json.dump(dict_answer_places, f, indent=4)
-
     if os.path.exists(path_df_form57_retrieval):
         df_retrieval = pd.read_csv(path_df_form57_retrieval)
-        df_retrieval[list_answer_places] = df_retrieval[list_answer_places].fillna('')
+        df_retrieval = df_retrieval.fillna('')
     elif os.path.exists(path_df_match):
         df_match = pd.read_csv(path_df_match)
         df_match = df_match[df_match['match'] == 1]
@@ -67,19 +75,32 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
         'use_cache': True,
         'do_sample': False,
     }
-    pipe = pipeline(model=model, device_map='auto', **config)
-    if pipe.generation_config.pad_token_id is None:
-        pipe.generation_config.pad_token_id = pipe.tokenizer.eos_token_id
-    if pipe.generation_config.temperature == 0 or pipe.generation_config.do_sample == False:
-        n_sim = 1
-    else:
-        n_sim = n_generate
+    
+    if question_batch in ['single', 'group']:
+        pipe = pipeline(model=model, device_map='auto', **config)
+        if pipe.generation_config.pad_token_id is None:
+            pipe.generation_config.pad_token_id = pipe.tokenizer.eos_token_id
+        if pipe.generation_config.temperature == 0 or pipe.generation_config.do_sample == False:
+            n_sim = 1
+        else:
+            n_sim = n_generate
+    
+    elif question_batch == 'all':
+        # API_key = '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' # hong
+        API_key = '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' # lim
+        client = OpenAI(api_key=API_key)
+
+        with open(path_form57_img, "rb") as f:
+            img_file = client.files.create(
+                file=f,
+                purpose="vision"
+            )
 
     ############ extract information using csv-version json
 
     question_base = (
-            "From the given context, answer each question according to its specified answer type: "
-        )
+        "From the given context, answer each question according to its specified answer type: "
+    )
     answer_format = (
         "Do not provide explanations.\n"
         "If no information is available for a question, respond with 'Unknown'."
@@ -165,13 +186,50 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
                     pass
             # df_retrieval.loc[idx_content, :].to_dict()
 
+        elif question_batch == 'all':
+            question_base = (
+                "From the given context, answer each field in the form.\n"
+                "If a field is single-choice type, answer only with the choice code.\n"
+                f"The field indices to be answered are: {', '.join(list(map(lambda x: f'({x})', list_answer_places)))}.\n"
+            )
+            answer_format = (
+                "Do not provide explanations.\n"
+                "If no information is available for a question, respond with 'Unknown'."
+                "The output format must be in JSON:\n"
+                '```{"entry_index": "answer"}```\n'
+            )
+            question = question_base + answer_format
+            prompt = f"Context:\n{content}\n\nQuestion:\n{question}"
+
+            content = [
+                {"type": "input_text", "text": prompt},
+                {"type": "input_image", "file_id": img_file.id},
+            ]
+            messages = [
+                {
+                    "role": "user",
+                    "content": content,
+                },
+            ]
+            response = client.responses.create(model='o4-mini', input=messages)
+            output = response.output_text
+            dict_answer = parse_json_from_output(output)
+            
+            for entry_idx, answer in dict_answer.items():
+                if entry_idx in list_answer_places:
+                    try:
+                        df_retrieval.loc[idx_content, entry_idx] = answer
+                    except:
+                        pass
+        
         if idx_content % 10 == 0:
             df_retrieval.to_csv(path_df_form57_retrieval, index=False)
 
     df_retrieval.to_csv(path_df_form57_retrieval, index=False)
 
-    del pipe
-    gc.collect()
-    torch.cuda.empty_cache()
+    if question_batch in ['single', 'group']:
+        del pipe
+        gc.collect()
+        torch.cuda.empty_cache()
 
     return df_retrieval

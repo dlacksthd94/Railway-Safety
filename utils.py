@@ -11,6 +11,8 @@ from transformers import pipeline
 import datetime
 import gc
 import torch
+import json
+import ast
 
 def make_dir(path):
     if not os.path.exists(path):
@@ -46,6 +48,28 @@ def lower_str(val):
         return val.lower()
     else:
         return val
+
+def parse_json_from_output(output):
+    """Parse JSON from the output text of OpenAI response.
+    If the output is a plain JSON string, it parses that directly.
+    Otherwise, find the code block containing JSON and parse it.
+    """
+    try:
+        if '```' in output:
+            json_start_index = output.index('```')
+            json_end_index = output.rindex('```')
+            str_form57 = output[json_start_index:json_end_index].strip('`')
+            if str_form57.startswith('json'):
+                str_form57 = str_form57.replace('json', '', 1)
+        else:
+            str_form57 = output
+        try:
+            dict_form57 = json.loads(str_form57)
+        except:
+            dict_form57 = ast.literal_eval(str_form57)
+    except:
+        dict_form57 = {}
+    return dict_form57
 
 def text_binary_classification(pipe, prompt, dict_answer_choice, num_sim):
     list_output = pipe(prompt, max_new_tokens=1, num_return_sequences=num_sim, return_full_text=False)

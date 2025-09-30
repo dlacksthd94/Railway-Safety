@@ -22,9 +22,9 @@ parser.add_argument(
     "--c_api",
     type=str,
     choices=['Huggingface', 'OpenAI', 'None'],
-    # default="None",
+    default="None",
     # default="Huggingface",
-    default='OpenAI',
+    # default='OpenAI',
     help="API to use for processing"
 )
 
@@ -32,11 +32,11 @@ parser.add_argument(
     "--c_model",
     type=str,
     # choices=['Qwen/Qwen2.5-VL-7B-Instruct', 'OpenGVLab/InternVL3-8B-hf', 'ByteDance-Seed/UI-TARS-1.5-7B', 'None'],
-    # default='None',
+    default='None',
     # default='OpenGVLab/InternVL3_5-38B-HF',
     # default='Qwen/Qwen2.5-VL-72B-Instruct',
     # default='llava-hf/llava-v1.6-34b-hf',
-    default='o4-mini', # o1, o3, gpt-4.1 slightly poor (error in choice lists) / gpt-5 poor (too many errors) / gpt-4o very poor (not even completed)
+    # default='o4-mini', # o1, o3, gpt-4.1 slightly poor (error in choice lists) / gpt-5 poor (too many errors) / gpt-4o very poor (not even completed)
     # default='o3-pro',
     help="Model to use for processing"
 )
@@ -44,9 +44,9 @@ parser.add_argument(
 parser.add_argument(
     "--c_n_generate",
     type=int,
-    # default=0,
+    default=0,
     # default=1,
-    default=4,
+    # default=4,
     # action="store_true",
     help="Number of generations"
 )
@@ -54,18 +54,20 @@ parser.add_argument(
 parser.add_argument(
     "--c_json_source",
     type=str,
-    choices=['csv', 'pdf', 'img'],
+    choices=['csv', 'pdf', 'img', 'None'],
     # default='csv',
-    default='img',
+    # default='img',
+    default='None',
     help="Source of JSON data"
 )
 
 parser.add_argument(
     "--r_question_batch",
     type=str,
-    choices=['one_pass', 'single', 'group'],
+    choices=['all', 'single', 'group'],
+    default='all',
     # default='single',
-    default='group',
+    # default='group',
     help="Batching strategy for questions"
 )
 
@@ -98,8 +100,6 @@ FN_DF_NEWS_ARTICLES = 'df_news_articles.csv'
 FN_DF_NEWS_ARTICLES_SCORE = 'df_news_articles_score.csv'
 FN_DF_NEWS_ARTICLES_FILTER = 'df_news_articles_filter.csv'
 
-FN_DF_NEWS_LABEL = 'df_news_label.csv'
-
 # NM_FORM57 = 'FRA F 6180.57 (Form 57) form only'
 NM_FORM57 = 'FRA F 6180.57 (Form 57) form only'
 FN_FORM57_PDF = f'{NM_FORM57}.pdf'
@@ -111,6 +111,7 @@ FN_FORM57_JSON_GROUP = f'form57_group.json'
 FN_DF_FORM57_RETRIEVAL = f'df_form57_retrieval.csv'
 
 FN_DF_MATCH = 'df_match.csv'
+FN_DF_ANNOTATE = 'df_annotate.csv'
 FN_DICT_ANSWER_PLACES = 'dict_answer_places.jsonc'
 FN_DICT_IDX_MAPPING = 'dict_idx_mapping.jsonc'
 FN_DICT_COL_INDEXING = 'dict_col_indexing.jsonc'
@@ -131,7 +132,6 @@ path_df_news_articles = os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_ARTICLES)
 path_df_news_articles_score = os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_ARTICLES_SCORE)
 path_df_news_articles_filter = os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_ARTICLES_FILTER)
 
-path_df_news_label = os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_LABEL)
 path_form57_pdf = os.path.join(DIR_DATA_ROOT, FN_FORM57_PDF)
 path_form57_img = os.path.join(DIR_DATA_ROOT, FN_FORM57_IMG)
 path_form57_json = os.path.join(path_dir_config_json, FN_FORM57_JSON)
@@ -139,6 +139,7 @@ path_form57_json_group = os.path.join(path_dir_config_json, FN_FORM57_JSON_GROUP
 path_df_form57_retrieval = os.path.join(path_dir_config_result, FN_DF_FORM57_RETRIEVAL)
 
 path_df_match = os.path.join(DIR_DATA_ROOT, FN_DF_MATCH)
+path_df_annotate = os.path.join(DIR_DATA_ROOT, FN_DF_ANNOTATE)
 path_dict_answer_places = os.path.join(path_dir_config_json, FN_DICT_ANSWER_PLACES)
 path_dict_idx_mapping = os.path.join(path_dir_config_json, FN_DICT_IDX_MAPPING)
 path_dict_col_indexing = os.path.join(DIR_DATA_ROOT, FN_DICT_COL_INDEXING)
@@ -173,11 +174,12 @@ print('------------Conversion DONE!!------------')
 ############### extract keywords
 from extract_keywords import extract_keywords
 
-df_retrieval = extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_articles_filter, path_df_match, path_dict_answer_places, config)
+df_retrieval = extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_articles_filter, path_df_match, path_dict_answer_places, path_form57_img, config)
 
 print('------------Retrieval DONE!!------------')
 
-############### match samples manually via `match_record_news.py` (ONLY ONE-TIME TASK)
+############### match samples manually by running following command in terminal (ONLY ONE-TIME TASK)
+# streamlit run match_record_news.py
 assert os.path.exists(path_df_match)
 df_match = pd.read_csv(path_df_match)
 df_match = df_match[df_match['match'] == 1]

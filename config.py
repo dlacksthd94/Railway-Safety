@@ -6,7 +6,7 @@ class BaseConfig:
     model: str
     n_generate: int
     
-    list_json_source = ['csv', 'pdf', 'img']
+    list_json_source = ['csv', 'pdf', 'img', 'None']
     list_api = ['Google_DocAI', 'AWS_Textract', 'Azure_FormRecognizer', 'OpenAI', 'Huggingface']
     dict_model = {
         'Google_DocAI': ['form_parser', 'layout_parser'],
