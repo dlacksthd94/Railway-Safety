@@ -780,8 +780,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
     elif api == 'OpenAI':
         from openai import OpenAI
 
-        # API_key = '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' # hong
-        API_key = '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' # lim
+        API_key = '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' # hong
         client = OpenAI(api_key=API_key)
 
         with open(path_form57_img, "rb") as f:

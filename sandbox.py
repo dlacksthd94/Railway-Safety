@@ -268,3 +268,14 @@ with utils.Timer(model_path):
 
 with open('transcription.txt', 'w') as f:
     f.write(str(output))
+
+############### calculating transcription error rate
+
+import numpy as np
+array = np.array([1, 1, 1, 2]) # both
+array = np.array([5, 2, 5, 7]) # sample aggregation only
+array = np.array([2, 2, 3, 4]) # human-centric schema only
+array.mean()
+array.std()
+
+############### 

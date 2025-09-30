@@ -1,0 +1,655 @@
+{
+    "1": {
+        "answer_place_name": "railroad name",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "1a": {
+        "answer_place_name": "alphabetic code",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "1b": {
+        "answer_place_name": "accident number",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "2": {
+        "answer_place_name": "entity name",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "2a": {
+        "answer_place_name": "alphabetic code",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "2b": {
+        "answer_place_name": "accident number",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "3": {
+        "answer_place_name": "entity name",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "3a": {
+        "answer_place_name": "alphabetic code",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "3b": {
+        "answer_place_name": "accident number",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "4": {
+        "answer_place_name": "crossing id",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "5_1": {
+        "answer_place_name": "month",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "5_2": {
+        "answer_place_name": "day",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "5_3": {
+        "answer_place_name": "year",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "6_1": {
+        "answer_place_name": "time",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "6_2": {
+        "answer_place_name": "am/pm",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "AM": "AM",
+                "PM": "PM"
+            }
+        }
+    },
+    "7": {
+        "answer_place_name": "station name",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "8": {
+        "answer_place_name": "subdivision",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "9": {
+        "answer_place_name": "county",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "10": {
+        "answer_place_name": "state abbr",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "11": {
+        "answer_place_name": "city",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "12_1": {
+        "answer_place_name": "highway",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "12_2": {
+        "answer_place_name": "ownership",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "Public": "Public",
+                "Private": "Private"
+            }
+        }
+    },
+    "13": {
+        "answer_place_name": "type",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "A": "Auto",
+                "B": "Truck",
+                "C": "Truck-trailer",
+                "D": "Pick-up truck",
+                "E": "Van",
+                "F": "Bus",
+                "G": "School bus",
+                "H": "Motorcycle",
+                "J": "Other motor vehicle",
+                "K": "Pedestrian",
+                "M": "Other (specify)"
+            }
+        }
+    },
+    "14": {
+        "answer_place_name": "speed",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "15": {
+        "answer_place_name": "direction",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "North",
+                "2": "South",
+                "3": "East",
+                "4": "West"
+            }
+        }
+    },
+    "16": {
+        "answer_place_name": "position",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Stalled or stuck on crossing",
+                "2": "Stopped on crossing",
+                "3": "Moving over crossing",
+                "4": "Trapped on crossing by traffic",
+                "5": "Blocked on crossing by gates"
+            }
+        }
+    },
+    "17": {
+        "answer_place_name": "equipment",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Train (units pulling)",
+                "2": "Train (units pushing)",
+                "3": "Train (standing)",
+                "4": "Car(s) (moving)",
+                "5": "Car(s) (standing)",
+                "6": "Light loco(s) (moving)",
+                "7": "Light loco(s) (standing)",
+                "8": "Other (specify)",
+                "A": "Train pulling \u2013 RCL",
+                "B": "Train pushing \u2013 RCL",
+                "C": "Train standing \u2013 RCL",
+                "D": "EMU Locomotive(s)",
+                "E": "DMU Locomotive(s)"
+            }
+        }
+    },
+    "18": {
+        "answer_place_name": "car position",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "19": {
+        "answer_place_name": "circumstance",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Rail equipment struck highway user",
+                "2": "Rail equipment struck by highway user"
+            }
+        }
+    },
+    "20a": {
+        "answer_place_name": "transport hazmat",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Highway user",
+                "2": "Rail equipment",
+                "3": "Both",
+                "4": "Neither"
+            }
+        }
+    },
+    "20b": {
+        "answer_place_name": "release hazmat",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Highway user",
+                "2": "Rail equipment",
+                "3": "Both",
+                "4": "Neither"
+            }
+        }
+    },
+    "20c": {
+        "answer_place_name": "hazmat details",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "21": {
+        "answer_place_name": "temperature",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "22": {
+        "answer_place_name": "visibility",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Dawn",
+                "2": "Day",
+                "3": "Dusk",
+                "4": "Dark"
+            }
+        }
+    },
+    "23": {
+        "answer_place_name": "weather",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Clear",
+                "2": "Cloudy",
+                "3": "Rain",
+                "4": "Fog",
+                "5": "Sleet",
+                "6": "Snow"
+            }
+        }
+    },
+    "24": {
+        "answer_place_name": "consist type",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Freight Train",
+                "2": "Passenger Train-Pulling",
+                "3": "Commuter Train-Pulling",
+                "4": "Work train",
+                "5": "Single Car",
+                "6": "Cut of cars",
+                "7": "Yard/switching",
+                "8": "Light loco(s)",
+                "9": "Maint./inspect. Car",
+                "A": "Spec. Mow Equip.",
+                "B": "Passenger Train-Pushing",
+                "C": "Commuter Train-Pushing",
+                "D": "EMU",
+                "E": "DMU"
+            }
+        }
+    },
+    "25": {
+        "answer_place_name": "track type",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Main",
+                "2": "Yard",
+                "3": "Siding",
+                "4": "Industry"
+            }
+        }
+    },
+    "26": {
+        "answer_place_name": "track id",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "27": {
+        "answer_place_name": "track class",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "28": {
+        "answer_place_name": "locomotive units",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "29": {
+        "answer_place_name": "cars",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "30_1": {
+        "answer_place_name": "speed",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "30_2": {
+        "answer_place_name": "record",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "R": "Recorded",
+                "E": "Estimated"
+            }
+        }
+    },
+    "31": {
+        "answer_place_name": "timetable direction",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "North",
+                "2": "South",
+                "3": "East",
+                "4": "West"
+            }
+        }
+    },
+    "32": {
+        "answer_place_name": "crossing warning",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Gates",
+                "2": "Cantilever FLS",
+                "3": "Standard FLS",
+                "4": "Wig wags",
+                "5": "Hwy. traffic signals",
+                "6": "Audible",
+                "7": "Crossbucks",
+                "8": "Stop signs",
+                "9": "Watchman",
+                "10": "Flagged by crew",
+                "11": "Other (specify)",
+                "12": "None"
+            }
+        }
+    },
+    "33": {
+        "answer_place_name": "signal code",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "34": {
+        "answer_place_name": "roadway condition",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "A": "Dry",
+                "B": "Wet",
+                "C": "Snow/slush",
+                "D": "Ice",
+                "E": "Sand, Mud, Dirt, Oil, Gravel",
+                "F": "Water (Standing, Moving)"
+            }
+        }
+    },
+    "35": {
+        "answer_place_name": "warning location",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Both sides",
+                "2": "Side of vehicle approach",
+                "3": "Opposite side of vehicle approach"
+            }
+        }
+    },
+    "36": {
+        "answer_place_name": "interconnected",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        }
+    },
+    "37": {
+        "answer_place_name": "illuminated",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        }
+    },
+    "38": {
+        "answer_place_name": "age",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "39": {
+        "answer_place_name": "gender",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Male",
+                "2": "Female"
+            }
+        }
+    },
+    "40": {
+        "answer_place_name": "second train",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        }
+    },
+    "41": {
+        "answer_place_name": "action",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Ran around the gate",
+                "2": "Stopped and then proceeded",
+                "3": "Did not stop",
+                "4": "Stopped on crossing",
+                "5": "Other (specify)",
+                "6": "Went around/through temporary barricade",
+                "7": "Went through the gate",
+                "8": "Suicide/Attempted suicide"
+            }
+        }
+    },
+    "42": {
+        "answer_place_name": "passed vehicle",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No",
+                "3": "Unknown"
+            }
+        }
+    },
+    "43": {
+        "answer_place_name": "obstruction",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Permanent structure",
+                "2": "Standing railroad equipment",
+                "3": "Passing train",
+                "4": "Topography",
+                "5": "Vegetation",
+                "6": "Highway vehicles",
+                "7": "Other (specify)",
+                "8": "Not obstructed"
+            }
+        }
+    },
+    "44": {
+        "answer_place_name": "driver status",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Killed",
+                "2": "Injured",
+                "3": "Uninjured"
+            }
+        }
+    },
+    "45": {
+        "answer_place_name": "in vehicle",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No"
+            }
+        }
+    },
+    "46_1": {
+        "answer_place_name": "killed",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "46_2": {
+        "answer_place_name": "injured",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "47": {
+        "answer_place_name": "damage",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "48": {
+        "answer_place_name": "occupants",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "49_1": {
+        "answer_place_name": "killed",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "49_2": {
+        "answer_place_name": "injured",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "50": {
+        "answer_place_name": "people on train",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "51": {
+        "answer_place_name": "file report",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "1": "Yes",
+                "2": "No"
+            }
+        }
+    },
+    "52_1": {
+        "answer_place_name": "killed",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "52_2": {
+        "answer_place_name": "injured",
+        "answer_place_info": {
+            "answer_type": "digit"
+        }
+    },
+    "53a_1": {
+        "answer_place_name": "video taken",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "Yes": "Yes",
+                "No": "No"
+            }
+        }
+    },
+    "53a_2": {
+        "answer_place_name": "video used",
+        "answer_place_info": {
+            "answer_type": "single choice",
+            "choices": {
+                "Yes": "Yes",
+                "No": "No"
+            }
+        }
+    },
+    "53b": {
+        "answer_place_name": "special study",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "54": {
+        "answer_place_name": "narrative",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "55": {
+        "answer_place_name": "name & title",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "56": {
+        "answer_place_name": "signature",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    },
+    "57": {
+        "answer_place_name": "date",
+        "answer_place_info": {
+            "answer_type": "free-text"
+        }
+    }
+}
