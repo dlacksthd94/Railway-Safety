@@ -22,9 +22,9 @@ parser.add_argument(
     "--c_api",
     type=str,
     choices=['Huggingface', 'OpenAI', 'None'],
-    default="None",
+    # default="None",
     # default="Huggingface",
-    # default='OpenAI',
+    default='OpenAI',
     help="API to use for processing"
 )
 
@@ -32,21 +32,18 @@ parser.add_argument(
     "--c_model",
     type=str,
     # choices=['Qwen/Qwen2.5-VL-7B-Instruct', 'OpenGVLab/InternVL3-8B-hf', 'ByteDance-Seed/UI-TARS-1.5-7B', 'None'],
-    default='None',
+    # default='None',
     # default='OpenGVLab/InternVL3_5-38B-HF',
     # default='Qwen/Qwen2.5-VL-72B-Instruct',
-    # default='llava-hf/llava-v1.6-34b-hf',
-    # default='o4-mini', # o1, o3, gpt-4.1 slightly poor (error in choice lists) / gpt-5 poor (too many errors) / gpt-4o very poor (not even completed)
-    # default='o3-pro',
+    default='o4-mini', # o1, o3, gpt-4.1 slightly poor (error in choice lists) / gpt-5 poor (too many errors) / gpt-4o very poor (not even completed)
     help="Model to use for processing"
 )
 
 parser.add_argument(
     "--c_n_generate",
     type=int,
-    default=0,
-    # default=1,
-    # default=4,
+    # default=0,
+    default=4,
     # action="store_true",
     help="Number of generations"
 )
@@ -56,8 +53,8 @@ parser.add_argument(
     type=str,
     choices=['csv', 'pdf', 'img', 'None'],
     # default='csv',
-    # default='img',
-    default='None',
+    default='img',
+    # default='None',
     help="Source of JSON data"
 )
 
@@ -65,10 +62,28 @@ parser.add_argument(
     "--r_question_batch",
     type=str,
     choices=['all', 'single', 'group'],
-    default='all',
     # default='single',
-    # default='group',
+    default='group',
+    # default='all',
     help="Batching strategy for questions"
+)
+
+parser.add_argument(
+    "--r_api",
+    type=str,
+    choices=['Huggingface', 'OpenAI'],
+    # default="Huggingface",
+    default='OpenAI',
+    help="API to use for processing"
+)
+
+parser.add_argument(
+    "--r_model",
+    type=str,
+    # default='microsoft/phi-4',
+    # default='Qwen/Qwen2.5-VL-72B-Instruct',
+    default='o4-mini', # o1, o3, gpt-4.1 slightly poor (error in choice lists) / gpt-5 poor (too many errors) / gpt-4o very poor (not even completed)
+    help="Model to use for processing"
 )
 
 args = parser.parse_args()
@@ -78,7 +93,7 @@ from config import Config, ConversionConfig, RetrievalConfig
 
 config_conversion = ConversionConfig(api=args.c_api, model=args.c_model, n_generate=args.c_n_generate, json_source=args.c_json_source)
 # config_retrieval = RetrievalConfig(api='Huggingface', model='microsoft/Phi-4-mini-instruct', n_generate=1, question_batch=args.r_question_batch) # bad
-config_retrieval = RetrievalConfig(api='Huggingface', model='microsoft/phi-4', n_generate=1, question_batch=args.r_question_batch)
+config_retrieval = RetrievalConfig(api=args.r_api, model=args.r_model, n_generate=1, question_batch=args.r_question_batch)
 # "Qwen/Qwen3-4B ~ 32B" and "openai/gpt-oss-20b" take too long and too verbose
 
 config = Config(conversion=config_conversion, retrieval=config_retrieval)
@@ -183,6 +198,14 @@ print('------------Retrieval DONE!!------------')
 assert os.path.exists(path_df_match)
 df_match = pd.read_csv(path_df_match)
 df_match = df_match[df_match['match'] == 1]
+
+print('------------Matching DONE!!------------')
+
+############### annotate samples manually by running following command in terminal (ONLY ONE-TIME TASK)
+# streamlit run annotate_news.py
+assert os.path.exists(path_df_annotate)
+df_annotate = pd.read_csv(path_df_annotate)
+df_annotate = df_annotate[df_annotate['annotated'] == 1]
 
 print('------------Matching DONE!!------------')
 

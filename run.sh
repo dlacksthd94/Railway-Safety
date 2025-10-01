@@ -18,7 +18,7 @@
 
 ### python main.py --c_api Huggingface --c_model ByteDance-Seed/UI-TARS-1.5-7B --c_n_generate 4 --c_json_source img --r_question_batch group
 
-# python main.py --c_api None --c_model None --c_n_generate 0 --c_json_source csv --r_question_batch single
+# python main.py --c_api None --c_model None --c_n_generate 0 --c_json_source csv --r_question_batch single --r_api OpenAI --r_model o4-mini
 
-python main.py --c_api OpenAI --c_model o4-mini --c_n_generate 4 --c_json_source img --r_question_batch single
-python main.py --c_api OpenAI --c_model o4-mini --c_n_generate 4 --c_json_source img --r_question_batch group
+python main.py --c_api OpenAI --c_model o4-mini --c_n_generate 4 --c_json_source img --r_question_batch group --r_api OpenAI --r_model o4-mini
+# python main.py --c_api OpenAI --c_model o4-mini --c_n_generate 4 --c_json_source img --r_question_batch single --r_api OpenAI --r_model o4-mini
