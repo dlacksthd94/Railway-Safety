@@ -36,7 +36,7 @@ def to_answer_places(dict_form57):
 
 def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_retrieval, path_df_news_articles_filter, path_df_match, path_dict_answer_places, path_form57_img, config):
     _, _, _, json_source = config.conversion.to_tuple()
-    _, model, n_generate, question_batch = config.retrieval.to_tuple()
+    api, model, n_generate, question_batch = config.retrieval.to_tuple()
 
     # if json_source == 'None':
     #     # list_answer_places = ["1", "2", "3", "4", "5_month", "5_day", "5_year", "6", "6_ampm", "7", "8", "9", "10", "11", "12", "12_ownership", 
@@ -68,24 +68,32 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
         df_news_articles_filter = pd.read_csv(path_df_news_articles_filter)
         df_retrieval = df_news_articles_filter.copy(deep=True)
         df_retrieval[list_answer_places] = ''
-
-    config = {
-        'max_new_tokens': 512,
-        'truncation': True,
-        'use_cache': True,
-        'do_sample': False,
-    }
     
-    if question_batch in ['single', 'group']:
-        pipe = pipeline(model=model, device_map='auto', **config)
+    if api == 'Huggingface':
+        dict_model_config = {
+            'microsoft/phi-4': {},
+            'Qwen/Qwen2.5-VL-72B-Instruct': {'load_in_4bit': True},
+        }
+        quant_config = dict_model_config[model]
+        
+        config = {
+            'max_new_tokens': 1024,
+            'truncation': True,
+            'use_cache': True,
+            'do_sample': False,
+        }
+
+        pipe = pipeline(model=model, device_map='auto', model_kwargs=quant_config, **config)
         if pipe.generation_config.pad_token_id is None:
             pipe.generation_config.pad_token_id = pipe.tokenizer.eos_token_id
         if pipe.generation_config.temperature == 0 or pipe.generation_config.do_sample == False:
             n_sim = 1
         else:
             n_sim = n_generate
+        
+        image = Image.open(path_form57_img)
     
-    elif question_batch == 'all':
+    elif api == 'OpenAI':
         API_key = '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' # hong
         client = OpenAI(api_key=API_key)
 
@@ -109,13 +117,15 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
     )
 
     for idx_content, row in tqdm(df_retrieval.iterrows(), total=df_retrieval.shape[0]):
-        if (row != '').sum() / len(row) > 0.8:
+        if (row != '').sum() / len(row) > 0.5:
             continue
         title = row['title']
-        content = row['content']
+        news_content = row['content']
         
         if question_batch == 'single':
             for entry_idx in tqdm(dict_form57.keys(), leave=False):
+                if entry_idx in ['54', '105']:
+                    continue
                 entry = dict_form57[entry_idx]
                 entry_name = entry['name']
                 for entry_idx_suffix in dict_idx_ap[entry_idx]:
@@ -127,12 +137,28 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
                     question += f'{entry_idx_suffix}: ' + entry_name + description + f' {str(answer_place_info)}' + '\n'
                     question += answer_format
                     answer_start_idx = dict_idx_ap[entry_idx][0]
-                    # prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n({answer_start_idx}):"
-                    prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n"
                 
                     try:
-                        output = pipe(prompt, max_new_tokens=30)
-                        answers = output[0]['generated_text'].split('Answer:\n')[-1]
+                        if api == 'Huggingface':
+                            # prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}\n\nAnswer:\n({answer_start_idx}):"
+                            prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}\n\nAnswer:\n"
+                            output = pipe(prompt, max_new_tokens=30)
+                            answers = output[0]['generated_text'].split('Answer:\n')[-1]
+                        
+                        elif api == 'OpenAI':
+                            prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}"
+                            content = [
+                                {"type": "input_text", "text": prompt},
+                            ]
+                            messages = [
+                                {
+                                    "role": "user",
+                                    "content": content,
+                                },
+                            ]
+                            response = client.responses.create(model=model, input=messages)
+                            answers = response.output_text
+                            
 
                         # dict_answer = dict(re.findall(r'\((.+)\):\s*([^\n]+)', answers))
                         dict_answer = parse_json_from_output(answers)
@@ -154,6 +180,8 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
             for group_name, group in tqdm(dict_form57_group.items(), leave=False):
                 question = question_base + '\n'
                 for entry_idx in group:
+                    if entry_idx in ['54', '105']:
+                        continue
                     entry = dict_form57[entry_idx]
                     entry_name = entry['name']
                     for entry_idx_suffix in dict_idx_ap[entry_idx]:
@@ -164,12 +192,27 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
                         question += f'{entry_idx_suffix}: ' + entry_name + description + f' {str(answer_place_info)}' + '\n'
                 question += answer_format
                 answer_start_idx = dict_idx_ap[group[0]][0]
-                # prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n({answer_start_idx}):"
-                prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n"
                 
                 try:
-                    output = pipe(prompt)#, max_new_tokens=30)
-                    answers = output[0]['generated_text'].split('Answer:\n')[-1]
+                    if api == 'Huggingface':
+                        # prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n({answer_start_idx}):"
+                        prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}\n\nAnswer:\n"
+                        output = pipe(prompt)#, max_new_tokens=30)
+                        answers = output[0]['generated_text'].split('Answer:\n')[-1]
+                    
+                    elif api == 'OpenAI':
+                        prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}"
+                        content = [
+                            {"type": "input_text", "text": prompt},
+                        ]
+                        messages = [
+                            {
+                                "role": "user",
+                                "content": content,
+                            },
+                        ]
+                        response = client.responses.create(model=model, input=messages)
+                        answers = response.output_text
 
                     # dict_answer = dict(re.findall(r'\((.+)\):\s*([^\n]+)', answers))
                     dict_answer = parse_json_from_output(answers)
@@ -191,26 +234,47 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
             # df_retrieval.loc[idx_content, :].to_dict()
 
         elif question_batch == 'all':
+            list_answer_places_str = ', '.join(list(map(lambda x: f'({x})', list_answer_places))).replace(', (54)', '').replace(', (105)', '')
             question_base = (
                 "From the given context, answer each field in the form.\n"
-                f"The field indices to be answered are: {', '.join(list(map(lambda x: f'({x})', list_answer_places)))}.\n"
+                f"The field indices to be answered are: {list_answer_places_str}.\n"
             )
             question = question_base + answer_format
-            prompt = f"Context:\n{content}\n\nQuestion:\n{question}"
 
-            content = [
-                {"type": "input_text", "text": prompt},
-                {"type": "input_image", "file_id": img_file.id},
-            ]
-            messages = [
-                {
-                    "role": "user",
-                    "content": content,
-                },
-            ]
-            response = client.responses.create(model='o4-mini', input=messages)
-            output = response.output_text
-            dict_answer = parse_json_from_output(output)
+            if api == 'Huggingface':
+                prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}\n\nAnswer:\n"
+                if model == 'microsoft/phi-4':
+                    output = pipe(prompt)#, max_new_tokens=30)
+                    answers = output[0]['generated_text'].split('Answer:\n')[-1]
+                elif model == 'Qwen/Qwen2.5-VL-72B-Instruct':
+                    content = [
+                        {"type": "image", "image": image},
+                        {"type": "text", "text": prompt},
+                    ]
+                    messages = [
+                        {
+                            "role": "user",
+                            "content": content,
+                        },
+                    ]
+                    response = pipe(text=messages, return_full_text=False)
+                    answers = response[0]['generated_text'].split('Answer:\n')[-1]
+
+            elif api == 'OpenAI':
+                content = [
+                    {"type": "input_text", "text": prompt},
+                    {"type": "input_image", "file_id": img_file.id},
+                ]
+                messages = [
+                    {
+                        "role": "user",
+                        "content": content,
+                    },
+                ]
+                response = client.responses.create(model=model, input=messages)
+                answers = response.output_text
+            
+            dict_answer = parse_json_from_output(answers)
             
             for entry_idx, answer in dict_answer.items():
                 if entry_idx in list_answer_places:
@@ -224,7 +288,7 @@ def extract_keywords(path_form57_json, path_form57_json_group, path_df_form57_re
 
     df_retrieval.to_csv(path_df_form57_retrieval, index=False)
 
-    if question_batch in ['single', 'group']:
+    if api == 'Huggingface':
         del pipe
         gc.collect()
         torch.cuda.empty_cache()
