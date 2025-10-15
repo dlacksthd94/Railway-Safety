@@ -72,17 +72,17 @@ parser.add_argument(
     "--r_api",
     type=str,
     choices=['Huggingface', 'OpenAI'],
-    # default="Huggingface",
-    default='OpenAI',
+    default="Huggingface",
+    # default='OpenAI',
     help="API to use for processing"
 )
 
 parser.add_argument(
     "--r_model",
     type=str,
-    # default='microsoft/phi-4',
+    default='microsoft/phi-4',
     # default='Qwen/Qwen2.5-VL-72B-Instruct',
-    default='o4-mini', # o1, o3, gpt-4.1 slightly poor (error in choice lists) / gpt-5 poor (too many errors) / gpt-4o very poor (not even completed)
+    # default='o4-mini', # o1, o3, gpt-4.1 slightly poor (error in choice lists) / gpt-5 poor (too many errors) / gpt-4o very poor (not even completed)
     help="Model to use for processing"
 )
 
@@ -207,7 +207,7 @@ assert os.path.exists(path_df_annotate)
 df_annotate = pd.read_csv(path_df_annotate)
 df_annotate = df_annotate[df_annotate['annotated'] == 1]
 
-print('------------Matching DONE!!------------')
+print('------------Annotating DONE!!------------')
 
 # ############### merge news-record pair and retrieval results
 assert df_match['news_id'].is_unique and df_retrieval['news_id'].is_unique, '==========Warning: News is not unique!!!==========='
@@ -223,29 +223,39 @@ df_merge = df_match.merge(df_retrieval_drop, left_on='news_id', right_index=True
 
 print('------------Merging DONE!!------------')
 
-############### calculate the accuracy
-from utils import get_acc_table
+############### calculate the accuracy and coverage
+from utils import get_acc_table, get_cov_table
 
 assert os.path.exists(path_dict_idx_mapping), "Must map index names shared accross the models with form transcription manually"
 
-list_answer_type_selected = ['digit', 'text', 'choice']
-df_acc = get_acc_table(path_df_record, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_merge, list_answer_type_selected, config)
-acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
-print('digit + text + choice:\t', acc)
+# list_answer_type_selected = ['choice']
+# df_acc = get_acc_table(path_df_record, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_merge, list_answer_type_selected, config)
+# idx_news_content = df_acc.columns.get_loc('content')
+# acc = df_acc.iloc[:, idx_news_content + 1:].dropna(axis=1, how='all').mean().mean()
+# print('ACCURACY\ndigit + text + choice:\t', acc)
 
 # list_answer_type_selected = ['digit']
 # df_acc = get_acc_table(path_df_record, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_merge, list_answer_type_selected, config)
-# acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
-# print('digit:\t', acc)
-
-# list_answer_type_selected = ['choice']
-# df_acc = get_acc_table(path_df_record, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_merge, list_answer_type_selected, config)
-# acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
-# print('choice:\t', acc)
+# idx_news_content = df_acc.columns.get_loc('content')
+# acc = df_acc.iloc[:, idx_news_content + 1:].dropna(axis=1, how='all').mean().mean()
+# print('ACCURACY\ndigit + text + choice:\t', acc)
 
 # list_answer_type_selected = ['text']
 # df_acc = get_acc_table(path_df_record, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_merge, list_answer_type_selected, config)
-# acc = df_acc.loc[:, '1':].dropna(axis=1, how='all').mean().mean()
-# print('text:\t', acc)
+# idx_news_content = df_acc.columns.get_loc('content')
+# acc = df_acc.iloc[:, idx_news_content + 1:].dropna(axis=1, how='all').mean().mean()
+# print('ACCURACY\ndigit + text + choice:\t', acc)
 
-print('------------accuracy DONE!!------------')
+list_answer_type_selected = ['digit', 'text', 'choice']
+df_acc = get_acc_table(path_df_record, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_merge, list_answer_type_selected, config)
+idx_news_content = df_acc.columns.get_loc('content')
+acc = df_acc.iloc[:, idx_news_content + 1:].dropna(axis=1, how='all').mean().mean()
+print('ACCURACY\ndigit + text + choice:\t', acc)
+
+list_answer_type_selected = ['digit', 'text', 'choice']
+df_cov = get_cov_table(path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_retrieval, df_annotate, list_answer_type_selected, config)
+idx_news_content = df_cov.columns.get_loc('content')
+cov = df_cov.iloc[:, idx_news_content + 1:].dropna(axis=1, how='all').mean().mean()
+print('COVERAGE\ndigit + text + choice:\t', cov)
+
+print('------------Metrics DONE!!------------')

@@ -98,7 +98,7 @@ generation_config_search = {**generation_config_base, 'do_sample': False} # gree
 # model = Pix2StructForConditionalGeneration.from_pretrained(model_path).to("cuda")
 # processor = Pix2StructProcessor.from_pretrained(model_path)
 
-# question = "Transcribe the list of choices in entry 15"
+# question = "What is the name of field 1?"
 
 # inputs = processor(images=image, text=question, return_tensors="pt").to("cuda")
 
@@ -144,21 +144,21 @@ generation_config_search = {**generation_config_base, 'do_sample': False} # gree
 # model = InstructBlipForConditionalGeneration.from_pretrained(model_path)
 # processor = InstructBlipProcessor.from_pretrained(model_path)
 # device = "cuda" if torch.cuda.is_available() else "cpu"
-# model.to(device)
+# _ = model.to(device)
 
-# prompt = "Transcribe entry 1."
+# prompt = "Extract key-value"
 # # prompt = "What is the title?"
 # inputs = processor(images=image, text=prompt, return_tensors="pt").to(device)
 # outputs = model.generate(
 #     **inputs,
-#     do_sample=False,
-#     num_beams=5,
-#     max_length=256,
-#     min_length=1,
-#     top_p=0.9,
-#     repetition_penalty=1.5,
-#     length_penalty=1.0,
-#     temperature=1,
+#     # do_sample=False,
+#     # num_beams=5,
+#     # max_length=256,
+#     # min_length=1,
+#     # top_p=0.9,
+#     # repetition_penalty=1.5,
+#     # length_penalty=1.0,
+#     # temperature=1,
 # )
 # generated_text = processor.batch_decode(outputs, skip_special_tokens=True)[0].strip()
 # print(generated_text)
@@ -181,60 +181,104 @@ generation_config_search = {**generation_config_base, 'do_sample': False} # gree
 # df_record_news_merge = df_record_news_merge.rename(columns={'Report Key': 'report_key'})
 # df_record_news_merge.to_csv(path_df_record_news, index=False)
 
-############### test parsing models
-from transformers import pipeline
-import utils
-from convert_report_to_json import select_generate_func
+############### OmniParser V2 setup and test
+# git clone https://github.com/microsoft/OmniParser
+# cd OmniParser
+# conda create -n omni python==3.12 -y
+# conda activate omni
+# pip install -r requirements.txt
+#    (needs huggingface-cli: pip install -U "huggingface_hub[cli]")
+# for f in icon_detect/{train_args.yaml,model.pt,model.yaml} icon_caption/{config.json,generation_config.json,model.safetensors}; do \
+#   huggingface-cli download microsoft/OmniParser-v2.0 "$f" --local-dir weights; \
+# done
+# mv weights/icon_caption weights/icon_caption_florence
+# python gradio_demo.py
+# jupyter notebook demo.ipynb
 
-api = 'Huggingface'
-# model_path = 'Qwen/Qwen2.5-VL-32B-Instruct'
-model_path = 'Qwen/Qwen2.5-VL-72B-Instruct'
-# model_path = 'OpenGVLab/InternVL3_5-38B-HF'
-# model_path = 'google/gemma-3-27b-it'
-# model_path = 'llava-hf/llava-v1.6-34b-hf'
+import replicate
 
-dict_model_config = {
-    # 'Qwen/Qwen2.5-VL-7B-Instruct': {},
-    # 'Qwen/Qwen2.5-VL-32B-Instruct': {'load_in_4bit': True},
-    # 'Qwen/Qwen2.5-VL-32B-Instruct': {'load_in_8bit': True},
-    'Qwen/Qwen2.5-VL-32B-Instruct': {},
-    'Qwen/Qwen2.5-VL-72B-Instruct': {'load_in_8bit': True},
-    # 'OpenGVLab/InternVL3-38B-hf': {'load_in_8bit': True},
-    'OpenGVLab/InternVL3_5-38B-HF': {},
-    'google/gemma-3-27b-it': {},
-    'llava-hf/llava-v1.6-34b-hf': {},
-}
-quant_config = dict_model_config[model_path]
-device = 'auto'
+model = replicate.models.get("microsoft/omniparser-v2")
+output = model.predict(image=image_path)
+print(output)
 
-pipe = pipeline(model=model_path, device_map=device, model_kwargs=quant_config)
-generate_func = select_generate_func(api)
 
-# # field = '5. Date of Accident/Incident'
-# # field = '6. Time of Accident/Incident'
-# # field = '12. Highway Name or Number'
-# # field = '46. Highway-Rail Crossing Users'
-# field = '49. Railroad Employees'
-# # field = '52. Passengers on Train'
-# prompt = f"""Each field of the form has areas to write or mark the answers.
-# Identify every answer place associated with the "{field}" field."""
-# # prompt = f"""Break down every answer place required for the "{field}" field, based in the image."""
-# # prompt = f"""Briefly describe "{field}" field in the context of its adjecent fields."""
-# with utils.Timer(model_path):
-#     output = generate_func(pipe, model_path, [{"type": "image", "image": image}, {"type": "text", "text": prompt},], generation_config_search)
-#     print(output)
+# ############### test parsing models
+# from transformers import pipeline
+# import utils
+# from convert_report_to_json import select_generate_func
 
-# prompt = f"""Break down every answer place of "{field}" that is required to be written or marked.
-# Include choices only when it is provided in the form.
-# Strictly follow the JSON format:""" + \
-# """
-# ```
-# "answer_places": {
-#     "<answer place name>": {
-#         "type": "<free-text/digit/single choice/multiple choice>",
-#         "choices": {
-#             "<choice code>": "<choice name>",
-#         },
+# api = 'Huggingface'
+# # model_path = 'Qwen/Qwen2.5-VL-32B-Instruct'
+# model_path = 'Qwen/Qwen2.5-VL-72B-Instruct'
+# # model_path = 'OpenGVLab/InternVL3_5-38B-HF'
+# # model_path = 'google/gemma-3-27b-it'
+# # model_path = 'llava-hf/llava-v1.6-34b-hf'
+
+# dict_model_config = {
+#     # 'Qwen/Qwen2.5-VL-7B-Instruct': {},
+#     # 'Qwen/Qwen2.5-VL-32B-Instruct': {'load_in_4bit': True},
+#     # 'Qwen/Qwen2.5-VL-32B-Instruct': {'load_in_8bit': True},
+#     'Qwen/Qwen2.5-VL-32B-Instruct': {},
+#     'Qwen/Qwen2.5-VL-72B-Instruct': {'load_in_8bit': True},
+#     # 'OpenGVLab/InternVL3-38B-hf': {'load_in_8bit': True},
+#     'OpenGVLab/InternVL3_5-38B-HF': {},
+#     'google/gemma-3-27b-it': {},
+#     'llava-hf/llava-v1.6-34b-hf': {},
+# }
+# quant_config = dict_model_config[model_path]
+# device = 'auto'
+
+# pipe = pipeline(model=model_path, device_map=device, model_kwargs=quant_config)
+# generate_func = select_generate_func(api)
+
+# # # field = '5. Date of Accident/Incident'
+# # # field = '6. Time of Accident/Incident'
+# # # field = '12. Highway Name or Number'
+# # # field = '46. Highway-Rail Crossing Users'
+# # field = '49. Railroad Employees'
+# # # field = '52. Passengers on Train'
+# # prompt = f"""Each field of the form has areas to write or mark the answers.
+# # Identify every answer place associated with the "{field}" field."""
+# # # prompt = f"""Break down every answer place required for the "{field}" field, based in the image."""
+# # # prompt = f"""Briefly describe "{field}" field in the context of its adjecent fields."""
+# # with utils.Timer(model_path):
+# #     output = generate_func(pipe, model_path, [{"type": "image", "image": image}, {"type": "text", "text": prompt},], generation_config_search)
+# #     print(output)
+
+# # prompt = f"""Break down every answer place of "{field}" that is required to be written or marked.
+# # Include choices only when it is provided in the form.
+# # Strictly follow the JSON format:""" + \
+# # """
+# # ```
+# # "answer_places": {
+# #     "<answer place name>": {
+# #         "type": "<free-text/digit/single choice/multiple choice>",
+# #         "choices": {
+# #             "<choice code>": "<choice name>",
+# #         },
+# #     },
+# # }
+# # ```
+# # """
+# # with utils.Timer(model_path):
+# #     output = generate_func(pipe, model_path, [{"type": "image", "image": image}, {"type": "text", "text": prompt},], generation_config_search)
+# #     print(output)
+
+# prompt = """Identify the indices and names of all entries.
+# For each entry, break down every answer place that is required to write or mark.
+# Strictly follow the JSON format:
+# ```json
+# {
+#     "<entry idx>": {
+#         "name": "<entry name>",
+#         "answer_places": [
+#             "<answer place name>": {
+#                 "type": "<free-text/digit/single choice/multiple choice>",
+#                 "choices": {
+#                     "<choice code>": "<choice name>",
+#                 },
+#             },
+#         ]
 #     },
 # }
 # ```
@@ -243,37 +287,14 @@ generate_func = select_generate_func(api)
 #     output = generate_func(pipe, model_path, [{"type": "image", "image": image}, {"type": "text", "text": prompt},], generation_config_search)
 #     print(output)
 
-prompt = """Identify the indices and names of all entries.
-For each entry, break down every answer place that is required to write or mark.
-Strictly follow the JSON format:
-```json
-{
-    "<entry idx>": {
-        "name": "<entry name>",
-        "answer_places": [
-            "<answer place name>": {
-                "type": "<free-text/digit/single choice/multiple choice>",
-                "choices": {
-                    "<choice code>": "<choice name>",
-                },
-            },
-        ]
-    },
-}
-```
-"""
-with utils.Timer(model_path):
-    output = generate_func(pipe, model_path, [{"type": "image", "image": image}, {"type": "text", "text": prompt},], generation_config_search)
-    print(output)
-
-with open('transcription.txt', 'w') as f:
-    f.write(str(output))
+# with open('transcription.txt', 'w') as f:
+#     f.write(str(output))
 
 ############### calculating transcription error rate
 
 import numpy as np
-array = np.array([1, 1, 1, 2]) # both
-array = np.array([5, 2, 5, 7]) # sample aggregation only
+array = np.array([5, 6, 4, 8]) # both
+array = np.array([8, 6, 7, 6]) # sample aggregation only
 array = np.array([2, 2, 3, 4]) # human-centric schema only
 array.mean()
 array.std()

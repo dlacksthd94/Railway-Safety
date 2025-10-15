@@ -13,6 +13,7 @@ import gc
 import torch
 import json
 import ast
+from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix, accuracy_score
 
 def make_dir(path):
     if not os.path.exists(path):
@@ -83,7 +84,7 @@ def text_generation(pipe, prompt, max_new_tokens=4096):
     answer = output[0]['generated_text']
     return answer
 
-def get_acc_table(path_form57_csv, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_match, list_answer_type_selected, config):
+def get_acc_table(path_form57_csv, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_merge, list_answer_type_selected, config):
     _, _, _, json_source = config.conversion.to_tuple()
     _, model, _, _ = config.retrieval.to_tuple()
 
@@ -147,12 +148,12 @@ def get_acc_table(path_form57_csv, path_dict_col_indexing, path_dict_idx_mapping
     if '' in dict_idx_selected:
         dict_idx_selected.pop('')
 
-    pipe = pipeline(model=model, device_map='auto', **{'do_sample': False})
+    pipe = pipeline(model='microsoft/phi-4', device_map='auto', **{'do_sample': False})
 
-    df_acc = df_match.copy(deep=True)
+    df_acc = df_merge.copy(deep=True)
     df_acc = df_acc.drop('match', axis=1, errors='ignore')
     df_acc.iloc[:, 12:] = np.nan
-    for idx_match, row_match in tqdm(df_match.iterrows(), total=df_match.shape[0]):
+    for idx_match, row_match in tqdm(df_merge.iterrows(), total=df_merge.shape[0]):
         report_key = row_match['report_key']
         row_csv = df_form57_csv.loc[report_key]
         list_score_temp = []
@@ -214,3 +215,71 @@ def get_acc_table(path_form57_csv, path_dict_col_indexing, path_dict_idx_mapping
     torch.cuda.empty_cache()
 
     return df_acc
+
+def get_cov_table(path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_retrieval, df_annotate, list_answer_type_selected, config):
+    _, _, _, json_source = config.conversion.to_tuple()
+    _, model, _, _ = config.retrieval.to_tuple()
+
+    with open(path_dict_col_indexing, 'r') as f:
+        dict_col_indexing = json5.load(f)
+    
+    with open(path_dict_idx_mapping, 'r') as f:
+        dict_idx_mapping = json5.load(f)
+        dict_idx_mapping_inverse = {v: k for k, v in dict_idx_mapping.items()}
+        if '' in dict_idx_mapping_inverse:
+            dict_idx_mapping_inverse.pop('')
+
+    with open(path_dict_answer_places, 'r') as f:
+        dict_answer_places = json5.load(f)
+    
+    dict_idx_answer_type = {
+        'digit': ['5_month', '5_day', '5_year', '6_hour', '6_minute', '14', '18', '20c_quantity', '21', '28', '29', '30', '38', 
+                    '46_killed', '46_injured', '47', '48', '49_killed', '49_injured', '50', '52_killed', '52_injured'],
+        'text': ['1', '2', '3', '5', '6', '7', '9', '11', '12', '20c_name', '20c_measure', '26'],
+        'choice': ['6_ampm', '12_ownership', '13', '15', '16', '17', '19', '20a', '20b', '22', '23', '24', '25', '30_record', '31', 
+                    '34', '35', '36', '37', '39', '40', '41', '42', '43', '44', '45'],
+        'etc': ['8', '10', '27'],
+    }
+    dict_idx_answer_type = {k: {idx: dict_col_indexing[idx] for idx in v} for k, v in dict_idx_answer_type.items()}
+
+    # sanity check
+    list_all = list(chain.from_iterable(map(set, dict_idx_answer_type.values())))
+    counts = Counter(list_all)
+    duplicates = [item for item, count in counts.items() if count > 1]
+    assert len(duplicates) == 0
+
+    dict_idx_selected = {dict_idx_mapping[k]: k for answer_type_selected in list_answer_type_selected for k, v in dict_idx_answer_type[answer_type_selected].items()}
+    if '' in dict_idx_selected:
+        dict_idx_selected.pop('')
+    if '20c' in dict_idx_selected:
+        dict_idx_selected.pop('20c')
+
+    df_annotate = df_annotate.drop('annotated', axis=1, errors='ignore')
+    df_cov = df_annotate.copy(deep=True)
+    idx_news_content = df_cov.columns.get_loc('content')
+    df_cov = df_cov.iloc[:, :idx_news_content + 1]
+    df_cov['fnr'] = np.nan
+
+    list_col_idx_form = df_annotate.columns[idx_news_content + 1:]
+    
+    for idx_annotate, row_annotate in tqdm(df_annotate.iterrows(), total=df_annotate.shape[0]):
+        news_id = row_annotate['news_id']
+        row_retrieval = df_retrieval[df_retrieval['news_id'] == news_id].squeeze()
+        list_attempt = []
+        list_label = []
+        for col_idx_form in list_col_idx_form:
+            try:
+                col_idx_json = dict_idx_mapping[col_idx_form]
+                pred = str(row_retrieval[col_idx_json]).lower() != 'unknown'
+                label = row_annotate[col_idx_form] == 'True'
+                list_attempt.append(pred)
+                list_label.append(label)
+            except:
+                pass
+        
+        # cov_temp = f1_score(list_label, list_attempt, zero_division=0)
+        tn, fp, fn, tp = confusion_matrix(list_label, list_attempt).ravel()
+        cov_temp = tp / (fn + tp) if (fn + tp) > 0 else np.nan
+        df_cov.loc[idx_annotate, 'fnr'] = cov_temp
+    
+    return df_cov
