@@ -3,9 +3,11 @@ google*
 udot_project
 data2
 *Highway-Rail Grade Crossing Incident Data (Form 57).csv
+*NTAD_Railroad_Grade_Crossings*.csv
 web_screenshot.png
 inspect_news.py
 df_news.csv
 backup*
 error*
 aws*
+mapillary

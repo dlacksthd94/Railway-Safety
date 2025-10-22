@@ -2,13 +2,12 @@ import pandas as pd
 import numpy as np
 import sys
 import os
-import spacy
 from tqdm import tqdm
 import datetime
 import re
 
 DATA_FOLDER = 'data/'
-pd.set_option('display.max_columns', 10, 'display.max_rows', 150, 'display.width', 1000)
+pd.set_option('display.max_columns', 10, 'display.max_rows', 150, 'display.width', 1000) # type: ignore
 
 df = pd.read_csv(DATA_FOLDER + 'Highway-Rail_Grade_Crossing_Accident_Data__Form_57__20240925.csv')
 df['Date'] = pd.to_datetime(df['Date'])

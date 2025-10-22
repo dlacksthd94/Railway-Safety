@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import utils_scrape
 import os
 from pprint import pprint
 import streamlit as st

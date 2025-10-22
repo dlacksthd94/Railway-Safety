@@ -65,12 +65,12 @@ if "df" not in st.session_state:
         df_match = df_match[df_match['match'] == 1]
         df_annotate = df_match.copy(deep=True)
         idx_content = df_annotate.columns.get_loc('content')
-        df_annotate = df_annotate.iloc[:, :idx_content + 1]
+        df_annotate = df_annotate.iloc[:, :idx_content + 1] # type: ignore
         df_annotate = df_annotate.drop(columns=['query1', 'query2', 'county', 'state', 'city', 'highway', 'title', 'pub_date', 'url'])
         df_annotate = df_annotate.merge(df_retrieval, on='news_id')
         
         idx_col_content = df_annotate.columns.get_loc('content')
-        for col in df_annotate.columns[idx_col_content + 1:]:
+        for col in df_annotate.columns[idx_col_content + 1:]: # type: ignore
             if col not in dict_col_indexing:
                 df_annotate = df_annotate.drop(columns=[col])
         

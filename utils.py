@@ -1,6 +1,5 @@
 import os
 import time
-import utils_scrape
 import json5
 from tqdm import tqdm
 import numpy as np
@@ -15,9 +14,48 @@ import json
 import ast
 from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix, accuracy_score
 
-def make_dir(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
+def make_dir(path: str) -> None:
+    os.makedirs(path, exist_ok=True)
+
+def sanitize_model_path(model_path: str) -> str:
+    """Replace path separators so model_path names are safe in folder names."""
+    return model_path.replace("/", "--")
+
+def desanitize_model_path(model_path: str) -> str:
+    """Replace path separators so model_path names are safe in folder names."""
+    return model_path.replace("--", "/")
+
+def generate_openai(client, model_path, content, generation_config=None):
+    messages = [
+        {
+            "role": "user",
+            "content": content,
+        },
+    ]
+    response = client.responses.create(model=model_path, input=messages)
+    output = response.output_text
+    return output
+
+def generate_hf(pipe, model_path, content, generation_config={}):
+    messages = [
+        {
+            "role": "user",
+            "content": content,
+        },
+    ]
+    # response = pipe(messages, return_full_text=False, generate_kwargs=generation_config)
+    response = pipe(messages, return_full_text=False, **generation_config)
+    output = response[0]['generated_text']
+    return output
+
+def select_generate_func(api):
+    if api == 'OpenAI':
+        generate_func = generate_openai
+    elif api == 'Huggingface':
+        generate_func = generate_hf
+    else:
+        raise ValueError(f"Unsupported API: {api}")
+    return generate_func
 
 class Timer:
     def __init__(self, label):
@@ -84,27 +122,40 @@ def text_generation(pipe, prompt, max_new_tokens=4096):
     answer = output[0]['generated_text']
     return answer
 
-def get_acc_table(path_form57_csv, path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_merge, list_answer_type_selected, config):
-    _, _, _, json_source = config.conversion.to_tuple()
-    _, model, _, _ = config.retrieval.to_tuple()
+def merge_df(cfg):
+    df_retrieval = pd.read_csv(cfg.path.df_retrieval)
+    df_match = pd.read_csv(cfg.path.df_match)
+    df_match = df_match[df_match['match'] == 1]
+    assert df_match['news_id'].is_unique and df_retrieval['news_id'].is_unique, '==========Warning: News is not unique!!!==========='
+    
+    idx_content_match = df_match.columns.get_loc('content')
+    df_match = df_match.iloc[:, :idx_content_match + 1] # type: ignore
+    df_retrieval_drop = df_retrieval.set_index('news_id')
+    idx_content_retrieval = df_retrieval_drop.columns.get_loc('content')
+    df_retrieval_drop = df_retrieval_drop.iloc[:, idx_content_retrieval + 1:] # type: ignore
+    df_record_news_retrieval = df_match.merge(df_retrieval_drop, left_on='news_id', right_index=True, how='inner')
+    # df_record_news_retrieval.to_csv(cfg.path.df_record_news_retrieval)
+    return df_record_news_retrieval
 
-    df_form57_csv = pd.read_csv(path_form57_csv)
-    df_form57_csv = df_form57_csv[df_form57_csv['State Name'] == 'CALIFORNIA']
-    df_form57_csv['Date'] = pd.to_datetime(df_form57_csv['Date'])
-    df_form57_csv = df_form57_csv[df_form57_csv['Date'] >= '2000-01-01']
-    df_form57_csv['Date'] = df_form57_csv['Date'].astype(str)
-    df_form57_csv = df_form57_csv.set_index('Report Key')
+def get_acc_table(df_merge, list_answer_type_selected, cfg):
+    df_record = pd.read_csv(cfg.path.df_record)
+    df_record = df_record[df_record['State Name'].str.title().isin(cfg.scrp.target_states)]
+    df_record['Date'] = pd.to_datetime(df_record['Date'])
+    df_record = df_record[df_record['Date'] >= cfg.scrp.start_date]
 
-    with open(path_dict_col_indexing, 'r') as f:
+    df_record['Date'] = df_record['Date'].astype(str)
+    df_record = df_record.set_index('Report Key')
+
+    with open(cfg.path.dict_col_indexing, 'r') as f:
         dict_col_indexing = json5.load(f)
     
-    with open(path_dict_idx_mapping, 'r') as f:
+    with open(cfg.path.dict_idx_mapping, 'r') as f:
         dict_idx_mapping = json5.load(f)
         dict_idx_mapping_inverse = {v: k for k, v in dict_idx_mapping.items()}
         if '' in dict_idx_mapping_inverse:
             dict_idx_mapping_inverse.pop('')
 
-    with open(path_dict_answer_places, 'r') as f:
+    with open(cfg.path.dict_answer_places, 'r') as f:
         dict_answer_places = json5.load(f)
     
     dict_idx_answer_type = {
@@ -148,14 +199,14 @@ def get_acc_table(path_form57_csv, path_dict_col_indexing, path_dict_idx_mapping
     if '' in dict_idx_selected:
         dict_idx_selected.pop('')
 
-    pipe = pipeline(model='microsoft/phi-4', device_map='auto', **{'do_sample': False})
+    pipe = pipeline(model='microsoft/phi-4', device_map='auto', **{'do_sample': False}) # type: ignore
 
     df_acc = df_merge.copy(deep=True)
     df_acc = df_acc.drop('match', axis=1, errors='ignore')
     df_acc.iloc[:, 12:] = np.nan
     for idx_match, row_match in tqdm(df_merge.iterrows(), total=df_merge.shape[0]):
         report_key = row_match['report_key']
-        row_csv = df_form57_csv.loc[report_key]
+        row_csv = df_record.loc[report_key]
         list_score_temp = []
         for col_idx_json, col_idx_form  in dict_idx_selected.items():
             col_name = dict_col_indexing[col_idx_form]
@@ -183,7 +234,10 @@ def get_acc_table(path_form57_csv, path_dict_col_indexing, path_dict_idx_mapping
                     acc_temp = (retrieval == label)
                     if np.issubdtype(np.array(retrieval).dtype, np.number):
                         if col_name == 'Incident Year':
-                            retrieval_dt = datetime.datetime(year=int(retrieval), month=1, day=1).strftime('%y')
+                            if retrieval:
+                                retrieval_dt = datetime.datetime(year=int(retrieval), month=1, day=1).strftime('%y')
+                            else:
+                                retrieval_dt = '0'
                             label_dt = datetime.datetime(year=int(label), month=1, day=1).strftime('%y')
                             acc_temp = retrieval_dt == label_dt
                         # elif col_name == 'Day':
@@ -204,7 +258,7 @@ def get_acc_table(path_form57_csv, path_dict_col_indexing, path_dict_idx_mapping
                 elif col_idx_form in dict_idx_answer_type['etc']:
                     pass
                 else:
-                    raise f"no col like {col_idx_form}: {col_name}"
+                    raise BaseException(f"no col like {col_idx_form}: {col_name}")
             list_score_temp.append(acc_temp)
         #     print(f'{acc_temp}\t{retrieval}=={label}\t{col_name}')
         # print('--------------------------------------------------')
@@ -216,21 +270,17 @@ def get_acc_table(path_form57_csv, path_dict_col_indexing, path_dict_idx_mapping
 
     return df_acc
 
-def get_cov_table(path_dict_col_indexing, path_dict_idx_mapping, path_dict_answer_places, df_retrieval, df_annotate, list_answer_type_selected, config):
-    _, _, _, json_source = config.conversion.to_tuple()
-    _, model, _, _ = config.retrieval.to_tuple()
+def get_cov_table(df_annotate, list_answer_type_selected, cfg):
+    df_retrieval = pd.read_csv(cfg.path.df_retrieval)
 
-    with open(path_dict_col_indexing, 'r') as f:
+    with open(cfg.path.dict_col_indexing, 'r') as f:
         dict_col_indexing = json5.load(f)
     
-    with open(path_dict_idx_mapping, 'r') as f:
+    with open(cfg.path.dict_idx_mapping, 'r') as f:
         dict_idx_mapping = json5.load(f)
         dict_idx_mapping_inverse = {v: k for k, v in dict_idx_mapping.items()}
         if '' in dict_idx_mapping_inverse:
             dict_idx_mapping_inverse.pop('')
-
-    with open(path_dict_answer_places, 'r') as f:
-        dict_answer_places = json5.load(f)
     
     dict_idx_answer_type = {
         'digit': ['5_month', '5_day', '5_year', '6_hour', '6_minute', '14', '18', '20c_quantity', '21', '28', '29', '30', '38', 

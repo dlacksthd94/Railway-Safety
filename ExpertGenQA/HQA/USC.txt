@@ -1,0 +1,951 @@
+49 U.S. Code § 20157 - Implementation of positive train control systems
+U.S. Code
+Notes
+prev | next
+(a)In General.—
+(1)Plan required.—Not later than 90 days after the date of enactment of the Positive Train Control Enforcement and Implementation Act of 2015, each Class I railroad carrier and each entity providing regularly scheduled intercity or commuter rail passenger transportation shall submit to the Secretary of Transportation a revised plan for implementing a positive train control system by December 31, 2018, governing operations on—
+(A)its main line over which intercity rail passenger transportation or commuter rail passenger transportation, as defined in section 24102, is regularly provided;
+(B)its main line over which poison- or toxic-by-inhalation hazardous materials, as defined in sections 171.8, 173.115, and 173.132 of title 49, Code of Federal Regulations, are transported; and
+(C)such other tracks as the Secretary may prescribe by regulation or order.
+(2)Implementation.—
+(A)Contents of revised plan.—A revised plan required under paragraph (1) shall—
+(i)describe—
+(I)how the positive train control system will provide for interoperability of the system with the movements of trains of other railroad carriers over its lines; and
+(II)how, to the extent practical, the positive train control system will be implemented in a manner that addresses areas of greater risk before areas of lesser risk;
+(ii)comply with the positive train control system implementation plan content requirements under section 236.1011 of title 49, Code of Federal Regulations; and
+(iii)provide—
+(I)the calendar year or years in which spectrum will be acquired and will be available for use in each area as needed for positive train control system implementation, if such spectrum is not already acquired and available for use;
+(II)the total amount of positive train control system hardware that will be installed for implementation, with totals separated by each major hardware category;
+(III)the total amount of positive train control system hardware that will be installed by the end of each calendar year until the positive train control system is implemented, with totals separated by each hardware category;
+(IV)the total number of employees required to receive training under the applicable positive train control system regulations;
+(V)the total number of employees that will receive the training, as required under the applicable positive train control system regulations, by the end of each calendar year until the positive train control system is implemented;
+(VI)a summary of any remaining technical, programmatic, operational, or other challenges to the implementation of a positive train control system, including challenges with—
+(aa)availability of public funding;
+(bb)interoperability;
+(cc)spectrum;
+(dd)software;
+(ee)permitting; and
+(ff)testing, demonstration, and certification; and
+(VII)a schedule and sequence for implementing a positive train control system by the deadline established under paragraph (1).
+(B)Alternative schedule and sequence.—
+Notwithstanding the implementation deadline under paragraph (1) and in lieu of a schedule and sequence under paragraph (2)(A)(iii)(VII), a railroad carrier or other entity subject to paragraph (1) may include in its revised plan an alternative schedule and sequence for implementing a positive train control system, subject to review under paragraph (3). Such schedule and sequence shall provide for implementation of a positive train control system as soon as practicable, but not later than the date that is 24 months after the implementation deadline under paragraph (1).
+(C)Amendments.—
+A railroad carrier or other entity subject to paragraph (1) may file a request to amend a revised plan, including any alternative schedule and sequence, as applicable, in accordance with section 236.1021 of title 49, Code of Federal Regulations.
+(D)Compliance.—
+A railroad carrier or other entity subject to paragraph (1) shall implement a positive train control system in accordance with its revised plan, including any amendments or any alternative schedule and sequence approved by the Secretary under paragraph (3).
+(3)Secretarial review.—
+(A)Notification.—
+A railroad carrier or other entity that submits a revised plan under paragraph (1) and proposes an alternative schedule and sequence under paragraph (2)(B) shall submit to the Secretary a written notification when such railroad carrier or other entity is prepared for review under subparagraph (B).
+(B)Criteria.—Not later than 90 days after a railroad carrier or other entity submits a notification under subparagraph (A), the Secretary shall review the alternative schedule and sequence submitted pursuant to paragraph (2)(B) and determine whether the railroad carrier or other entity has demonstrated, to the satisfaction of the Secretary, that such carrier or entity has—
+(i)installed all positive train control system hardware consistent with the plan contents provided pursuant to paragraph (2)(A)(iii)(II) on or before the implementation deadline under paragraph (1);
+(ii)acquired all spectrum necessary for implementation of a positive train control system, consistent with the plan contents provided pursuant to paragraph (2)(A)(iii)(I) on or before the implementation deadline under paragraph (1);
+(iii)completed employee training required under the applicable positive train control system regulations;
+(iv)included in its revised plan an alternative schedule and sequence for implementing a positive train control system as soon as practicable, pursuant to paragraph (2)(B);
+(v)certified to the Secretary in writing that it will be in full compliance with the requirements of this section on or before the date provided in an alternative schedule and sequence, subject to approval by the Secretary;
+(vi)in the case of a Class I railroad carrier and Amtrak, implemented a positive train control system or initiated revenue service demonstration on the majority of territories, such as subdivisions or districts, or route miles that are owned or controlled by such carrier and required to have operations governed by a positive train control system; and
+(vii)in the case of any other railroad carrier or other entity not subject to clause (vi)—
+(I)initiated revenue service demonstration on at least 1 territory that is required to have operations governed by a positive train control system; or
+(II)met any other criteria established by the Secretary.
+(C)Decision.—
+(i)In general.—Not later than 90 days after the receipt of the notification from a railroad carrier or other entity under subparagraph (A), the Secretary shall—
+(I)approve an alternative schedule and sequence submitted pursuant to paragraph (2)(B) if the railroad carrier or other entity meets the criteria in subparagraph (B); and
+(II)notify in writing the railroad carrier or other entity of the decision.
+(ii)Deficiencies.—
+Not later than 45 days after the receipt of the notification under subparagraph (A), the Secretary shall provide to the railroad carrier or other entity a written notification of any deficiencies that would prevent approval under clause (i) and provide the railroad carrier or other entity an opportunity to correct deficiencies before the date specified in such clause.
+(D)Revised deadlines.—
+(i)Pending reviews.—
+For a railroad carrier or other entity that submits a notification under subparagraph (A), the deadline for implementation of a positive train control system required under paragraph (1) shall be extended until the date on which the Secretary approves or disapproves the alternative schedule and sequence, if such date is later than the implementation date under paragraph (1).
+(ii)Alternative schedule and sequence deadline.—
+If the Secretary approves a railroad carrier or other entity’s alternative schedule and sequence under subparagraph (C)(i), the railroad carrier or other entity’s deadline for implementation of a positive train control system required under paragraph (1) shall be the date specified in that railroad carrier or other entity’s alternative schedule and sequence. The Secretary may not approve a date for implementation that is later than 24 months from the deadline in paragraph (1).
+(b)Technical Assistance.—
+The Secretary may provide technical assistance and guidance to railroad carriers in developing the plans required under subsection (a).
+(c)Progress Reports and Review.—
+(1)Progress reports.—Each railroad carrier or other entity subject to subsection (a) shall, not later than March 31, 2016, and annually thereafter until such carrier or entity has completed implementation of a positive train control system, submit to the Secretary a report on the progress toward implementing such systems, including—
+(A)the information on spectrum acquisition provided pursuant to subsection (a)(2)(A)(iii)(I);
+(B)the totals provided pursuant to subclauses (III) and (V) of subsection (a)(2)(A)(iii), by territory, if applicable;
+(C)the extent to which the railroad carrier or other entity is complying with the implementation schedule under subsection (a)(2)(A)(iii)(VII) or subsection (a)(2)(B);
+(D)any update to the information provided under subsection (a)(2)(A)(iii)(VI);
+(E)for each entity providing regularly scheduled intercity or commuter rail passenger transportation, a description of the resources identified and allocated to implement a positive train control system;
+(F)for each railroad carrier or other entity subject to subsection (a), the total number of route miles on which a positive train control system has been initiated for revenue service demonstration or implemented, as compared to the total number of route miles required to have a positive train control system under subsection (a); and
+(G)any other information requested by the Secretary.
+(2)Plan review.—
+The Secretary shall at least annually conduct reviews to ensure that railroad carriers or other entities are complying with the revised plan submitted under subsection (a), including any amendments or any alternative schedule and sequence approved by the Secretary. Such railroad carriers or other entities shall provide such information as the Secretary determines necessary to adequately conduct such reviews.
+(3)Public availability.—Not later than 60 days after receipt, the Secretary shall make available to the public on the Internet Web site of the Department of Transportation any report submitted pursuant to paragraph (1) or subsection (d), but may exclude, as the Secretary determines appropriate—
+(A)proprietary information; and
+(B)security-sensitive information, including information described in section 1520.5(a) of title 49, Code of Federal Regulations.
+(d)Report to Congress.—
+Not later than July 1, 2018, the Secretary shall transmit to the Committee on Transportation and Infrastructure of the House of Representatives and the Committee on Commerce, Science, and Transportation of the Senate a report on the progress of each railroad carrier or other entity subject to subsection (a) in implementing a positive train control system.
+(e)Enforcement.—The Secretary is authorized to assess civil penalties pursuant to chapter 213 for—
+(1)a violation of this section;
+(2)the failure to submit or comply with the revised plan required under subsection (a), including the failure to comply with the totals provided pursuant to subclauses (III) and (V) of subsection (a)(2)(A)(iii) and the spectrum acquisition dates provided pursuant to subsection (a)(2)(A)(iii)(I);
+(3)failure to comply with any amendments to such revised plan pursuant to subsection (a)(2)(C); and
+(4)the failure to comply with an alternative schedule and sequence submitted under subsection (a)(2)(B) and approved by the Secretary under subsection (a)(3)(C).
+(f)Other Railroad Carriers.—
+Nothing in this section restricts the discretion of the Secretary to require railroad carriers other than those specified in subsection (a) to implement a positive train control system pursuant to this section or section 20156, or to specify the period by which implementation shall occur that does not exceed the time limits established in this section or section 20156. In exercising such discretion, the Secretary shall, at a minimum, consider the risk to railroad employees and the public associated with the operations of the railroad carrier.
+(g)Regulations.—
+(1)In general.—
+The Secretary shall prescribe regulations or issue orders necessary to implement this section, including regulations specifying in appropriate technical detail the essential functionalities of positive train control systems, and the means by which those systems will be qualified.
+(2)Conforming regulatory amendments.—Immediately after the date of the enactment of the Positive Train Control Enforcement and Implementation Act of 2015, the Secretary—
+(A)shall remove or revise the date-specific deadlines in the regulations or orders implementing this section to the extent necessary to conform with the amendments made by such Act; and
+(B)may not enforce any such date-specific deadlines or requirements that are inconsistent with the amendments made by such Act.
+(3)Review.—
+Nothing in the Positive Train Control Enforcement and Implementation Act of 2015, or the amendments made by such Act, shall be construed to require the Secretary to issue regulations to implement such Act or amendments other than the regulatory amendments required to conform with this section.
+(4)Clarification.—
+(A)Prohibitions.—The Secretary is prohibited from—
+(i)approving or disapproving a revised plan submitted under subsection (a)(1);
+(ii)considering a revised plan under subsection (a)(1) as a request for amendment under section 236.1021 of title 49, Code of Federal Regulations; or
+(iii)requiring the submission, as part of the revised plan under subsection (a)(1), of—
+(I)only a schedule and sequence under subsection (a)(2)(A)(iii)(VII); or
+(II)both a schedule and sequence under subsection (a)(2)(A)(iii)(VII) and an alternative schedule and sequence under subsection (a)(2)(B).
+(B)Civil penalty authority.—
+Except as provided in paragraph (2) and this paragraph, nothing in this subsection shall be construed to limit the Secretary’s authority to assess civil penalties pursuant to subsection (e), consistent with the requirements of this section.
+(C)Retained review authority.—
+The Secretary retains the authority to review revised plans submitted under subsection (a)(1) and is authorized to require modifications of those plans to the extent necessary to ensure that such plans include the descriptions under subsection (a)(2)(A)(i), the contents under subsection (a)(2)(A)(ii), and the year or years, totals, and summary under subsection (a)(2)(A)(iii)(I) through (VI).
+(h)Certification.—
+(1)In general.—
+The Secretary shall not permit the installation of any positive train control system or component in revenue service unless the Secretary has certified that any such system or component has been approved through the approval process set forth in part 236 of title 49, Code of Federal Regulations, and complies with the requirements of that part.
+(2)Provisional operation.—
+Notwithstanding the requirements of paragraph (1), the Secretary may authorize a railroad carrier or other entity to commence operation in revenue service of a positive train control system or component to the extent necessary to enable the safe implementation and operation of a positive train control system in phases.
+(i)Definitions.—In this section:
+(1)Equivalent or greater level of safety.—The term “equivalent or greater level of safety” means the compliance of a railroad carrier with—
+(A)appropriate operating rules in place immediately prior to the use or implementation of such carrier’s positive train control system, except that such rules may be changed by such carrier to improve safe operations; and
+(B)all applicable safety regulations, except as specified in subsection (j).
+(2)Hardware.—
+The term “hardware” means a locomotive apparatus, a wayside interface unit (including any associated legacy signal system replacements), switch position monitors needed for a positive train control system, physical back office system equipment, a base station radio, a wayside radio, a locomotive radio, or a communication tower or pole.
+(3)Interoperability.—
+The term “interoperability” means the ability to control locomotives of the host railroad and tenant railroad to communicate with and respond to the positive train control system, including uninterrupted movements over property boundaries.
+(4)Main line.—The term “main line” means a segment or route of railroad tracks over which 5,000,000 or more gross tons of railroad traffic is transported annually, except that—
+(A)the Secretary may, through regulations under subsection (g), designate additional tracks as main line as appropriate for this section; and
+(B)for intercity rail passenger transportation or commuter rail passenger transportation routes or segments over which limited or no freight railroad operations occur, the Secretary shall define the term “main line” by regulation.
+(5)Positive train control system.—
+The term “positive train control system” means a system designed to prevent train-to-train collisions, over-speed derailments, incursions into established work zone limits, and the movement of a train through a switch left in the wrong position.
+(j)Early Adoption.—
+(1)Operations.—
+From the date of enactment of the Positive Train Control Enforcement and Implementation Act of 2015 through the 1-year period beginning on the date on which the last Class I railroad carrier’s positive train control system subject to subsection (a) is certified by the Secretary under subsection (h)(1) of this section and is implemented on all of that railroad carrier’s lines required to have operations governed by a positive train control system, any railroad carrier, including any railroad carrier that has its positive train control system certified by the Secretary, shall not be subject to the operational restrictions set forth in sections 236.567 and 236.1029 of title 49, Code of Federal Regulations, that would apply where a controlling locomotive that is operating in, or is to be operated in, a positive train control-equipped track segment experiences a positive train control system failure, a positive train control operated consist is not provided by another railroad carrier when provided in interchange, or a positive train control system otherwise fails to initialize, cuts out, or malfunctions, provided that such carrier operates at an equivalent or greater level of safety than the level achieved immediately prior to the use or implementation of its positive train control system.
+(2)Safety assurance.—
+During the period described in paragraph (1), if a positive train control system that has been certified and implemented fails to initialize, cuts out, or malfunctions, the affected railroad carrier or other entity shall make reasonable efforts to determine the cause of the failure and adjust, repair, or replace any faulty component causing the system failure in a timely manner.
+(3)Plans.—
+The positive train control safety plan for each railroad carrier or other entity shall describe the safety measures, such as operating rules and actions to comply with applicable safety regulations, that will be put in place during any system failure.
+(4)Notification.—
+During the period described in paragraph (1), if a positive train control system that has been certified and implemented fails to initialize, cuts out, or malfunctions, the affected railroad carrier or other entity shall submit a notification to the appropriate regional office of the Federal Railroad Administration within 7 days of the system failure, or under alternative location and deadline requirements set by the Secretary, and include in the notification a description of the safety measures the affected railroad carrier or other entity has in place.
+(k)Small Railroads.—
+Not later than 120 days after the date of the enactment of this Act,[1] the Secretary shall amend section 236.1006(b)(4)(iii)(B) of title 49, Code of Federal Regulations (relating to equipping locomotives for applicable Class II and Class III railroads operating in positive train control territory) to extend each deadline under such section by 3 years.
+(l)Revenue Service Demonstration.—
+When a railroad carrier or other entity subject to (a)(1) [2] notifies the Secretary it is prepared to initiate revenue service demonstration, it shall also notify any applicable tenant railroad carrier or other entity subject to subsection (a)(1).
+(m)Reports on Positive Train Control System Performance.—
+(1)In general.—
+Each host railroad subject to this section or subpart I of part 236 of title 49, Code of Federal Regulations, shall electronically submit to the Secretary of Transportation a Report of PTC System Performance on Form FRA F 6180.152, which shall be submitted on or before the applicable due date set forth in paragraph (3) and contain the information described in paragraph (2), which shall be separated by the host railroad, each applicable tenant railroad, and each positive train control-governed track segment, consistent with the railroad’s positive train control Implementation Plan described in subsection (a)(1).
+(2)Required information.—Each report submitted pursuant to paragraph (1) shall include, for the applicable reporting period—
+(A)the number of positive train control system initialization failures, disaggregated by the number of initialization failures for which the source or cause was the onboard subsystem, the wayside subsystem, the communications subsystem, the back office subsystem, or a non-positive train control component;
+(B)the number of positive train control system cut outs, disaggregated by each component listed in subparagraph (A) that was the source or cause of such cut outs;
+(C)the number of positive train control system malfunctions, disaggregated by each component listed in subparagraph (A) that was the source or cause of such malfunctions;
+(D)the number of enforcements by the positive train control system;
+(E)the number of enforcements by the positive train control system in which it is reasonable to assume an accident or incident was prevented;
+(F)the number of scheduled attempts at initialization of the positive train control system;
+(G)the number of train miles governed by the positive train control system; and
+(H)a summary of any actions the host railroad and its tenant railroads are taking to reduce the frequency and rate of initialization failures, cut outs, and malfunctions, such as any actions to correct or eliminate systemic issues and specific problems.
+(3)Due dates.—
+(A)In general.—Except as provided in subparagraph (B), each host railroad shall electronically submit the report required under paragraph (1) not later than—
+(i)April 30, for the period from January 1 through March 31;
+(ii)July 31, for the period from April 1 through June 30;
+(iii)October 31, for the period from July 1 through September 30; and
+(iv)January 31, for the period from October 1 through December 31 of the prior calendar year.
+(B)Frequency reduction.—Beginning on the date that is 3 years after the date of enactment of the Passenger Rail Expansion and Rail Safety Act of 2021, the Secretary shall reduce the frequency with which host railroads are required to submit the report described in paragraph (1) to not less frequently than twice per year, unless the Secretary—
+(i)determines that quarterly reporting is in the public interest; and
+(ii)publishes a justification for such determination in the Federal Register.
+(4)Tenant railroads.—
+Each tenant railroad that operates on a host railroad’s positive train control-governed main line and is not currently subject to an exception under section 236.1006(b) of title 49, Code of Federal Regulations, shall submit the information described in paragraph (2) to each applicable host railroad on a continuous basis.
+(5)Enforcements.—
+Any railroad operating a positive train control system classified under Federal Railroad Administration Type Approval number FRA–TA–2010–001 or FRA–TA–2013–003 shall begin submitting the metric required under paragraph (2)(D) not later than January 31, 2023.
+
+
+23 U.S. Code § 139 - Efficient environmental reviews for project decisionmaking and One Federal Decision
+U.S. Code
+Notes
+prev | next
+(a)Definitions.—In this section, the following definitions apply:
+(1)Agency.—
+The term “agency” means any agency, department, or other unit of Federal, State, local, or Indian tribal government.
+(2)Authorization.—
+The term “authorization” means any environmental license, permit, approval, finding, or other administrative decision related to the environmental review process that is required under Federal law to site, construct, or reconstruct a project.
+(3)Environmental document.—
+The term “environmental document” includes an environmental assessment, finding of no significant impact, notice of intent, environmental impact statement, or record of decision under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.).
+(4)Environmental impact statement.—
+The term “environmental impact statement” means the detailed statement of environmental impacts required to be prepared under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.).
+(5)Environmental review process.—
+(A)In general.—
+The term “environmental review process” means the process for preparing for a project an environmental impact statement, environmental assessment, categorical exclusion, or other document prepared under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.).
+(B)Inclusions.—
+The term “environmental review process” includes the process and schedule, including a timetable for and completion of any environmental permit, approval, review, or study required for a project under any Federal law other than the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.).
+(6)Lead agency.—
+The term “lead agency” means the Department of Transportation and, if applicable, any State or local governmental entity serving as a joint lead agency pursuant to this section.
+(7)Major project.—
+(A)In general.—The term “major project” means a project for which—
+(i)multiple permits, approvals, reviews, or studies are required under a Federal law other than the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.);
+(ii)the project sponsor has identified the reasonable availability of funds sufficient to complete the project;
+(iii)the project is not a covered project (as defined in section 41001 of the FAST Act (42 U.S.C. 4370m)); and
+(iv)
+(I)the head of the lead agency has determined that an environmental impact statement is required; or
+(II)the head of the lead agency has determined that an environmental assessment is required, and the project sponsor requests that the project be treated as a major project.
+(B)Clarification.—
+In this section, the term “major project” does not have the same meaning as the term “major project” as described in section 106(h).
+(8)Multimodal project.—
+The term “multimodal project” means a project that requires the approval of more than 1 Department of Transportation operating administration or secretarial office.
+(9)Project.—
+(A)In general.—
+The term “project” means any highway project, public transportation capital project, or multimodal project that, if implemented as proposed by the project sponsor, would require approval by any operating administration or secretarial office within the Department of Transportation.
+(B)Considerations.—
+In determining whether a project is a project under subparagraph (A), the Secretary shall take into account, if known, any sources of Federal funding or financing identified by the project sponsor, including any discretionary grant, loan, and loan guarantee programs administered by the Department of Transportation.
+(10)Project sponsor.—
+The term “project sponsor” means the agency or other entity, including any private or public-private entity, that seeks approval of the Secretary for a project.
+(11)State transportation department.—
+The term “State transportation department” means any statewide agency of a State with responsibility for one or more modes of transportation.
+(b)Applicability.—
+(1)In general.—
+The project development procedures in this section are applicable to all projects, including major projects, for which an environmental impact statement is prepared under the National Environmental Policy Act (42 U.S.C. 4321 et seq.) of 1969 and may be applied, as requested by a project sponsor and to the extent determined appropriate by the Secretary, to other projects for which an environmental document is prepared pursuant to such Act.
+(2)Flexibility.—
+Any authorities granted in this section may be exercised, and any requirements established under this section may be satisfied, for a project, class of projects, or program of projects.
+(3)Programmatic compliance.—
+(A)In general.—The Secretary shall allow for the use of programmatic approaches to conduct environmental reviews that—
+(i)eliminate repetitive discussions of the same issues;
+(ii)focus on the actual issues ripe for analyses at each level of review; and
+(iii)are consistent with—
+(I)the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.); and
+(II)other applicable laws.
+(B)Requirements.—In carrying out subparagraph (A), the Secretary shall ensure that programmatic reviews—
+(i)promote transparency, including the transparency of—
+(I)the analyses and data used in the environmental reviews;
+(II)the treatment of any deferred issues raised by agencies or the public; and
+(III)the temporal and spatial scales to be used to analyze issues under subclauses (I) and (II);
+(ii)use accurate and timely information, including through establishment of—
+(I)criteria for determining the general duration of the usefulness of the review; and
+(II)a timeline for updating an out-of-date review;
+(iii)describe—
+(I)the relationship between any programmatic analysis and future tiered analysis; and
+(II)the role of the public in the creation of future tiered analysis;
+(iv)are available to other relevant Federal and State agencies, Indian tribes, and the public; and
+(v)provide notice and public comment opportunities consistent with applicable requirements.
+(c)Lead Agencies.—
+(1)Federal lead agency.—
+(A)In general.—
+The Department of Transportation, or an operating administration thereof designated by the Secretary, shall be the Federal lead agency in the environmental review process for a project.
+(B)Modal administration.—
+If the project requires approval from more than 1 modal administration within the Department, the Secretary may designate a single modal administration to serve as the Federal lead agency for the Department in the environmental review process for the project.
+(2)Joint lead agencies.—
+Nothing in this section precludes another agency from being a joint lead agency in accordance with regulations under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.).
+(3)Project sponsor as joint lead agency.—
+Any project sponsor that is a State or local governmental entity receiving funds under this title or chapter 53 of title 49 for the project shall serve as a joint lead agency with the Department for purposes of preparing any environmental document under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.) and may prepare any such environmental document required in support of any action or approval by the Secretary if the Federal lead agency furnishes guidance in such preparation and independently evaluates such document and the document is approved and adopted by the Secretary prior to the Secretary taking any subsequent action or making any approval based on such document, whether or not the Secretary’s action or approval results in Federal funding.
+(4)Ensuring compliance.—
+The Secretary shall ensure that the project sponsor complies with all design and mitigation commitments made jointly by the Secretary and the project sponsor in any environmental document prepared by the project sponsor in accordance with this subsection and that such document is appropriately supplemented if project changes become necessary.
+(5)Adoption and use of documents.—
+Any environmental document prepared in accordance with this subsection may be adopted or used by any Federal agency making any approval to the same extent that such Federal agency could adopt or use a document prepared by another Federal agency.
+(6)Roles and responsibility of lead agency.—With respect to the environmental review process for any project, the lead agency shall have authority and responsibility—
+(A)to take such actions as are necessary and proper, within the authority of the lead agency, to facilitate the expeditious resolution of the environmental review process for the project;
+(B)to prepare or ensure that any required environmental impact statement or other document required to be completed under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.) is completed in accordance with this section and applicable Federal law;
+(C)to consider and respond to comments received from participating agencies on matters within the special expertise or jurisdiction of those agencies; and
+(D)to calculate annually the average time taken by the lead agency to complete all environmental documents for each project during the previous fiscal year.
+(7)Process improvements for projects.—
+(A)In general.—The Secretary shall review—
+(i)existing practices, procedures, rules, regulations, and applicable laws to identify impediments to meeting the requirements applicable to projects under this section; and
+(ii)best practices, programmatic agreements, and potential changes to internal departmental procedures that would facilitate an efficient environmental review process for projects.
+(B)Consultation.—
+In conducting the review under subparagraph (A), the Secretary shall consult, as appropriate, with the heads of other Federal agencies that participate in the environmental review process.
+(C)Report.—Not later than 2 years after the date of enactment of the Surface Transportation Reauthorization Act of 2021, the Secretary shall submit to the Committee on Environment and Public Works of the Senate and the Committee on Transportation and Infrastructure of the House of Representatives a report that includes—
+(i)the results of the review under subparagraph (A); and
+(ii)an analysis of whether additional funding would help the Secretary meet the requirements applicable to projects under this section.
+(d)Participating Agencies.—
+(1)In general.—
+The lead agency shall be responsible for inviting and designating participating agencies in accordance with this subsection.
+(2)Invitation.—
+Not later than 45 days after the date of publication of a notice of intent to prepare an environmental impact statement or the initiation of an environmental assessment, the lead agency shall identify any other Federal and non-Federal agencies that may have an interest in the project, and shall invite such agencies to become participating agencies in the environmental review process for the project. The invitation shall set a deadline for responses to be submitted. The deadline may be extended by the lead agency for good cause.
+(3)Federal participating agencies.—Any Federal agency that is invited by the lead agency to participate in the environmental review process for a project shall be designated as a participating agency by the lead agency unless the invited agency informs the lead agency, in writing, by the deadline specified in the invitation that the invited agency—
+(A)has no jurisdiction or authority with respect to the project;
+(B)has no expertise or information relevant to the project; and
+(C)does not intend to submit comments on the project.
+(4)Effect of designation.—
+(A)Requirement.—
+A participating agency shall comply with the requirements of this section.
+(B)Implication.—Designation as a participating agency under this subsection shall not imply that the participating agency—
+(i)supports a proposed project; or
+(ii)has any jurisdiction over, or special expertise with respect to evaluation of, the project.
+(5)Cooperating agency.—
+A participating agency may also be designated by a lead agency as a “cooperating agency” under the regulations contained in part 1500 of title 40, Code of Federal Regulations.
+(6)Designations for categories of projects.—
+The Secretary may exercise the authorities granted under this subsection for a project, class of projects, or program of projects.
+(7)Concurrent reviews.—Each participating agency and cooperating agency shall—
+(A)carry out the obligations of that agency under other applicable law concurrently, and in conjunction, with the review required under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.), unless doing so would impair the ability of the Federal agency to conduct needed analysis or otherwise carry out those obligations; and
+(B)formulate and implement administrative, policy, and procedural mechanisms to enable the agency to ensure completion of the environmental review process in a timely, coordinated, and environmentally responsible manner.
+(8)Single environmental document.—
+(A)In general.—
+Except as inconsistent with paragraph (7) and except as provided in subparagraph (D), to the maximum extent practicable and consistent with Federal law, all Federal authorizations and reviews for a project shall rely on a single environmental document for each kind of environmental document prepared under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.) under the leadership of the lead agency.
+(B)Use of document.—
+(i)In general.—
+To the maximum extent practicable, the lead agency shall develop environmental documents sufficient to satisfy the requirements for any Federal approval or other Federal action required for the project, including authorizations by other Federal agencies.
+(ii)Cooperation of participating agencies.—
+Other participating agencies shall cooperate with the lead agency and provide timely information to help the lead agency carry out this subparagraph.
+(C)Treatment as participating and cooperating agencies.—
+A Federal agency required to make an approval or take an action for a project, as described in subparagraph (B), shall work with the lead agency for the project to ensure that the agency making the approval or taking the action is treated as being both a participating and cooperating agency for the project.
+(D)Exceptions.—The lead agency may waive the application of subparagraph (A) with respect to a project if—
+(i)the project sponsor requests that agencies issue separate environmental documents;
+(ii)the obligations of a cooperating agency or participating agency under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.) have already been satisfied with respect to the project; or
+(iii)the lead agency determines that reliance on a single environmental document (as described in subparagraph (A)) would not facilitate timely completion of the environmental review process for the project.
+(9)Participating agency responsibilities.—An agency participating in the environmental review process under this section shall—
+(A)provide comments, responses, studies, or methodologies on those areas within the special expertise or jurisdiction of the agency; and
+(B)use the process to address any environmental issues of concern to the agency.
+(10)Timely authorizations for major projects.—
+(A)Deadline.—
+Except as provided in subparagraph (C), all authorization decisions necessary for the construction of a major project shall be completed by not later than 90 days after the date of the issuance of a record of decision for the major project.
+(B)Detail.—
+The final environmental impact statement for a major project shall include an adequate level of detail to inform decisions necessary for the role of the participating agencies and cooperating agencies in the environmental review process.
+(C)Extension of deadline.—The head of the lead agency may extend the deadline under subparagraph (A) if—
+(i)Federal law prohibits the lead agency or another agency from issuing an approval or permit within the period described in that subparagraph;
+(ii)the project sponsor requests that the permit or approval follow a different timeline; or
+(iii)an extension would facilitate completion of the environmental review and authorization process of the major project.
+(e)Project Initiation.—
+(1)In general.—
+The project sponsor shall notify the Secretary of the type of work, termini, length and general location of the proposed project (including any additional information that the project sponsor considers to be important to initiate the process for the proposed project), together with a statement of any Federal approvals anticipated to be necessary for the proposed project, for the purpose of informing the Secretary that the environmental review process should be initiated.
+(2)Submission of documents.—
+The project sponsor may satisfy the requirement under paragraph (1) by submitting to the Secretary any relevant documents containing the information described in that paragraph, including a draft notice for publication in the Federal Register announcing the preparation of an environmental review for the project.
+(3)Review of application.—Not later than 45 days after the date on which the Secretary receives notification under paragraph (1), the Secretary shall provide to the project sponsor a written response that, as applicable—
+(A)describes the determination of the Secretary—
+(i)to initiate the environmental review process, including a timeline and an expected date for the publication in the Federal Register of the relevant notice of intent; or
+(ii)to decline the application, including an explanation of the reasons for that decision; or
+(B)requests additional information, and provides to the project sponsor an accounting regarding what documentation is necessary to initiate the environmental review process.
+(4)Request to designate a lead agency.—
+(A)In general.—
+Any project sponsor may submit to the Secretary a request to designate the operating administration or secretarial office within the Department of Transportation with the expertise on the proposed project to serve as the Federal lead agency for the project.
+(B)Secretarial action.—
+(i)In general.—
+If the Secretary receives a request under subparagraph (A), the Secretary shall respond to the request not later than 45 days after the date of receipt.
+(ii)Requirements.—The response under clause (i) shall—
+(I)approve the request;
+(II)deny the request, with an explanation of the reasons for the denial; or
+(III)require the submission of additional information.
+(iii)Additional information.—
+If additional information is submitted in accordance with clause (ii)(III), the Secretary shall respond to the submission not later than 45 days after the date of receipt.
+(5)Environmental checklist.—
+(A)Development.—
+The lead agency for a project, in consultation with participating agencies, shall develop, as appropriate, a checklist to help project sponsors identify potential natural, cultural, and historic resources in the area of the project.
+(B)Purpose.—The purposes of the checklist are—
+(i)to identify agencies and organizations that can provide information about natural, cultural, and historic resources;
+(ii)to develop the information needed to determine the range of alternatives; and
+(iii)to improve interagency collaboration to help expedite the permitting process for the lead agency and participating agencies.
+(f)Purpose and Need; Alternatives Analysis.—
+(1)Participation.—
+As early as practicable during the environmental review process, the lead agency shall provide an opportunity for involvement by participating agencies and the public in defining the purpose and need for a project.
+(2)Definition.—
+Following participation under paragraph (1), the lead agency shall define the project’s purpose and need for purposes of any document which the lead agency is responsible for preparing for the project.
+(3)Objectives.—The statement of purpose and need shall include a clear statement of the objectives that the proposed action is intended to achieve, which may include—
+(A)achieving a transportation objective identified in an applicable statewide or metropolitan transportation plan;
+(B)supporting land use, economic development, or growth objectives established in applicable Federal, State, local, or tribal plans; and
+(C)serving national defense, national security, or other national objectives, as established in Federal laws, plans, or policies.
+(4)Alternatives analysis.—
+(A)Participation.—
+(i)In general.—
+As early as practicable during the environmental review process, the lead agency shall provide an opportunity for involvement by participating agencies and the public in determining the range of alternatives to be considered for a project.
+(ii)Comments of participating agencies.—
+To the maximum extent practicable and consistent with applicable law, each participating agency receiving an opportunity for involvement under clause (i) shall limit the comments of the agency to subject matter areas within the special expertise or jurisdiction of the agency.
+(iii)Effect of nonparticipation.—
+A participating agency that declines to participate in the development of the purpose and need and range of alternatives for a project shall be required to comply with the schedule developed under subsection (g)(1)(B).
+(B)Range of alternatives.—
+(i)Determination.—
+Following participation under subparagraph (A), the lead agency shall determine the range of alternatives for consideration in any document which the lead agency is responsible for preparing for the project.
+(ii)Use.—To the maximum extent practicable and consistent with Federal law, the range of alternatives determined for a project under clause (i) shall be used for all Federal environmental reviews and permit processes required for the project unless the alternatives must be modified—
+(I)to address significant new information or circumstances, and the lead agency and participating agencies agree that the alternatives must be modified to address the new information or circumstances; or
+(II)for the lead agency or a participating agency to fulfill the responsibilities of the agency under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.) in a timely manner.
+(C)Methodologies.—
+The lead agency also shall determine, in collaboration with participating agencies at appropriate times during the study process, the methodologies to be used and the level of detail required in the analysis of each alternative for a project.
+(D)Preferred alternative.—
+At the discretion of the lead agency, the preferred alternative for a project, after being identified, may be developed to a higher level of detail than other alternatives in order to facilitate the development of mitigation measures or concurrent compliance with other applicable laws if the lead agency determines that the development of such higher level of detail will not prevent the lead agency from making an impartial decision as to whether to accept another alternative which is being considered in the environmental review process.
+(E)Reduction of duplication.—
+(i)In general.—In carrying out this paragraph, the lead agency shall reduce duplication, to the maximum extent practicable, between—
+(I)the evaluation of alternatives under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.); and
+(II)the evaluation of alternatives in the metropolitan transportation planning process under section 134 or an environmental review process carried out under State law (referred to in this subparagraph as a “State environmental review process”).
+(ii)Consideration of alternatives.—The lead agency may eliminate from detailed consideration an alternative proposed in an environmental impact statement regarding a project if, as determined by the lead agency—
+(I)the alternative was considered in a metropolitan planning process or a State environmental review process by a metropolitan planning organization or a State or local transportation agency, as applicable;
+(II)the lead agency provided guidance to the metropolitan planning organization or State or local transportation agency, as applicable, regarding analysis of alternatives in the metropolitan planning process or State environmental review process, including guidance on the requirements of the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.) and any other Federal law necessary for approval of the project;
+(III)the applicable metropolitan planning process or State environmental review process included an opportunity for public review and comment;
+(IV)the applicable metropolitan planning organization or State or local transportation agency rejected the alternative after considering public comments;
+(V)the Federal lead agency independently reviewed the alternative evaluation approved by the applicable metropolitan planning organization or State or local transportation agency; and
+(VI)the Federal lead agency determined—
+(aa)in consultation with Federal participating or cooperating agencies, that the alternative to be eliminated from consideration is not necessary for compliance with the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.); or
+(bb)with the concurrence of Federal agencies with jurisdiction over a permit or approval required for a project, that the alternative to be eliminated from consideration is not necessary for any permit or approval under any other Federal law.
+(g)Coordination and Scheduling.—
+(1)Coordination plan.—
+(A)In general.—
+Not later than 90 days after the date of publication of a notice of intent to prepare an environmental impact statement or the initiation of an environmental assessment, the lead agency shall establish a plan for coordinating public and agency participation in and comment on the environmental review process for a project or category of projects. The coordination plan may be incorporated into a memorandum of understanding.
+(B)Schedule.—
+(i)In general.—
+The lead agency shall establish as part of such coordination plan, after consultation with and the concurrence of each participating agency for the project and with the State in which the project is located (and, if the State is not the project sponsor, with the project sponsor), a schedule for completion of the environmental review process for the project.
+(ii)Factors for consideration.—In establishing the schedule, the lead agency shall consider factors such as—
+(I)the responsibilities of participating agencies under applicable laws;
+(II)resources available to the cooperating agencies;
+(III)overall size and complexity of the project;
+(IV)the overall time required by an agency to conduct an environmental review and make decisions under applicable Federal law relating to a project (including the issuance or denial of a permit or license) and the cost of the project; and
+(V)the sensitivity of the natural and historic resources that could be affected by the project.
+(iii)Major project schedule.—To the maximum extent practicable and consistent with applicable Federal law, in the case of a major project, the lead agency shall develop, in concurrence with the project sponsor, a schedule for the major project that is consistent with an agency average of not more than 2 years for the completion of the environmental review process for major projects, as measured from, as applicable—
+(I)the date of publication of a notice of intent to prepare an environmental impact statement to the record of decision; or
+(II)the date on which the head of the lead agency determines that an environmental assessment is required to a finding of no significant impact.
+(C)Consistency with other time periods.—
+A schedule under subparagraph (B) shall be consistent with any other relevant time periods established under Federal law.
+(D)Modification.—
+(i)In general.—
+Except as provided in clause (ii), the lead agency may lengthen or shorten a schedule established under subparagraph (B) for good cause.
+(ii)Exceptions.—
+(I)Major projects.—
+In the case of a major project, the lead agency may lengthen a schedule under clause (i) for a cooperating Federal agency by not more than 1 year after the latest deadline established for the major project by the lead agency.
+(II)Shortened schedules.—
+The lead agency may not shorten a schedule under clause (i) if doing so would impair the ability of a cooperating Federal agency to conduct necessary analyses or otherwise carry out relevant obligations of the Federal agency for the project.
+(E)Failure to meet deadline.—If a cooperating Federal agency fails to meet a deadline established under subparagraph (D)(ii)(I)—
+(i)the cooperating Federal agency shall submit to the Secretary a report that describes the reasons why the deadline was not met; and
+(ii)the Secretary shall—
+(I)transmit to the Committee on Environment and Public Works of the Senate and the Committee on Transportation and Infrastructure of the House of Representatives a copy of the report under clause (i); and
+(II)make the report under clause (i) publicly available on the internet.
+(F)Dissemination.—A copy of a schedule under subparagraph (B), and of any modifications to the schedule, shall be—
+(i)provided to all participating agencies and to the State transportation department of the State in which the project is located (and, if the State is not the project sponsor, to the project sponsor); and
+(ii)made available to the public.
+(2)Comment deadlines.—The lead agency shall establish the following deadlines for comment during the environmental review process for a project:
+(A)For comments by agencies and the public on a draft environmental impact statement, a period of not more than 60 days after publication in the Federal Register of notice of the date of public availability of such document, unless—
+(i)a different deadline is established by agreement of the lead agency, the project sponsor, and all participating agencies; or
+(ii)the deadline is extended by the lead agency for good cause.
+(B)For all other comment periods established by the lead agency for agency or public comments in the environmental review process, a period of no more than 30 days from availability of the materials on which comment is requested, unless—
+(i)a different deadline is established by agreement of the lead agency, the project sponsor, and all participating agencies; or
+(ii)the deadline is extended by the lead agency for good cause.
+(3)Deadlines for decisions under other laws.—In any case in which a decision under any Federal law relating to a project (including the issuance or denial of a permit or license) is required to be made by the later of the date that is 180 days after the date on which the Secretary made all final decisions of the lead agency with respect to the project, or 180 days after the date on which an application was submitted for the permit or license, the Secretary shall submit to the Committee on Environment and Public Works of the Senate and the Committee on Transportation and Infrastructure of the House of Representatives and publish on the Internet—
+(A)as soon as practicable after the 180-day period, an initial notice of the failure of the Federal agency to make the decision; and
+(B)every 60 days thereafter until such date as all decisions of the Federal agency relating to the project have been made by the Federal agency, an additional notice that describes the number of decisions of the Federal agency that remain outstanding as of the date of the additional notice.
+(4)Involvement of the public.—
+Nothing in this subsection shall reduce any time period provided for public comment in the environmental review process under existing Federal law, including a regulation.
+(h)Issue Identification and Resolution.—
+(1)Cooperation.—
+The lead agency and the participating agencies shall work cooperatively in accordance with this section to identify and resolve issues that could delay completion of the environmental review process or could result in denial of any approvals required for the project under applicable laws.
+(2)Lead agency responsibilities.—
+The lead agency shall make information available to the participating agencies as early as practicable in the environmental review process regarding the environmental and socioeconomic resources located within the project area and the general locations of the alternatives under consideration. Such information may be based on existing data sources, including geographic information systems mapping.
+(3)Participating agency responsibilities.—
+Based on information received from the lead agency, participating agencies shall identify, as early as practicable, any issues of concern regarding the project’s potential environmental or socioeconomic impacts. In this paragraph, issues of concern include any issues that could substantially delay or prevent an agency from granting a permit or other approval that is needed for the project.
+(4)Issue resolution.—
+Any issue resolved by the lead agency with the concurrence of participating agencies may not be reconsidered unless significant new information or circumstances arise.
+(5)Interim decision on achieving accelerated decisionmaking.—
+(A)In general.—
+Not later than 30 days after the close of the public comment period on a draft environmental impact statement, the Secretary may convene a meeting with the project sponsor, lead agency, resource agencies, and any relevant State agencies to ensure that all parties are on schedule to meet deadlines for decisions to be made regarding the project.
+(B)Deadlines.—
+The deadlines referred to in subparagraph (A) shall be those established under subsection (g), or any other deadlines established by the lead agency, in consultation with the project sponsor and other relevant agencies.
+(C)Failure to assure.—
+If the relevant agencies cannot provide reasonable assurances that the deadlines described in subparagraph (B) will be met, the Secretary may initiate the issue resolution and referral process described under paragraph (6) before the completion of the record of decision.
+(6)Accelerated issue resolution and referral.—
+(A)Agency issue resolution meeting.—
+(i)In general.—
+A Federal agency of jurisdiction, project sponsor, or the Governor of a State in which a project is located may request an issue resolution meeting to be conducted by the lead agency.
+(ii)Action by lead agency.—The lead agency shall convene an issue resolution meeting under clause (i) with the relevant participating agencies and the project sponsor, including the Governor only if the meeting was requested by the Governor, to resolve issues that could—
+(I)delay completion of the environmental review process; or
+(II)result in denial of any approvals required for the project under applicable laws.
+(iii)Date.—
+A meeting requested under this subparagraph shall be held by not later than 21 days after the date of receipt of the request for the meeting, unless the lead agency determines that there is good cause to extend the time for the meeting.
+(iv)Notification.—
+On receipt of a request for a meeting under this subparagraph, the lead agency shall notify all relevant participating agencies of the request, including the issue to be resolved, and the date for the meeting.
+(v)Disputes.—
+If a relevant participating agency with jurisdiction over an approval required for a project under applicable law determines that the relevant information necessary to resolve the issue has not been obtained and could not have been obtained within a reasonable time, but the lead agency disagrees, the resolution of the dispute shall be forwarded to the heads of the relevant agencies for resolution.
+(vi)Convention by lead agency.—
+A lead agency may convene an issue resolution meeting under this subsection at any time without the request of the Federal agency of jurisdiction, project sponsor, or the Governor of a State.
+(B)Elevation of issue resolution.—
+(i)In general.—
+If issue resolution is not achieved by not later than 30 days after the date of a relevant meeting under subparagraph (A), the Secretary shall notify the lead agency, the heads of the relevant participating agencies, and the project sponsor (including the Governor only if the initial issue resolution meeting request came from the Governor) that an issue resolution meeting will be convened.
+(ii)Requirements.—
+The Secretary shall identify the issues to be addressed at the meeting and convene the meeting not later than 30 days after the date of issuance of the notice.
+(C)Referral of issue resolution.—
+(i)Referral to council on environmental quality.—
+(I)In general.—
+If resolution is not achieved by not later than 30 days after the date of an issue resolution meeting under subparagraph (B), the Secretary shall refer the matter to the Council on Environmental Quality.
+(II)Meeting.—
+Not later than 30 days after the date of receipt of a referral from the Secretary under subclause (I), the Council on Environmental Quality shall hold an issue resolution meeting with the lead agency, the heads of relevant participating agencies, and the project sponsor (including the Governor only if an initial request for an issue resolution meeting came from the Governor).
+(ii)Referral to the president.—
+If a resolution is not achieved by not later than 30 days after the date of the meeting convened by the Council on Environmental Quality under clause (i)(II), the Secretary shall refer the matter directly to the President.
+(7)Financial penalty provisions.—
+(A)In general.—
+A Federal agency of jurisdiction over an approval required for a project under applicable laws shall complete any required approval on an expeditious basis using the shortest existing applicable process.
+(B)Failure to decide.—
+(i)In general.—If an agency described in subparagraph (A) fails to render a decision under any Federal law relating to a project that requires the preparation of an environmental impact statement or environmental assessment, including the issuance or denial of a permit, license, or other approval by the date described in clause (ii), an amount of funding equal to the amounts specified in subclause (I) or (II) shall be rescinded from the applicable office of the head of the agency, or equivalent office to which the authority for rendering the decision has been delegated by law by not later than 1 day after the applicable date under clause (ii), and once each week thereafter until a final decision is rendered, subject to subparagraph (C)—
+(I)$20,000 for any project for which an annual financial plan is required under subsection (h) or (i) of section 106; or
+(II)$10,000 for any other project requiring preparation of an environmental assessment or environmental impact statement.
+(ii)Description of date.—The date referred to in clause (i) is—
+(I)the date that is 30 days after the date for rendering a decision as described in the project schedule established pursuant to subsection (g)(1)(B);
+(II)if no schedule exists, the later of—
+(aa)the date that is 180 days after the date on which an application for the permit, license, or approval is complete; and
+(bb)the date that is 180 days after the date on which the Federal lead agency issues a decision on the project under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.); or
+(III)a modified date in accordance with subsection (g)(1)(D).
+(C)Limitations.—
+(i)In general.—
+No rescission of funds under subparagraph (B) relating to an individual project shall exceed, in any fiscal year, an amount equal to 2.5 percent of the funds made available for the applicable agency office.
+(ii)Failure to decide.—
+The total amount rescinded in a fiscal year as a result of a failure by an agency to make a decision by an applicable deadline shall not exceed an amount equal to 7 percent of the funds made available for the applicable agency office for that fiscal year.
+(D)No fault of agency.—A rescission of funds under this paragraph shall not be made if the lead agency for the project certifies that—
+(i)the agency has not received necessary information or approvals from another entity, such as the project sponsor, in a manner that affects the ability of the agency to meet any requirements under State, local, or Federal law; or
+(ii)significant new information or circumstances, including a major modification to an aspect of the project, requires additional analysis for the agency to make a decision on the project application.
+(E)Limitation.—
+The Federal agency with jurisdiction for the decision from which funds are rescinded pursuant to this paragraph shall not reprogram funds to the office of the head of the agency, or equivalent office, to reimburse that office for the loss of the funds.
+(F)Audits.—In any fiscal year in which any funds are rescinded from a Federal agency pursuant to this paragraph, the Inspector General of that agency shall—
+(i)conduct an audit to assess compliance with the requirements of this paragraph; and
+(ii)not later than 120 days after the end of the fiscal year during which the rescission occurred, submit to the Committee on Environment and Public Works of the Senate and the Committee on Transportation and Infrastructure of the House of Representatives a report describing the reasons why the transfers were levied, including allocations of resources.
+(G)Effect of paragraph.—
+Nothing in this paragraph affects or limits the application of, or obligation to comply with, any Federal, State, local, or tribal law.
+(8)Expedient decisions and reviews.—To ensure that Federal environmental decisions and reviews are expeditiously made—
+(A)adequate resources made available under this title shall be devoted to ensuring that applicable environmental reviews under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.) are completed on an expeditious basis and that the shortest existing applicable process under that Act is implemented; and
+(B)the President shall submit to the Committee on Transportation and Infrastructure of the House of Representatives and the Committee on Environment and Public Works of the Senate, not less frequently than once every 120 days after the date of enactment of the MAP–21, a report on the status and progress of the following projects and activities funded under this title with respect to compliance with applicable requirements under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.):
+(i)Projects and activities required to prepare an annual financial plan under section 106(i).
+(ii)A sample of not less than 5 percent of the projects requiring preparation of an environmental impact statement or environmental assessment in each State.
+(i)Performance Measurement.—
+The Secretary shall establish a program to measure and report on progress toward improving and expediting the planning and environmental review process.
+(j)Assistance to Affected State and Federal Agencies.—
+(1)In general.—
+(A)Authority to provide funds.—
+The Secretary may allow a public entity receiving financial assistance from the Department of Transportation under this title or chapter 53 of title 49 to provide funds to Federal agencies (including the Department), State agencies, and Indian tribes participating in the environmental review process for the project or program.
+(B)Use of funds.—
+Funds referred to in subparagraph (A) may be provided only to support activities that directly and meaningfully contribute to expediting and improving permitting and review processes, including planning, approval, and consultation processes for the project or program.
+(2)Activities eligible for funding.—
+Activities for which funds may be provided under paragraph (1) include transportation planning activities that precede the initiation of the environmental review process, activities directly related to the environmental review process, dedicated staffing, training of agency personnel, information gathering and mapping, and development of programmatic agreements.
+(3)Use of federal lands highway funds.—
+The Secretary may also use funds made available under section 204 [1] for a project for the purposes specified in this subsection with respect to the environmental review process for the project.
+(4)Amounts.—
+Requests under paragraph (1) may be approved only for the additional amounts that the Secretary determines are necessary for the Federal agencies, State agencies, or Indian tribes participating in the environmental review process to meet the time limits for environmental review.
+(5)Condition.—
+A request under paragraph (1) to expedite time limits for environmental review may be approved only if such time limits are less than the customary time necessary for such review.
+(6)Agreement.—
+Prior to providing funds approved by the Secretary for dedicated staffing at an affected agency under paragraphs (1) and (2), the affected agency and the requesting public entity shall enter into an agreement that establishes the projects and priorities to be addressed by the use of the funds.
+(k)Judicial Review and Savings Clause.—
+(1)Judicial review.—
+Except as set forth under subsection (l), nothing in this section shall affect the reviewability of any final Federal agency action in a court of the United States or in the court of any State.
+(2)Savings clause.—
+Nothing in this section shall be construed as superseding, amending, or modifying the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.) or any other Federal environmental statute or affect the responsibility of any Federal officer to comply with or enforce any such statute.
+(3)Limitations.—Nothing in this section shall preempt or interfere with—
+(A)any practice of seeking, considering, or responding to public comment; or
+(B)any power, jurisdiction, responsibility, or authority that a Federal, State, or local government agency, metropolitan planning organization, Indian tribe, or project sponsor has with respect to carrying out a project or any other provisions of law applicable to projects, plans, or programs.
+(l)Limitations on Claims.—
+(1)In general.—
+Notwithstanding any other provision of law, a claim arising under Federal law seeking judicial review of a permit, license, or approval issued by a Federal agency for a highway or public transportation capital project shall be barred unless it is filed within 150 days after publication of a notice in the Federal Register announcing that the permit, license, or approval is final pursuant to the law under which the agency action is taken, unless a shorter time is specified in the Federal law pursuant to which judicial review is allowed. Nothing in this subsection shall create a right to judicial review or place any limit on filing a claim that a person has violated the terms of a permit, license, or approval.
+(2)New information.—
+The Secretary shall consider new information received after the close of a comment period if the information satisfies the requirements for a supplemental environmental impact statement under section 771.130 of title 23, Code of Federal Regulations. The preparation of a supplemental environmental impact statement when required shall be considered a separate final agency action and the deadline for filing a claim for judicial review of such action shall be 150 days after the date of publication of a notice in the Federal Register announcing such action.
+(m)Enhanced Technical Assistance and Accelerated Project Completion.—
+(1)Definition of covered project.—In this subsection, the term “covered project” means a project—
+(A)that has an ongoing environmental impact statement under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.); and
+(B)for which at least 2 years, beginning on the date on which a notice of intent is issued, have elapsed without the issuance of a record of decision.
+(2)Technical assistance.—At the request of a project sponsor or the Governor of a State in which a project is located, the Secretary shall provide additional technical assistance to resolve for a covered project any outstanding issues and project delay, including by—
+(A)providing additional staff, training, and expertise;
+(B)facilitating interagency coordination;
+(C)promoting more efficient collaboration; and
+(D)supplying specialized onsite assistance.
+(3)Scope of work.—
+(A)In general.—
+In providing technical assistance for a covered project under this subsection, the Secretary shall establish a scope of work that describes the actions that the Secretary will take to resolve the outstanding issues and project delays, including establishing a schedule under subparagraph (B).
+(B)Schedule.—
+(i)In general.—
+The Secretary shall establish and meet a schedule for the completion of any permit, approval, review, or study, required for the covered project by the date that is not later than 4 years after the date on which a notice of intent for the covered project is issued.
+(ii)Inclusions.—The schedule under clause (i) shall—
+(I)comply with all applicable laws;
+(II)require the concurrence of the Council on Environmental Quality and each participating agency for the project with the State in which the project is located or the project sponsor, as applicable; and
+(III)reflect any new information that becomes available and any changes in circumstances that may result in new significant impacts that could affect the timeline for completion of any permit, approval, review, or study required for the covered project.
+(4)Consultation.—
+In providing technical assistance for a covered project under this subsection, the Secretary shall consult, if appropriate, with resource and participating agencies on all methods available to resolve the outstanding issues and project delays for a covered project as expeditiously as possible.
+(5)Enforcement.—
+(A)In general.—
+All provisions of this section shall apply to this subsection, including the financial penalty provisions under subsection (h)(6).
+(B)Restriction.—
+If the Secretary enforces this subsection under subsection (h)(6), the Secretary may use a date included in a schedule under paragraph (3)(B) that is created pursuant to and is in compliance with this subsection in lieu of the dates under subsection (h)(6)(B)(ii).
+(n)Accelerated Decisionmaking in Environmental Reviews.—
+(1)In general.—In preparing a final environmental impact statement under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.), if the lead agency modifies the statement in response to comments that are minor and are confined to factual corrections or explanations of why the comments do not warrant additional agency response, the lead agency may write on errata sheets attached to the statement instead of rewriting the draft statement, subject to the condition that the errata sheets—
+(A)cite the sources, authorities, and reasons that support the position of the agency; and
+(B)if appropriate, indicate the circumstances that would trigger agency reappraisal or further response.
+(2)Single document.—To the maximum extent practicable, the lead agency shall expeditiously develop a single document that consists of a final environmental impact statement and a record of decision, unless—
+(A)the final environmental impact statement makes substantial changes to the proposed action that are relevant to environmental or safety concerns; or
+(B)there is a significant new circumstance or information relevant to environmental concerns that bears on the proposed action or the impacts of the proposed action.
+(3)Length of environmental document.—
+(A)In general.—
+Notwithstanding any other provision of law and except as provided in subparagraph (B), to the maximum extent practicable, the text of the items described in paragraphs (4) through (6) of section 1502.10(a) of title 40, Code of Federal Regulations (or successor regulations), of an environmental impact statement for a project shall be 200 pages or fewer.
+(B)Exemption.—
+An environmental impact statement for a project may exceed 200 pages, if the lead agency establishes a new page limit for the environmental impact statement for that project.
+(o)Improving Transparency in Environmental Reviews.—
+(1)In general.—Not later than 18 months after the date of enactment of this subsection, the Secretary shall—
+(A)use the searchable Internet website maintained under section 41003(b) of the FAST Act—
+(i)to make publicly available the status and progress of projects requiring an environmental assessment or an environmental impact statement with respect to compliance with applicable requirements of the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.) and any other Federal, State, or local approval required for those projects; and
+(ii)to make publicly available the names of participating agencies not participating in the development of a project purpose and need and range of alternatives under subsection (f); and
+(B)issue reporting standards to meet the requirements of subparagraph (A).
+(2)Federal, state, and local agency participation.—
+(A)Federal agencies.—
+A Federal agency participating in the environmental review or permitting process for a project shall provide to the Secretary information regarding the status and progress of the approval of the project for publication on the Internet website referred to in paragraph (1)(A), consistent with the standards established under paragraph (1)(B).
+(B)State and local agencies.—
+The Secretary shall encourage State and local agencies participating in the environmental review permitting process for a project to provide information regarding the status and progress of the approval of the project for publication on the Internet website referred to in paragraph (1)(A).
+(3)States with delegated authority.—
+A State with delegated authority for responsibilities under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.) pursuant to section 327 shall be responsible for supplying to the Secretary project development and compliance status for all applicable projects.
+(p)Accountability and Reporting for Major Projects.—
+(1)In general.—
+The Secretary shall establish a performance accountability system to track each major project.
+(2)Requirements.—The performance accountability system under paragraph (1) shall, for each major project, track, at a minimum—
+(A)the environmental review process for the major project, including the project schedule;
+(B)whether the lead agency, cooperating agencies, and participating agencies are meeting the schedule established for the environmental review process; and
+(C)the time taken to complete the environmental review process.
+(q)Development of Categorical Exclusions.—
+(1)In general.—Not later than 60 days after the date of enactment of this subsection, and every 4 years thereafter, the Secretary shall—
+(A)in consultation with the agencies described in paragraph (2), identify the categorical exclusions described in section 771.117 of title 23, Code of Federal Regulations (or successor regulations), that would accelerate delivery of a project if those categorical exclusions were available to those agencies;
+(B)collect existing documentation and substantiating information on the categorical exclusions described in subparagraph (A); and
+(C)provide to each agency described in paragraph (2)—
+(i)a list of the categorical exclusions identified under subparagraph (A); and
+(ii)the documentation and substantiating information under subparagraph (B).
+(2)Agencies described.—The agencies referred to in paragraph (1) are—
+(A)the Department of the Interior;
+(B)the Department of the Army;
+(C)the Department of Commerce;
+(D)the Department of Agriculture;
+(E)the Department of Energy;
+(F)the Department of Defense; and
+(G)any other Federal agency that has participated in an environmental review process for a project, as determined by the Secretary.
+(3)Adoption of categorical exclusions.—
+(A)In general.—
+Not later than 1 year after the date on which the Secretary provides a list under paragraph (1)(C), an agency described in paragraph (2) shall publish a notice of proposed rulemaking to propose any categorical exclusions from the list applicable to the agency, subject to the condition that the categorical exclusion identified under paragraph (1)(A) meets the criteria for a categorical exclusion under section 1508.1 of title 40, Code of Federal Regulations (or successor regulations).
+(B)Public comment.—
+In a notice of proposed rulemaking under subparagraph (A), the applicable agency may solicit comments on whether any of the proposed new categorical exclusions meet the criteria for a categorical exclusion under section 1508.1 of title 40, Code of Federal Regulations (or successor regulations).
+
+
+23 U.S. Code § 138 - Preservation of parklands
+U.S. Code
+Notes
+prev | next
+(a)Declaration of Policy.—
+(1)In general.—
+It is the national policy that special effort should be made to preserve the natural beauty of the countryside and public park and recreation lands, wildlife and waterfowl refuges, and historic sites.
+(2)Cooperation and consultation.—
+(A)In general.—
+The Secretary shall cooperate and consult with the Secretaries of the Interior, Housing and Urban Development, and Agriculture, and with the States in developing transportation plans and programs that include measures to maintain or enhance the natural beauty of the lands traversed.
+(B)Timeline for approvals.—
+(i)In general.—The Secretary shall—
+(I)provide an evaluation under this section to the Secretaries described in subparagraph (A); and
+(II)provide a period of 30 days for receipt of comments.
+(ii)Assumed acceptance.—
+If the Secretary does not receive comments by 15 days after the deadline under clause (i)(II), the Secretary shall assume a lack of objection and proceed with the action.
+(C)Effect.—Nothing in subparagraph (B) affects—
+(i)the requirements under—
+(I)subsections (b) through (f); or
+(II)the consultation process under section 306108 of title 54; or
+(ii)programmatic section 4(f) evaluations, as described in regulations issued by the Secretary.
+(3)Requirement.—After the effective date of the Federal-Aid Highway Act of 1968, the Secretary shall not approve any program or project (other than any project for a Federal lands transportation facility) which requires the use of any publicly owned land from a public park, recreation area, or wildlife and waterfowl refuge of national, State, or local significance as determined by the Federal, State, or local officials having jurisdiction thereof, or any land from an historic site of national, State, or local significance as so determined by such officials unless—
+(A)there is no feasible and prudent alternative to the use of the land; and
+(B)the program includes all possible planning to minimize harm to such park, recreational area, wildlife and waterfowl refuge, or historic site resulting from such use.
+(4)Studies.—
+In carrying out the national policy declared in this section the Secretary, in cooperation with the Secretary of the Interior and appropriate State and local officials, is authorized to conduct studies as to the most feasible Federal-aid routes for the movement of motor vehicular traffic through or around national parks so as to best serve the needs of the traveling public while preserving the natural beauty of these areas.
+(b)De Minimis Impacts.—
+(1)Requirements.—
+(A)Requirements for historic sites.—
+The requirements of this section shall be considered to be satisfied with respect to an area described in paragraph (2) if the Secretary determines, in accordance with this subsection, that a transportation program or project will have a de minimis impact on the area.
+(B)Requirements for parks, recreation areas, and wildlife or waterfowl refuges.—
+The requirements of subsection (a)(1) shall be considered to be satisfied with respect to an area described in paragraph (3) if the Secretary determines, in accordance with this subsection, that a transportation program or project will have a de minimis impact on the area. The requirements of subsection (a)(2) with respect to an area described in paragraph (3) shall not include an alternatives analysis.
+(C)Criteria.—
+In making any determination under this subsection, the Secretary shall consider to be part of a transportation program or project any avoidance, minimization, mitigation, or enhancement measures that are required to be implemented as a condition of approval of the transportation program or project.
+(2)Historic sites.—With respect to historic sites, the Secretary may make a finding of de minimis impact only if—
+(A)the Secretary has determined, in accordance with the consultation process required under section 306108 of title 54, that—
+(i)the transportation program or project will have no adverse effect on the historic site; or
+(ii)there will be no historic properties affected by the transportation program or project;
+(B)the finding of the Secretary has received written concurrence from the applicable State historic preservation officer or tribal historic preservation officer (and from the Advisory Council on Historic Preservation if the Council is participating in the consultation process); and
+(C)the finding of the Secretary has been developed in consultation with parties consulting as part of the process referred to in subparagraph (A).
+(3)Parks, recreation areas, and wildlife or waterfowl refuges.—With respect to parks, recreation areas, or wildlife or waterfowl refuges, the Secretary may make a finding of de minimis impact only if—
+(A)the Secretary has determined, after public notice and opportunity for public review and comment, that the transportation program or project will not adversely affect the activities, features, and attributes of the park, recreation area, or wildlife or waterfowl refuge eligible for protection under this section; and
+(B)the finding of the Secretary has received concurrence from the officials with jurisdiction over the park, recreation area, or wildlife or waterfowl refuge.
+(c)Satisfaction of Requirements for Certain Historic Sites.—
+(1)In general.—The Secretary shall—
+(A)align, to the maximum extent practicable, with the requirements of the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.) and section 306108 of title 54, including implementing regulations; and
+(B)not later than 90 days after the date of enactment of this subsection, coordinate with the Secretary of the Interior and the Executive Director of the Advisory Council on Historic Preservation (referred to in this subsection as the “Council”) to establish procedures to satisfy the requirements described in subparagraph (A) (including regulations).
+(2)Avoidance alternative analysis.—
+(A)In general.—If, in an analysis required under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.), the Secretary determines that there is no feasible or prudent alternative to avoid use of a historic site, the Secretary may—
+(i)include the determination of the Secretary in the analysis required under that Act;
+(ii)provide a notice of the determination to—
+(I)each applicable State historic preservation officer and tribal historic preservation officer;
+(II)the Council, if the Council is participating in the consultation process under section 306108 of title 54; and
+(III)the Secretary of the Interior; and
+(iii)request from the applicable preservation officer, the Council, and the Secretary of the Interior a concurrence that the determination is sufficient to satisfy subsection (a)(1).
+(B)Concurrence.—
+If the applicable preservation officer, the Council, and the Secretary of the Interior each provide a concurrence requested under subparagraph (A)(iii), no further analysis under subsection (a)(1) shall be required.
+(C)Publication.—A notice of a determination, together with each relevant concurrence to that determination, under subparagraph (A) shall—
+(i)be included in the record of decision or finding of no significant impact of the Secretary; and
+(ii)be posted on an appropriate Federal website by not later than 3 days after the date of receipt by the Secretary of all concurrences requested under subparagraph (A)(iii).
+(3)Aligning historical reviews.—
+(A)In general.—
+If the Secretary, the applicable preservation officer, the Council, and the Secretary of the Interior concur that no feasible and prudent alternative exists as described in paragraph (2), the Secretary may provide to the applicable preservation officer, the Council, and the Secretary of the Interior notice of the intent of the Secretary to satisfy subsection (a)(2) through the consultation requirements of section 306108 of title 54.
+(B)Satisfaction of conditions.—
+To satisfy subsection (a)(2), each individual described in paragraph (2)(A)(ii) shall concur in the treatment of the applicable historic site described in the memorandum of agreement or programmatic agreement developed under section 306108 of title 54.
+(d)References to Past Transportation Environmental Authorities.—
+(1)Section 4(f) requirements.—
+The requirements of this section are commonly referred to as section 4(f) requirements (see section 4(f) of the Department of Transportation Act (Public Law 89–670; 80 Stat. 934) as in effect before the repeal of that section).
+(2)Section 106 requirements.—
+The requirements of section 306108 of title 54 are commonly referred to as section 106 requirements (see section 106 of the National Historic Preservation Act of 1966 (Public Law 89–665; 80 Stat. 917) as in effect before the repeal of that section).
+(e)Bridge Exemption From Consideration.—
+A common post-1945 concrete or steel bridge or culvert (as described in 77 Fed. Reg. 68790) that is exempt from individual review under section 306108 of title 54 shall be exempt from consideration under this section.
+(f)Rail and Transit.—
+(1)In general.—
+Improvements to, or the maintenance, rehabilitation, or operation of, railroad or rail transit lines or elements thereof that are in use or were historically used for the transportation of goods or passengers shall not be considered a use of a historic site under subsection (a), regardless of whether the railroad or rail transit line or element thereof is listed on, or eligible for listing on, the National Register of Historic Places.
+(2)Exceptions.—
+(A)In general.—Paragraph (1) shall not apply to—
+(i)stations; or
+(ii)bridges or tunnels located on—
+(I)railroad lines that have been abandoned; or
+(II)transit lines that are not in use.
+(B)Clarification with respect to certain bridges and tunnels.—The bridges and tunnels referred to in subparagraph (A)(ii) do not include bridges or tunnels located on railroad or transit lines—
+(i)over which service has been discontinued; or
+(ii)that have been railbanked or otherwise reserved for the transportation of goods or passengers.
+
+
+49 U.S. Code § 24201 - Efficient environmental reviews
+U.S. Code
+Notes
+prev | next
+(a)Efficient Environmental Reviews.—
+(1)In general.—
+The Secretary of Transportation shall apply the project development procedures, to the greatest extent feasible, described in section 139 of title 23 to any railroad project that requires the approval of the Secretary under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.).
+(2)Regulations and procedures.—
+In carrying out paragraph (1), the Secretary shall incorporate into agency regulations and procedures pertaining to railroad projects described in paragraph (1) aspects of such project development procedures, or portions thereof, determined appropriate by the Secretary in a manner consistent with this section, that increase the efficiency of the review of railroad projects.
+(3)Discretion.—
+The Secretary may choose not to incorporate into agency regulations and procedures pertaining to railroad projects described in paragraph (1) such project development procedures that could only feasibly apply to highway projects, public transportation capital projects, and multimodal projects.
+(4)Applicability.—
+Subsection (l) of section 139 of title 23 shall apply to railroad projects described in paragraph (1), except that the limitation on claims of 150 days shall be 2 years.
+(b)Additional Categorical Exclusions.—Not later than 6 months after the date of enactment of the Passenger Rail Reform and Investment Act of 2015, the Secretary shall—
+(1)survey the use by the Federal Railroad Administration of categorical exclusions in transportation projects since 2005; and
+(2)publish in the Federal Register for notice and public comment a review of the survey that includes a description of—
+(A)the types of actions categorically excluded; and
+(B)any actions the Secretary is considering for new categorical exclusions, including those that would conform to those of other modal administrations.
+(c)New Categorical Exclusions.—
+Not later than 1 year after the date of enactment of the Passenger Rail Reform and Investment Act of 2015, the Secretary shall publish a notice of proposed rulemaking to propose new and existing categorical exclusions for railroad projects that require the approval of the Secretary under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.), including those identified under subsection (b), and develop a process for considering new categorical exclusions to the extent that the categorical exclusions meet the criteria for a categorical exclusion under section 1508.4 of title 40, Code of Federal Regulations.
+(d)Transparency.—
+The Secretary shall maintain and make publicly available, including on the Internet, a database that identifies project-specific information on the use of a categorical exclusion on any railroad project carried out under this title.
+(e)Protections for Existing Agreements and NEPA.—
+Nothing in subtitle E of the Passenger Rail Reform and Investment Act of 2015, or any amendment made by such subtitle, shall affect any existing environmental review process, program, agreement, or funding arrangement approved by the Secretary under title 49, as that title was in effect on the day preceding the date of enactment of such subtitle.
+
+
+49 U.S. Code § 303 - Policy on lands, wildlife and waterfowl refuges, and historic sites
+U.S. Code
+Notes
+prev | next
+(a)It is the policy of the United States Government that special effort should be made to preserve the natural beauty of the countryside and public park and recreation lands, wildlife and waterfowl refuges, and historic sites.
+(b)The Secretary of Transportation shall cooperate and consult with the Secretaries of the Interior, Housing and Urban Development, and Agriculture, and with the States, in developing transportation plans and programs that include measures to maintain or enhance the natural beauty of lands crossed by transportation activities or facilities.
+(c)Approval of Programs and Projects.—Subject to subsections (d) and (h), the Secretary may approve a transportation program or project (other than any project for a park road or parkway under section 204 [1] of title 23) requiring the use of publicly owned land of a public park, recreation area, or wildlife and waterfowl refuge of national, State, or local significance, or land of an historic site of national, State, or local significance (as determined by the Federal, State, or local officials having jurisdiction over the park, area, refuge, or site) only if—
+(1)there is no prudent and feasible alternative to using that land; and
+(2)the program or project includes all possible planning to minimize harm to the park, recreation area, wildlife and waterfowl refuge, or historic site resulting from the use.
+(d)De Minimis Impacts.—
+(1)Requirements.—
+(A)Requirements for historic sites.—
+The requirements of this section shall be considered to be satisfied with respect to an area described in paragraph (2) if the Secretary determines, in accordance with this subsection, that a transportation program or project will have a de minimis impact on the area.
+(B)Requirements for parks, recreation areas, and wildlife or waterfowl refuges.—
+The requirements of subsection (c)(1) shall be considered to be satisfied with respect to an area described in paragraph (3) if the Secretary determines, in accordance with this subsection, that a transportation program or project will have a de minimis impact on the area. The requirements of subsection (c)(2) with respect to an area described in paragraph (3) shall not include an alternatives analysis.
+(C)Criteria.—
+In making any determination under this subsection, the Secretary shall consider to be part of a transportation program or project any avoidance, minimization, mitigation, or enhancement measures that are required to be implemented as a condition of approval of the transportation program or project.
+(2)Historic sites.—With respect to historic sites, the Secretary may make a finding of de minimis impact only if—
+(A)the Secretary has determined, in accordance with the consultation process required under section 306108 of title 54, United States Code,[2] that—
+(i)the transportation program or project will have no adverse effect on the historic site; or
+(ii)there will be no historic properties affected by the transportation program or project;
+(B)the finding of the Secretary has received written concurrence from the applicable State historic preservation officer or tribal historic preservation officer (and from the Advisory Council on Historic Preservation if the Council is participating in the consultation process); and
+(C)the finding of the Secretary has been developed in consultation with parties consulting as part of the process referred to in subparagraph (A).
+(3)Parks, recreation areas, and wildlife or waterfowl refuges.—With respect to parks, recreation areas, or wildlife or waterfowl refuges, the Secretary may make a finding of de minimis impact only if—
+(A)the Secretary has determined, after public notice and opportunity for public review and comment, that the transportation program or project will not adversely affect the activities, features, and attributes of the park, recreation area, or wildlife or waterfowl refuge eligible for protection under this section; and
+(B)the finding of the Secretary has received concurrence from the officials with jurisdiction over the park, recreation area, or wildlife or waterfowl refuge.
+(e)Satisfaction of Requirements for Certain Historic Sites.—
+(1)In general.—The Secretary shall—
+(A)align, to the maximum extent practicable, the requirements of this section with the requirements of the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.) and section 306108 of title 54, including implementing regulations; and
+(B)not later than 90 days after the date of enactment of this subsection, coordinate with the Secretary of the Interior and the Executive Director of the Advisory Council on Historic Preservation (referred to in this subsection as the “Council”) to establish procedures to satisfy the requirements described in subparagraph (A) (including regulations).
+(2)Avoidance alternative analysis.—
+(A)In general.—If, in an analysis required under the National Environmental Policy Act of 1969 (42 U.S.C. 4321 et seq.), the Secretary determines that there is no feasible or prudent alternative to avoid use of a historic site, the Secretary may—
+(i)include the determination of the Secretary in the analysis required under that Act;
+(ii)provide a notice of the determination to—
+(I)each applicable State historic preservation officer and tribal historic preservation officer;
+(II)the Council, if the Council is participating in the consultation process under section 306108 of title 54; and
+(III)the Secretary of the Interior; and
+(iii)request from the applicable preservation officer, the Council, and the Secretary of the Interior a concurrence that the determination is sufficient to satisfy subsection (c)(1).
+(B)Concurrence.—
+If the applicable preservation officer, the Council, and the Secretary of the Interior each provide a concurrence requested under subparagraph (A)(iii), no further analysis under subsection (c)(1) shall be required.
+(C)Publication.—A notice of a determination, together with each relevant concurrence to that determination, under subparagraph (A) shall—
+(i)be included in the record of decision or finding of no significant impact of the Secretary; and
+(ii)be posted on an appropriate Federal website by not later than 3 days after the date of receipt by the Secretary of all concurrences requested under subparagraph (A)(iii).
+(3)Aligning historical reviews.—
+(A)In general.—
+If the Secretary, the applicable preservation officer, the Council, and the Secretary of the Interior concur that no feasible and prudent alternative exists as described in paragraph (2), the Secretary may provide to the applicable preservation officer, the Council, and the Secretary of the Interior notice of the intent of the Secretary to satisfy subsection (c)(2) through the consultation requirements of section 306108 of title 54.
+(B)Satisfaction of conditions.—
+To satisfy subsection (c)(2), the applicable preservation officer, the Council, and the Secretary of the Interior shall concur in the treatment of the applicable historic site described in the memorandum of agreement or programmatic agreement developed under section 306108 of title 54.
+(f)References to Past Transportation Environmental Authorities.—
+(1)Section 4(f) requirements.—
+The requirements of this section are commonly referred to as section 4(f) requirements (see section 4(f) of the Department of Transportation Act (Public Law 89–670; 80 Stat. 934) as in effect before the repeal of that section).
+(2)Section 106 requirements.—
+The requirements of section 306108 of title 54 are commonly referred to as section 106 requirements (see section 106 of the National Historic Preservation Act of 1966 (Public Law 89–665; 80 Stat. 917) as in effect before the repeal of that section).
+(g)Bridge Exemption From Consideration.—
+A common post-1945 concrete or steel bridge or culvert (as described in 77 Fed. Reg. 68790) that is exempt from individual review under section 306108 of title 54 shall be exempt from consideration under this section.
+(h)Rail and Transit.—
+(1)In general.—
+Improvements to, or the maintenance, rehabilitation, or operation of, railroad or rail transit lines or elements thereof that are in use or were historically used for the transportation of goods or passengers shall not be considered a use of a historic site under subsection (c), regardless of whether the railroad or rail transit line or element thereof is listed on, or eligible for listing on, the National Register of Historic Places.
+(2)Exceptions.—
+(A)In general.—Paragraph (1) shall not apply to—
+(i)stations; or
+(ii)bridges or tunnels located on—
+(I)railroad lines that have been abandoned; or
+(II)transit lines that are not in use.
+(B)Clarification with respect to certain bridges and tunnels.—The bridges and tunnels referred to in subparagraph (A)(ii) do not include bridges or tunnels located on railroad or transit lines—
+(i)over which service has been discontinued; or
+(ii)that have been railbanked or otherwise reserved for the transportation of goods or passengers.
+
+
+16 U.S. Code § 1247 - State and local area recreation and historic trails
+U.S. Code
+Notes
+prev | next
+(a)Secretary of the Interior to encourage States, political subdivisions, and private interests; financial assistance for State and local projects
+The Secretary of the Interior is directed to encourage States to consider, in their comprehensive statewide outdoor recreation plans and proposals for financial assistance for State and local projects submitted pursuant to chapter 2003 of title 54, needs and opportunities for establishing park, forest, and other recreation and historic trails on lands owned or administered by States, and recreation and historic trails on lands in or near urban areas. The Secretary is also directed to encourage States to consider, in their comprehensive statewide historic preservation plans and proposals for financial assistance for State, local, and private projects submitted pursuant to division A of subtitle III of title 54, needs and opportunities for establishing historic trails. He is further directed, in accordance with the authority contained in chapter 2003 of title 54),[1] to encourage States, political subdivisions, and private interests, including nonprofit organizations, to establish such trails.
+
+(b)Secretary of Housing and Urban Development to encourage metropolitan and other urban areas; administrative and financial assistance in connection with recreation and transportation planning; administration of urban open-space program
+The Secretary of Housing and Urban Development is directed, in administering the program of comprehensive urban planning and assistance under section 701 [2] of the Housing Act of 1954, to encourage the planning of recreation trails in connection with the recreation and transportation planning for metropolitan and other urban areas. He is further directed, in administering the urban open-space program under title VII of the Housing Act of 1961 [42 U.S.C. 1500 et seq.], to encourage such recreation trails.
+
+(c)Secretary of Agriculture to encourage States, local agencies, and private interests
+The Secretary of Agriculture is directed, in accordance with authority vested in him, to encourage States and local agencies and private interests to establish such trails.
+
+(d)Interim use of railroad rights-of-way
+The Secretary of Transportation, the Chairman of the Surface Transportation Board, and the Secretary of the Interior, in administering the Railroad Revitalization and Regulatory Reform Act of 1976 (45 U.S.C. 801 et seq.) and chapter 224 of title 49, shall encourage State and local agencies and private interests to establish appropriate trails using the provisions of such programs. Consistent with the purposes of that Act, and in furtherance of the national policy to preserve established railroad rights-of-way for future reactivation of rail service, to protect rail transportation corridors, and to encourage energy efficient transportation use, in the case of interim use of any established railroad rights-of-way pursuant to donation, transfer, lease, sale, or otherwise in a manner consistent with this chapter, if such interim use is subject to restoration or reconstruction for railroad purposes, such interim use shall not be treated, for purposes of any law or rule of law, as an abandonment of the use of such rights-of-way for railroad purposes. If a State, political subdivision, or qualified private organization is prepared to assume full responsibility for management of such rights-of-way and for any legal liability arising out of such transfer or use, and for the payment of any and all taxes that may be levied or assessed against such rights-of-way, then the Board shall impose such terms and conditions as a requirement of any transfer or conveyance for interim use in a manner consistent with this chapter, and shall not permit abandonment or discontinuance inconsistent or disruptive of such use.
+
+(e)Designation and marking of trails; approval of Secretary of the Interior
+Such trails may be designated and suitably marked as parts of the nationwide system of trails by the States, their political subdivisions, or other appropriate administering agencies with the approval of the Secretary of the Interior.
+
+
+49 U.S. Code § 22905 - Grant conditions
+U.S. Code
+Notes
+prev | next
+(a)Buy America.—
+(1)The Secretary of Transportation may obligate an amount that may be appropriated to carry out this chapter for a project only if the steel, iron, and manufactured goods used in the project are produced in the United States.
+(2)The Secretary of Transportation may waive paragraph (1) of this subsection if the Secretary finds that—
+(A)applying paragraph (1) would be inconsistent with the public interest;
+(B)the steel, iron, and goods produced in the United States are not produced in a sufficient and reasonably available amount or are not of a satisfactory quality;
+(C)rolling stock or power train equipment cannot be bought and delivered in the United States within a reasonable time; or
+(D)including domestic material will increase the cost of the overall project by more than 25 percent.
+(3)For purposes of this subsection, in calculating the components’ costs, labor costs involved in final assembly shall not be included in the calculation.
+(4)If the Secretary determines that it is necessary to waive the application of paragraph (1) based on a finding under paragraph (2), the Secretary shall, before the date on which such finding takes effect—
+(A)publish in the Federal Register a detailed written justification as to why the waiver is needed; and
+(B)provide notice of such finding and an opportunity for public comment on such finding for a reasonable period of time not to exceed 15 days.
+(5)Not later than December 31, 2012, the Secretary shall submit to the Committee on Transportation and Infrastructure of the House of Representatives and the Committee on Commerce, Science, and Transportation of the Senate a report on any waivers granted under paragraph (2).
+(6)The Secretary of Transportation may not make a waiver under paragraph (2) of this subsection for goods produced in a foreign country if the Secretary, in consultation with the United States Trade Representative, decides that the government of that foreign country—
+(A)has an agreement with the United States Government under which the Secretary has waived the requirement of this subsection; and
+(B)has violated the agreement by discriminating against goods to which this subsection applies that are produced in the United States and to which the agreement applies.
+(7)A person is ineligible to receive a contract or subcontract made with amounts authorized under this chapter if a court or department, agency, or instrumentality of the Government decides the person intentionally—
+(A)affixed a “Made in America” label, or a label with an inscription having the same meaning, to goods sold in or shipped to the United States that are used in a project to which this subsection applies but not produced in the United States; or
+(B)represented that goods described in subparagraph (A) of this paragraph were produced in the United States.
+(8)The Secretary may not impose any limitation on assistance provided under this chapter that restricts a State from imposing more stringent requirements than this subsection on the use of articles, materials, and supplies mined, produced, or manufactured in foreign countries in projects carried out with that assistance or restricts a recipient of that assistance from complying with those State-imposed requirements.
+(9)The Secretary may allow a manufacturer or supplier of steel, iron, or manufactured goods to correct after bid opening any certification of noncompliance or failure to properly complete the certification (but not including failure to sign the certification) under this subsection if such manufacturer or supplier attests under penalty of perjury that such manufacturer or supplier submitted an incorrect certification as a result of an inadvertent or clerical error. The burden of establishing inadvertent or clerical error is on the manufacturer or supplier.
+(10)A party adversely affected by an agency action under this subsection shall have the right to seek review under section 702 of title 5.
+(11)The requirements of this subsection shall only apply to projects for which the costs exceed $100,000.
+(b)Operators Deemed Rail Carriers and Employers for Certain Purposes.—A person that conducts rail operations over rail infrastructure constructed or improved with funding provided in whole or in part in a grant made under this chapter shall be considered a rail carrier as defined in section 10102(5) of this title for purposes of this title and any other statute that adopts that definition or in which that definition applies, including—
+(1)the Railroad Retirement Act of 1974 (45 U.S.C. 231 et seq.);
+(2)the Railway Labor Act (45 U.S.C. 151 et seq.); and
+(3)the Railroad Unemployment Insurance Act (45 U.S.C. 351 et seq.).
+(c)Grant Conditions.—The Secretary shall require as a condition of making any grant under this chapter for a project that uses rights-of-way owned by a railroad that—
+(1)a written agreement exist between the applicant and the railroad regarding such use and ownership, including—
+(A)any compensation for such use;
+(B)assurances regarding the adequacy of infrastructure capacity to accommodate both existing and future freight and passenger operations;
+(C)an assurance by the railroad that collective bargaining agreements with the railroad’s employees (including terms regulating the contracting of work) will remain in full force and effect according to their terms for work performed by the railroad on the railroad transportation corridor; and
+(D)an assurance that an applicant complies with liability requirements consistent with section 28103 of this title; and
+(2)the applicant agrees to comply with—
+(A)the standards of section 24312 of this title, as such section was in effect on September 1, 2003, with respect to the project in the same manner that Amtrak is required to comply with those standards for construction work financed under an agreement made under section 24308(a) of this title; and
+(B)the protective arrangements that are equivalent to the protective arrangements established under section 22404 with respect to employees affected by actions taken in connection with the project to be financed in whole or in part by grants under this chapter.
+(d)Replacement of Existing Intercity Passenger Rail Service.—
+(1)Collective bargaining agreement for intercity passenger rail projects.—Any entity providing intercity passenger railroad transportation that begins operations after the date of enactment of this Act [1] on a project funded in whole or in part by grants made under this chapter and replaces intercity rail passenger service that was provided by Amtrak, unless such service was provided solely by Amtrak to another entity or unless Amtrak ceased providing intercity passenger railroad transportation over the affected route more than 3 years before the commencement of new service, as of such date shall enter into an agreement with the authorized bargaining agent or agents for adversely affected employees of the predecessor provider that—
+(A)gives each such qualified employee of the predecessor provider priority in hiring according to the employee’s seniority on the predecessor provider for each position with the replacing entity that is in the employee’s craft or class and is available within 3 years after the termination of the service being replaced;
+(B)establishes a procedure for notifying such an employee of such positions;
+(C)establishes a procedure for such an employee to apply for such positions; and
+(D)establishes rates of pay, rules, and working conditions.
+(2)Immediate replacement service.—
+(A)Negotiations.—
+If the replacement of preexisting intercity rail passenger service occurs concurrent with or within a reasonable time before the commencement of the replacing entity’s rail passenger service, the replacing entity shall give written notice of its plan to replace existing rail passenger service to the authorized collective bargaining agent or agents for the potentially adversely affected employees of the predecessor provider at least 90 days before the date on which it plans to commence service. Within 5 days after the date of receipt of such written notice, negotiations between the replacing entity and the collective bargaining agent or agents for the employees of the predecessor provider shall commence for the purpose of reaching agreement with respect to all matters set forth in subparagraphs (A) through (D) of paragraph (1). The negotiations shall continue for 30 days or until an agreement is reached, whichever is sooner. If at the end of 30 days the parties have not entered into an agreement with respect to all such matters, the unresolved issues shall be submitted for arbitration in accordance with the procedure set forth in subparagraph (B).
+(B)Arbitration.—
+If an agreement has not been entered into with respect to all matters set forth in subparagraphs (A) through (D) of paragraph (1) as described in subparagraph (A) of this paragraph, the parties shall select an arbitrator. If the parties are unable to agree upon the selection of such arbitrator within 5 days, either or both parties shall notify the National Mediation Board, which shall provide a list of seven arbitrators with experience in arbitrating rail labor protection disputes. Within 5 days after such notification, the parties shall alternately strike names from the list until only 1 name remains, and that person shall serve as the neutral arbitrator. Within 45 days after selection of the arbitrator, the arbitrator shall conduct a hearing on the dispute and shall render a decision with respect to the unresolved issues among the matters set forth in subparagraphs (A) through (D) of paragraph (1). The arbitrator shall be guided by prevailing national standard rates of pay, benefits, and working conditions for comparable work. This decision shall be final, binding, and conclusive upon the parties. The salary and expenses of the arbitrator shall be borne equally by the parties; all other expenses shall be paid by the party incurring them.
+(3)Service commencement.—
+A replacing entity under this subsection shall commence service only after an agreement is entered into with respect to the matters set forth in subparagraphs (A) through (D) of paragraph (1) or the decision of the arbitrator has been rendered.
+(4)Subsequent replacement of service.—
+If the replacement of existing rail passenger service takes place within 3 years after the replacing entity commences intercity passenger rail service, the replacing entity and the collective bargaining agent or agents for the adversely affected employees of the predecessor provider shall enter into an agreement with respect to the matters set forth in subparagraphs (A) through (D) of paragraph (1). If the parties have not entered into an agreement with respect to all such matters within 60 days after the date on which the replacing entity replaces the predecessor provider, the parties shall select an arbitrator using the procedures set forth in paragraph (2)(B), who shall, within 20 days after the commencement of the arbitration, conduct a hearing and decide all unresolved issues. This decision shall be final, binding, and conclusive upon the parties.
+(e)Inapplicability to Certain Rail Operations.—Nothing in this section applies to—
+(1)commuter rail passenger transportation (as defined in section 24102) operations of a State or local governmental authority (as those terms are defined in section 5302) eligible to receive financial assistance under section 5307 of this title, or to its contractor performing services in connection with commuter rail passenger operations (as so defined);
+(2)the Alaska Railroad or its contractors; or
+(3)Amtrak’s access rights to railroad rights of way and facilities under current law.
+(f)Limitation.—
+No grants shall be provided under this chapter for commuter rail passenger transportation (as defined in section 24102(3)).
+
+
+49 U.S. Code § 22907 - Consolidated rail infrastructure and safety improvements
+U.S. Code
+Notes
+prev | next
+(a)General Authority.—
+The Secretary may make grants under this section to an eligible recipient to assist in financing the cost of improving passenger and freight rail transportation systems in terms of safety, efficiency, or reliability.
+(b)Eligible Recipients.—The following entities are eligible to receive a grant under this section:
+(1)A State (including the District of Columbia).
+(2)A group of States.
+(3)An Interstate Compact.
+(4)A public agency or publicly chartered authority established by 1 or more States.
+(5)A political subdivision of a State.
+(6)Amtrak or another rail carrier that provides intercity rail passenger transportation (as rail carrier and intercity rail passenger transportation are defined in section 24102).
+(7)A Class II railroad or Class III railroad (as those terms are defined in section 20102).
+(8)An association representing 1 or more railroads described in paragraph (7).
+(9)A federally recognized Indian Tribe.
+(10)Any rail carrier or rail equipment manufacturer in partnership with at least 1 of the entities described in paragraphs (1) through (5).
+(11)The Transportation Research Board and any entity with which it contracts in the development of rail-related research, including cooperative research programs.
+(12)A University transportation center engaged in rail-related research.
+(13)A non-profit labor organization representing a class or craft of employees of rail carriers or rail carrier contractors.
+(c)Eligible Projects.—The following projects are eligible to receive grants under this section:
+(1)Deployment of railroad safety technology, including positive train control and rail integrity inspection systems.
+(2)A capital project as defined in section 22901(2), except that a project shall not be required to be in a State rail plan developed under chapter 227.
+(3)A capital project identified by the Secretary as being necessary to address congestion or safety challenges affecting rail service.
+(4)A capital project identified by the Secretary as being necessary to reduce congestion and facilitate ridership growth in intercity passenger rail transportation along heavily traveled rail corridors.
+(5)A highway-rail grade crossing improvement project, including installation, repair, or improvement of grade separations, railroad crossing signals, gates, and related technologies, highway traffic signalization, highway lighting and crossing approach signage, roadway improvements such as medians or other barriers, railroad crossing panels and surfaces, and safety engineering improvements to reduce risk in quiet zones or potential quiet zones.
+(6)A rail line relocation or improvement project.
+(7)A capital project to improve short-line or regional railroad infrastructure.
+(8)The preparation of regional rail and corridor service development plans and corresponding environmental analyses.
+(9)Any project that the Secretary considers necessary to enhance multimodal connections or facilitate service integration between rail service and other modes, including between intercity rail passenger transportation and intercity bus service or commercial air service.
+(10)The development and implementation of a safety program or institute designed to improve rail safety.
+(11)The development and implementation of measures to prevent trespassing and reduce associated injuries and fatalities.
+(12)Any research that the Secretary considers necessary to advance any particular aspect of rail-related capital, operations, or safety improvements.
+(13)Workforce development and training activities, coordinated to the extent practicable with the existing local training programs supported by the Department of Transportation, the Department of Labor, and the Department of Education.
+(14)Research, development, and testing to advance and facilitate innovative rail projects, including projects using electromagnetic guideways in an enclosure in a very low-pressure environment.
+(15)The preparation of emergency plans for communities through which hazardous materials are transported by rail.
+(16)Rehabilitating, remanufacturing, procuring, or overhauling locomotives, provided that such activities result in a significant reduction of emissions.
+(d)Application Process.—
+The Secretary shall prescribe the form and manner of filing an application under this section.
+(e)Project Selection Criteria.—
+(1)In general.—In selecting a recipient of a grant for an eligible project, the Secretary shall—
+(A)give preference to a proposed project for which the proposed Federal share of total project costs does not exceed 50 percent; and
+(B)after factoring in preference to projects under subparagraph (A), select projects that will maximize the net benefits of the funds appropriated for use under this section, considering the cost-benefit analysis of the proposed project, including anticipated private and public benefits relative to the costs of the proposed project and factoring in the other considerations described in paragraph (2).
+(2)Other considerations.—The Secretary shall also consider the following:
+(A)The degree to which the proposed project’s business plan considers potential private sector participation in the financing, construction, or operation of the project.
+(B)The recipient’s past performance in developing and delivering similar projects, and previous financial contributions.
+(C)Whether the recipient has or will have the legal, financial, and technical capacity to carry out the proposed project, satisfactory continuing control over the use of the equipment or facilities, and the capability and willingness to maintain the equipment or facilities.
+(D)If applicable, the consistency of the proposed project with planning guidance and documents set forth by the Secretary or required by law or State rail plans developed under chapter 227.
+(E)If applicable, any technical evaluation ratings the proposed project received under previous competitive grant programs administered by the Secretary.
+(F)Such other factors as the Secretary considers relevant to the successful delivery of the project.
+(3)Benefits.—
+The benefits described in paragraph (1)(B) may include the effects on system and service performance, including measures such as improved safety, competitiveness, reliability, trip or transit time, resilience, efficiencies from improved integration with other modes, the ability to meet existing or anticipated demand, and any other benefits.
+(f)Performance Measures.—
+The Secretary shall establish performance measures for each grant recipient to assess progress in achieving strategic goals and objectives. The Secretary may require a grant recipient to periodically report information related to such performance measures.
+(g)Rural Areas.—
+(1)In general.—
+Of the amounts appropriated under this section, at least 25 percent shall be available for projects in rural areas. The Secretary shall consider a project to be in a rural area if all or the majority of the project (determined by the geographic location or locations where the majority of the project funds will be spent) is located in a rural area.
+(2)Definition of rural area.—
+In this subsection, the term “rural area” means any area not in an urbanized area, as defined by the Bureau of the Census.
+(h)Federal Share of Total Project Costs.—
+(1)Total project costs.—
+The Secretary shall estimate the total costs of a project under this section based on the best available information, including any available engineering studies, studies of economic feasibility, environmental analyses, and information on the expected use of equipment or facilities.
+(2)Federal share.—
+The Federal share of total project costs under this section shall not exceed 80 percent.
+(3)Treatment of passenger rail revenue.—
+If Amtrak or another rail carrier is an applicant under this section, Amtrak or the other rail carrier, as applicable, may use ticket and other revenues generated from its operations and other sources to satisfy the non-Federal share requirements.
+(4)Grade crossing and trespassing projects.—
+Applicants may use costs incurred previously for preliminary engineering associated with highway-rail grade crossing improvement projects under subsection (c)(5) and trespassing prevention projects under subsection (c)(11) to satisfy the non-Federal share requirements.
+(i)Applicability.—
+Except as specifically provided in this section, the use of any amounts appropriated for grants under this section shall be subject to the requirements of this chapter.
+(j)Availability.—
+Amounts appropriated for carrying out this section shall remain available until expended.
+(k)Limitation.—
+The requirements under sections 22902, 22903, and 22904, and the definition contained in section 22901(1) shall not apply to this section.
+(l)Special Transportation Circumstances.—
+(1)In general.—In carrying out this chapter, the Secretary shall allocate an appropriate portion of the amounts available to programs in this chapter to provide grants to States—
+(A)in which there is no intercity passenger rail service, for the purpose of funding freight rail capital projects that are on a State rail plan developed under chapter 227, including highway construction over rail facilities as an alternative to construction or improvement of a highway-rail grade crossing, that provide public benefits (as defined in chapter 227), as determined by the Secretary; or
+(B)in which the rail transportation system is not physically connected to rail systems in the continental United States or may not otherwise qualify for a grant under this section due to the unique characteristics of the geography of that State or other relevant considerations, for the purpose of funding transportation-related capital projects.
+(2)Definition.—
+For the purposes of this subsection, the term “appropriate portion” means a share, for each State subject to paragraph (1), not less than the share of the total railroad route miles in such State of the total railroad route miles in the United States, excluding from all totals the route miles exclusively used for tourist, scenic, and excursion railroad operations.
+
+

@@ -4,10 +4,11 @@ import copy
 import os
 from pprint import pprint
 import pandas as pd
-import utils_scrape
 import utils
 from PIL import Image
-from utils import parse_json_from_output
+import PIL
+from utils import parse_json_from_output, generate_openai, generate_hf, select_generate_func
+from typing import Any
 
 # DICT_FORM57_JSON_FORMAT = """```json
 # {
@@ -96,37 +97,6 @@ def json_to_str(json_obj):
         raise ValueError("Unsupported JSON object type")
     return return_str
 
-def generate_openai(client, model_path, content, generation_config=None):
-    messages = [
-        {
-            "role": "user",
-            "content": content,
-        },
-    ]
-    response = client.responses.create(model=model_path, input=messages)
-    output = response.output_text
-    return output
-
-def generate_hf(pipe, model_path, content, generation_config):
-    messages = [
-        {
-            "role": "user",
-            "content": content,
-        },
-    ]
-    response = pipe(text=messages, return_full_text=False, generate_kwargs=generation_config)
-    output = response[0]['generated_text']
-    return output
-
-def select_generate_func(api):
-    if api == 'OpenAI':
-        generate_func = generate_openai
-    elif api == 'Huggingface':
-        generate_func = generate_hf
-    else:
-        raise ValueError(f"Unsupported API: {api}")
-    return generate_func
-
 def check_dict_kv_type(dict_, k_type, v_type):
     for k, v in dict_.items():
         if not isinstance(k, k_type) or not isinstance(v, v_type):
@@ -142,13 +112,6 @@ def validate_transcription_format(dict_form57):
         return False
     cnt_invalid = 0
     for entry in dict_form57.values():
-        # if (('name' not in entry or not isinstance(entry['name'], str))
-        #     or ('choices' in entry and (not isinstance(entry['choices'], dict) or not check_dict_kv_type(entry['choices'], str, str)))):
-        # if ('name' not in entry or 'choices' not in entry
-        #     or not isinstance(entry['name'], str) or not isinstance(entry['choices'], dict)
-        #     or not check_dict_kv_type(entry['choices'], str, str)):
-        #     cnt_invalid += 1
-        #     # print(entry)
         if not ('name' in entry and 'answer_places' in entry and isinstance(entry['name'], str) and isinstance(entry['answer_places'], dict)):
             cnt_invalid += 1
         else:
@@ -179,7 +142,7 @@ def validate_grouping_format(dict_form57_group):
                 return False
     return True
 
-def transcribe_entries(api, generator, model_path, content, n_generate, generation_config=None):
+def transcribe_entries(api, generator, model_path, content, n_generate, generation_config={}):
     generate_func = select_generate_func(api)
     
     list_response = []
@@ -195,7 +158,7 @@ def transcribe_entries(api, generator, model_path, content, n_generate, generati
         list_response.append(dict_form57)
     return list_response
 
-def group_entries(api, generator, model_path, content, n_generate, generation_config=None):
+def group_entries(api, generator, model_path, content, n_generate, generation_config={}):
     generate_func = select_generate_func(api)
     
     list_response = []
@@ -220,17 +183,17 @@ def group_entries(api, generator, model_path, content, n_generate, generation_co
         list_response.append(dict_form57_group)
     return list_response
 
-def csv_to_json(path_form57_csv, path_form57_json):
+def csv_to_json(cfg):
     
-    if os.path.exists(path_form57_json):
-        with open(path_form57_json, 'r') as f:
+    if os.path.exists(cfg.path.form57_json):
+        with open(cfg.path.form57_json, 'r') as f:
             dict_form57 = json.load(f)
 
     else:
-        df_data = pd.read_csv(path_form57_csv)
-        df_data = df_data[df_data['State Name'] == 'CALIFORNIA']
+        df_data = pd.read_csv(cfg.path.df_record)
+        df_data = df_data[df_data['State Name'].str.title().isin(cfg.scrp.target_states)]
         df_data['Date'] = pd.to_datetime(df_data['Date'])
-        df_data = df_data[df_data['Date'] >= '2000-01-01']
+        df_data = df_data[df_data['Date'] >= cfg.scrp.start_date]
 
         list_col = df_data.columns.tolist()
 
@@ -285,18 +248,18 @@ def csv_to_json(path_form57_csv, path_form57_json):
             else:
                 dict_meta_info['answer_places'][col]['answer_type'] = 'free-text'
 
-        with open(path_form57_json, 'w') as f:
+        with open(cfg.path.form57_json, 'w') as f:
             json.dump(dict_form57, f, indent=4)
                 
     return dict_form57
 
-def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, config_conversion):
+def pdf_to_json(cfg):
     dict_form57_group = None
-    api, model_path, n_generate, _ = config_conversion.to_tuple()
+    api, model_path, n_generate, _ = cfg.conv.to_tuple()
     ############# Google Document AI API
 
     if api == 'Google_DocAI':
-        from google.cloud import documentai_v1 as documentai
+        from google.cloud import documentai_v1 as documentai # type: ignore
 
         dict_type_pid = {
             'form_parser': 'b4aa30ed34270c72',
@@ -312,7 +275,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
         )
 
         # 2) Read your PDF
-        with open(path_form57_pdf, "rb") as f:
+        with open(cfg.path.form57_pdf, "rb") as f:
             pdf_bytes = f.read()
 
         # 3) Build the request
@@ -341,6 +304,8 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
         # # 2) Read your PDF
         # with open(path_img_form57, "rb") as f:
         #     img_bytes = f.read()
+
+        dict_form57 = None
         
     ############# AWS Textract API
     # reference
@@ -367,7 +332,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
             with open(path, 'rb') as f:
                 img_bytes = f.read()
 
-            resp = client.analyze_document(
+            resp = client.analyze_document( # type: ignore
                 Document={'Bytes': img_bytes},
                 FeatureTypes=feature_type
             )
@@ -394,11 +359,11 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
             return dict_id_block
 
         def draw_boxes(blocks, path_form57):
-            if path_form57.endswith('pdf'):
-                images = convert_from_path(path_form57)
-                image = images[0]
-            elif path_form57.endswith('jpg'):
-                image = Image.open(path_form57)
+            # if path_form57.endswith('pdf'):
+            images = convert_from_path(path_form57)
+            image = images[0]
+            # elif path_form57.endswith('jpg'):
+            #     image = Image.open(path_form57)
             width, height = image.size
 
             dict_id_block = map_id_block(blocks)
@@ -435,7 +400,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
                 if block['BlockType'] == 'SELECTION_ELEMENT':
                     if block['SelectionStatus'] =='SELECTED':
                         ShowSelectedElement(draw, block['Geometry']['BoundingBox'],width,height, 'blue')
-            image.save(DATA_FOLDER + 'annotated_form.png')
+            image.save(cfg.path.form57_annotated)
 
         session = boto3.Session(profile_name='textract')
         client = session.client(service_name='textract', region_name='us-west-2')
@@ -445,13 +410,13 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
         feature_type = ['FORMS']
         # feature_type = ['QUERIES'] # must use queries config
 
-        result_pdf = analyze_pdf(path_form57_pdf, client, feature_type)
+        result_pdf = analyze_pdf(cfg.path.form57_pdf, client, feature_type)
         blocks = result_pdf['Blocks']
-        draw_boxes(blocks, path_form57_pdf)
+        draw_boxes(blocks, cfg.path.form57_pdf)
         geometry_popped = [block.pop('Geometry') for block in blocks]
         # result_pdf['Blocks'] = [block for block in blocks if block['BlockType'] != 'WORD']
         {block['BlockType'] for block in blocks}
-        with open(path_form57_json, 'w') as f:
+        with open(cfg.path.form57_json, 'w') as f:
             json.dump(result_pdf, f, indent=4)
 
         # make tree
@@ -469,20 +434,21 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
             elif block['BlockType'] not in ['WORD', 'SELECTION_ELEMENT', 'CELL', 'MERGED_CELL', 'TABLE_FOOTER']:
                 tree['Relationships'][0]['Ids'].remove(id)
 
-        # images = convert_from_path(path_form57_pdf)
+        # images = convert_from_path(cfg.path.form57_pdf)
         # images[0].save(path_img_form57, "JPEG")
         # result_img = analyze_img(path_img_form57, client, feature_type)
 
         # len(result_pdf['Blocks'])
         # len(result_img['Blocks'])
 
+        dict_form57 = None
+
     ############# Azure Form Recognizer API
     # https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/concept/choose-model-feature?view=doc-intel-4.0.0#pretrained-document-analysis-models
     elif api == 'Azure_FormRecognizer':
-        from azure.core.credentials import AzureKeyCredential
-        from azure.ai.documentintelligence import DocumentIntelligenceClient
-        from azure.ai.documentintelligence.models import AnalyzeResult
-        from azure.ai.documentintelligence.models import AnalyzeDocumentRequest
+        from azure.core.credentials import AzureKeyCredential # type: ignore
+        from azure.ai.documentintelligence import DocumentIntelligenceClient # type: ignore
+        from azure.ai.documentintelligence.models import AnalyzeResult, AnalyzeDocumentRequest # type: ignore
 
         # set `<your-endpoint>` and `<your-key>` variables with the values from the Azure portal
         endpoint = 'https://railway-safety.cognitiveservices.azure.com/'
@@ -503,7 +469,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
                     return True
             return False
 
-        with open(path_form57_pdf, "rb") as f:
+        with open(cfg.path.form57_pdf, "rb") as f:
             byte_pdf = f.read()
 
         document_intelligence_client = DocumentIntelligenceClient(
@@ -572,22 +538,24 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
 
         # +++ draw a bounding box around the table and save as an image
 
+        dict_form57 = None
+
     ############# OpenAI API
     elif api == 'OpenAI':
         from openai import OpenAI
 
-        API_key = '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'
+        API_key = cfg.apikey.openai
         client = OpenAI(api_key=API_key)
 
-        with open(path_form57_pdf, "rb") as f:
+        with open(cfg.path.form57_pdf, "rb") as f:
             pdf_file = client.files.create(
                 file=f,
                 purpose="user_data"
             )
 
         ############ transcribe
-        if os.path.exists(path_form57_json):
-            with open(path_form57_json, 'r') as f:
+        if os.path.exists(cfg.path.form57_json):
+            with open(cfg.path.form57_json, 'r') as f:
                 dict_form57 = json.load(f)
 
         else:
@@ -596,7 +564,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
                 {"type": "input_text", "text": PROMPT_DICT_FORM57_TEMP},
                 {"type": "input_file", "file_id": pdf_file.id},
             ]
-            list_dict_form57_temp = transcribe_entries(client, model_path, content, n_generate, generation_config=None)
+            list_dict_form57_temp = transcribe_entries(api, client, model_path, content, n_generate, generation_config=None)
 
             ############ merge the transcripts into one
             content = [
@@ -604,15 +572,15 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
                 {"type": "input_text", "text": PROMPT_DICT_FORM57},
                 {"type": "input_text", "text": json_to_str(list_dict_form57_temp)}
             ]
-            list_dict_form57 = transcribe_entries(client, model_path, content, n_generate=1, generation_config=None)
+            list_dict_form57 = transcribe_entries(api, client, model_path, content, n_generate=1, generation_config=None)
             dict_form57 = list_dict_form57[0]
             
-            with open(path_form57_json, 'w') as f:
+            with open(cfg.path.form57_json, 'w') as f:
                 json.dump(dict_form57, f, indent=4)
         
         ############ group the entries
-        if os.path.exists(path_form57_json_group):
-            with open(path_form57_json_group, 'r') as f:
+        if os.path.exists(cfg.path.form57_json_group):
+            with open(cfg.path.form57_json_group, 'r') as f:
                 dict_form57_group = json.load(f)
                 
         else:
@@ -622,7 +590,7 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
                 {"type": "input_file", "file_id": pdf_file.id},
                 {"type": "input_text", "text": json_to_str(dict_form57)}
             ]
-            list_dict_form57_group_temp = group_entries(client, model_path, content, n_generate, generation_config=None)
+            list_dict_form57_group_temp = group_entries(api, client, model_path, content, n_generate, generation_config=None)
             
             ############ merge groupings into one
             content = [
@@ -631,10 +599,10 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
                 {"type": "input_text", "text": json_to_str(dict_form57)},
                 {"type": "input_text", "text": json_to_str(list_dict_form57_group_temp)}
             ]
-            list_dict_form57_group = group_entries(client, model_path, content, n_generate=1, generation_config=None)
+            list_dict_form57_group = group_entries(api, client, model_path, content, n_generate=1, generation_config=None)
             dict_form57_group = list_dict_form57_group[0]
 
-            with open(path_form57_json_group, 'w') as f:
+            with open(cfg.path.form57_json_group, 'w') as f:
                 json.dump(dict_form57_group, f, indent=4)
     
     else:
@@ -642,11 +610,11 @@ def pdf_to_json(path_form57_pdf, path_form57_json, path_form57_json_group, confi
 
     return dict_form57, dict_form57_group
 
-def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, config_conversion):
+def img_to_json(cfg):
     
     dict_form57_group = None
-    api, model_path, n_generate, _ = config_conversion.to_tuple()
-    image = Image.open(path_form57_img)
+    api, model_path, n_generate, _ = cfg.conv.to_tuple()
+    image = Image.open(cfg.path.form57_img)
 
     if api == 'Huggingface':
         import torch
@@ -698,10 +666,10 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
         generation_config_sample = {**generation_config_base, 'do_sample': True}#, 'temperature': 1, 'top_p': 0.95} # sample or beam sample
         generation_config_search = {**generation_config_base, 'do_sample': False} # greedy search or beam search
 
-        pipe = pipeline(model=model_path, device_map='auto', model_kwargs=quant_config)
+        pipe = pipeline(model=model_path, device_map='auto', model_kwargs=quant_config) # type: ignore
 
         ############### transcribe
-        path_form57_json_temp = path_form57_json.replace('.json', '') + '_temp.json'
+        path_form57_json_temp = cfg.path.form57_json.replace('.json', '') + '_temp.json'
         
         if os.path.exists(path_form57_json_temp):
             with open(path_form57_json_temp, 'r') as f:
@@ -718,8 +686,8 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             with open(path_form57_json_temp, 'w') as f:
                 json.dump(list_dict_form57_temp, f, indent=4)
             
-        if os.path.exists(path_form57_json):
-            with open(path_form57_json, 'r') as f:
+        if os.path.exists(cfg.path.form57_json):
+            with open(cfg.path.form57_json, 'r') as f:
                 dict_form57 = json.load(f)
         
         else:
@@ -733,11 +701,11 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             list_dict_form57 = transcribe_entries(api, pipe, model_path, content, n_generate=1, generation_config=generation_config_search)
             dict_form57 = list_dict_form57[0]
 
-            with open(path_form57_json, 'w') as f:
+            with open(cfg.path.form57_json, 'w') as f:
                 json.dump(dict_form57, f, indent=4)
 
         ############ group the entries
-        path_form57_json_group_temp = path_form57_json_group.replace('.json', '') + '_temp.json'
+        path_form57_json_group_temp = cfg.path.form57_json_group.replace('.json', '') + '_temp.json'
 
         if os.path.exists(path_form57_json_group_temp):
             with open(path_form57_json_group_temp, 'r') as f:
@@ -755,8 +723,8 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             with open(path_form57_json_group_temp, 'w') as f:
                 json.dump(list_dict_form57_group_temp, f, indent=4)
             
-        if os.path.exists(path_form57_json_group):
-            with open(path_form57_json_group, 'r') as f:
+        if os.path.exists(cfg.path.form57_json_group):
+            with open(cfg.path.form57_json_group, 'r') as f:
                 dict_form57_group = json.load(f)
         
         else:
@@ -770,7 +738,7 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             list_dict_form57_group = group_entries(api, pipe, model_path, content, n_generate=1, generation_config=generation_config_search)
             dict_form57_group = list_dict_form57_group[0]
 
-            with open(path_form57_json_group, 'w') as f:
+            with open(cfg.path.form57_json_group, 'w') as f:
                 json.dump(dict_form57_group, f, indent=4)
             
         del pipe
@@ -780,17 +748,17 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
     elif api == 'OpenAI':
         from openai import OpenAI
 
-        API_key = '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' # hong
+        API_key = cfg.apikey.openai
         client = OpenAI(api_key=API_key)
 
-        with open(path_form57_img, "rb") as f:
+        with open(cfg.path.form57_img, "rb") as f:
             img_file = client.files.create(
                 file=f,
                 purpose="vision"
             )
 
         ############ transcribe
-        path_form57_json_temp = path_form57_json.replace('.json', '') + '_temp.json'
+        path_form57_json_temp = cfg.path.form57_json.replace('.json', '') + '_temp.json'
         
         if os.path.exists(path_form57_json_temp):
             with open(path_form57_json_temp, 'r') as f:
@@ -807,8 +775,8 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             with open(path_form57_json_temp, 'w') as f:
                 json.dump(list_dict_form57_temp, f, indent=4)
             
-        if os.path.exists(path_form57_json):
-            with open(path_form57_json, 'r') as f:
+        if os.path.exists(cfg.path.form57_json):
+            with open(cfg.path.form57_json, 'r') as f:
                 dict_form57 = json.load(f)
             
         else:
@@ -821,11 +789,11 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             list_dict_form57 = transcribe_entries(api, client, model_path, content, n_generate=1, generation_config=None)
             dict_form57 = list_dict_form57[0]
             
-            with open(path_form57_json, 'w') as f:
+            with open(cfg.path.form57_json, 'w') as f:
                 json.dump(dict_form57, f, indent=4)
         
         ############ group the entries
-        path_form57_json_group_temp = path_form57_json_group.replace('.json', '') + '_temp.json'
+        path_form57_json_group_temp = cfg.path.form57_json_group.replace('.json', '') + '_temp.json'
 
         if os.path.exists(path_form57_json_group_temp):
             with open(path_form57_json_group_temp, 'r') as f:
@@ -843,8 +811,8 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             with open(path_form57_json_group_temp, 'w') as f:
                 json.dump(list_dict_form57_group_temp, f, indent=4)
         
-        if os.path.exists(path_form57_json_group):
-            with open(path_form57_json_group, 'r') as f:
+        if os.path.exists(cfg.path.form57_json_group):
+            with open(cfg.path.form57_json_group, 'r') as f:
                 dict_form57_group = json.load(f)
         
         else:
@@ -858,12 +826,24 @@ def img_to_json(path_form57_img, path_form57_json, path_form57_json_group, confi
             list_dict_form57_group = group_entries(api, client, model_path, content, n_generate=1, generation_config=None)
             dict_form57_group = list_dict_form57_group[0]
 
-            with open(path_form57_json_group, 'w') as f:
+            with open(cfg.path.form57_json_group, 'w') as f:
                 json.dump(dict_form57_group, f, indent=4)
     
     else:
         raise ValueError(f"Unsupported API: {api}")
 
+    return dict_form57, dict_form57_group
+
+def convert_to_json(cfg) -> tuple[dict[str, dict[str, Any]] | None, dict[str, list[int]] | None]:
+    if cfg.conv.json_source == 'csv':
+        dict_form57 = csv_to_json(cfg)
+        dict_form57_group = None
+    elif cfg.conv.json_source == 'pdf':
+        dict_form57, dict_form57_group = pdf_to_json(cfg)
+    elif cfg.conv.json_source == 'img':
+        dict_form57, dict_form57_group = img_to_json(cfg)
+    else:
+        dict_form57, dict_form57_group = None, None
     return dict_form57, dict_form57_group
 
 if __name__ == '__main__':
@@ -887,7 +867,7 @@ if __name__ == '__main__':
     Strictly follow the JSON format:
     {answer_format}
     """
-    with utils.Timer(model_path):
-        # print(generate_hf(pipe, model_path, [{"type": "image", "image": image}, {"type": "text", "text": prompt},], generation_config_search)) # HF
-        print(generate_openai(client, model_path, [{"type": "input_image", "file_id": img_file.id}, {"type": "input_text", "text": prompt},])) # OpenAI
+    # with utils.Timer(model_path):
+    #     # print(generate_hf(pipe, model_path, [{"type": "image", "image": image}, {"type": "text", "text": prompt},], generation_config_search)) # HF
+    #     print(generate_openai(client, model_path, [{"type": "input_image", "file_id": img_file.id}, {"type": "input_text", "text": prompt},])) # OpenAI
     

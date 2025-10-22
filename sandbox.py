@@ -195,11 +195,11 @@ generation_config_search = {**generation_config_base, 'do_sample': False} # gree
 # python gradio_demo.py
 # jupyter notebook demo.ipynb
 
-import replicate
+# import replicate
 
-model = replicate.models.get("microsoft/omniparser-v2")
-output = model.predict(image=image_path)
-print(output)
+# model = replicate.models.get("microsoft/omniparser-v2")
+# output = model.predict(image=image_path)
+# print(output)
 
 
 # ############### test parsing models

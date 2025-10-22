@@ -1,69 +1,303 @@
-from dataclasses import dataclass, fields, field, asdict, astuple
+from dataclasses import dataclass, asdict, astuple
+from typing import Final
+import os
+import argparse
+import re
+import json
+from utils import make_dir, sanitize_model_path
 
-@dataclass
+DIR_DATA_ROOT: Final[str] = "data"
+DIR_DATA_JSON: Final[str] = "json"
+DIR_DATA_RESULT: Final[str] = "result"
+
+FN_DICT_API_KEY: Final[str] = 'dict_api_key.json'
+
+FN_DF_RECORD: Final[str] = "250821 Highway-Rail Grade Crossing Incident Data (Form 57).csv"
+
+NEWS_CRAWLERS: Final[tuple[str, ...]] = ("np_url", "tf_url", "rd_url", "gs_url", "np_html", "tf_html", "rd_html", "gs_html")
+TARGET_STATES: Final[tuple[str, ...]] = ('California',)
+START_DATE: Final[str] = '2000-01-01'
+# COL_DF_RECORD_NEWS: Final[tuple[str, ...]] = ('query1', 'query2', 'county', 'state', 'city', 'highway', 'report_key', 'news_id')
+# COL_DF_NEWS_ARTICLES: Final[tuple[str, ...]] = ('news_id', 'url', 'pub_date', 'title')
+FN_DF_RECORD_NEWS: Final[str] = "df_record_news.csv"
+FN_DF_NEWS_ARTICLES: Final[str] = "df_news_articles.csv"
+
+FN_DF_NEWS_ARTICLES_SCORE: Final[str] = "df_news_articles_score.csv"
+FN_DF_NEWS_ARTICLES_FILTER: Final[str] = "df_news_articles_filter.csv"
+
+NM_FORM57: Final[str] = "FRA F 6180.57 (Form 57) form only"
+FN_FORM57_PDF: Final[str] = f"{NM_FORM57}.pdf"
+FN_FORM57_IMG: Final[str] = f"{NM_FORM57}.jpg"
+
+FN_FORM57_JSON: Final[str] = "form57.json"
+FN_FORM57_JSON_GROUP: Final[str] = "form57_group.json"
+FN_FORM57_ANNOTATED: Final[str] = 'annotated_form.png'
+
+FN_DICT_ANSWER_PLACES: Final[str] = "dict_answer_places.jsonc"
+FN_DICT_IDX_MAPPING: Final[str] = "dict_idx_mapping.jsonc"
+FN_DICT_COL_INDEXING: Final[str] = "dict_col_indexing.jsonc"
+
+FN_DF_RETRIEVAL: Final[str] = "df_retrieval.csv"
+FN_DF_MATCH: Final[str] = "df_match.csv"
+FN_DF_ANNOTATE: Final[str] = "df_annotate.csv"
+FN_DF_RECORD_NEWS_RETRIEVAL: Final[str] = 'df_record_news_retrieval.csv'
+
+FN_DF_CROSSING: Final[str] = '251009 NTAD_Railroad_Grade_Crossings_1739202960140128164.csv'
+
+CONVERSION_API_MODEL_CHOICES: Final[dict[str, list[str]]] = {
+    'Google_DocAI': ['form_parser', 'layout_parser'],
+    'AWS_Textract': ['textract'],
+    'Azure_FormRecognizer': ['form_recognizer'],
+    "OpenAI": ["o4-mini"],
+    "Huggingface": ["Qwen/Qwen2.5-VL-72B-Instruct", "OpenGVLab/InternVL3_5-38B-HF"],
+    "None": ["None"],
+}
+CONVERSION_JSON_SOURCE_CHOICES: Final[list[str]] = ["csv", "pdf", "img", "None"]
+RETRIEVAL_API_MODELS_CHOICES: Final[dict[str, list[str]]] = {
+    "Huggingface": ["microsoft/phi-4", "Qwen/Qwen2.5-VL-72B-Instruct"],
+    "OpenAI": ["o4-mini"],
+}
+RETRIEVAL_BATCH_CHOICES: Final[list[str]] = ["single", "group", "all"]
+N_GENERATE_RANGE: Final[range] = range(9)
+
+
+def parse_args() -> argparse.Namespace:
+    """Create an argument parser for building configs from the CLI and parse CLI args."""
+    parser = argparse.ArgumentParser(description="Project configuration parser")
+
+    g_conv = parser.add_argument_group("conversion")
+    g_conv.add_argument(
+        "--c_api",
+        type=str,
+        choices=list(CONVERSION_API_MODEL_CHOICES.keys()),
+        required=True,
+        help="API to use for form transcription"
+    )
+    g_conv.add_argument(
+        "--c_model",
+        type=str,
+        choices=sorted([m for ms in CONVERSION_API_MODEL_CHOICES.values() for m in ms]),
+        required=True,
+        help="Model to use for form transcription"
+    )
+    g_conv.add_argument(
+        "--c_n_generate",
+        type=int,
+        choices=N_GENERATE_RANGE,
+        required=True,
+        help="Number of transcription sample generations before aggregation"
+    )
+    g_conv.add_argument(
+        "--c_json_source",
+        type=str,
+        choices=CONVERSION_JSON_SOURCE_CHOICES,
+        required=True,
+        help="Source of JSON data"
+    )
+
+    g_ret = parser.add_argument_group("retrieval")
+    g_ret.add_argument(
+        "--r_api",
+        type=str,
+        choices=list(RETRIEVAL_API_MODELS_CHOICES.keys()),
+        required=True,
+        help="API to use for information retrieval"
+    )
+    g_ret.add_argument(
+        "--r_model",
+        type=str,
+        choices=sorted([m for ms in RETRIEVAL_API_MODELS_CHOICES.values() for m in ms]),
+        required=True,
+        help="Model to use for information retrieval",
+    )
+    g_ret.add_argument(
+        "--r_n_generate",
+        type=int,
+        choices=N_GENERATE_RANGE,
+        required=False,
+        default=1,
+        help="Number of QAs before aggregation"
+    )
+    g_ret.add_argument(
+        "--r_question_batch",
+        type=str,
+        choices=RETRIEVAL_BATCH_CHOICES,
+        required=True,
+        help="Batching strategy for questions"
+    )
+
+    args = parser.parse_args()
+
+    # sanity check
+    if args.c_model not in CONVERSION_API_MODEL_CHOICES[args.c_api]:
+        parser.error(f"Model '{args.c_model}' is invalid for API '{args.c_api}'. "
+                     f"Allowed models: {CONVERSION_API_MODEL_CHOICES[args.c_api]}")
+    
+    if args.r_model not in RETRIEVAL_API_MODELS_CHOICES[args.r_api]:
+        parser.error(f"Model '{args.r_model}' is invalid for API '{args.r_api}'. "
+                     f"Allowed models: {RETRIEVAL_API_MODELS_CHOICES[args.r_api]}")
+    
+    if args.c_json_source == 'csv':
+        assert args.c_api == 'None' and args.c_model == 'None' and args.c_n_generate == 0 and args.r_question_batch == 'single'
+    
+    return args
+
+@dataclass(frozen=True)
 class BaseConfig:
     api: str
     model: str
     n_generate: int
     
-    list_json_source = ['csv', 'pdf', 'img', 'None']
-    list_api = ['Google_DocAI', 'AWS_Textract', 'Azure_FormRecognizer', 'OpenAI', 'Huggingface']
-    dict_model = {
-        'Google_DocAI': ['form_parser', 'layout_parser'],
-        'AWS_Textract': ['textract'],
-        'Azure_FormRecognizer': ['form_recognizer'],
-        'OpenAI': ['gpt-4.1-mini', 'gpt-4o-mini', 'o4-mini'],
-        'Huggingface': [],
-    }
-    list_n_generate = range(1, 9) # OpenAI API only allows upto 8 multiple outputs at an one-time input
-    list_question_batch = ['single', 'group', 'all']
-
-    def __post_init__(self):
-        self.assert_config('api', self.list_api)
-        self.assert_config('model', self.dict_model[self.api])
-        self.assert_config('n_generate', self.list_n_generate)
-    
-    def assert_type(self, param, arg, param_type):
-        assert isinstance(arg, param_type), f"'{arg}' value for param '{param}' must be {param_type}"
-    
-    def assert_list(self, param, arg, list_arg):
-        assert arg in list_arg, f"'{arg}' value for param '{param}' must be one of {list_arg}"
-
-    def assert_config(self, param, list_arg):
-        arg = self.__dict__[param]
-        param_type = self.__annotations__[param]
-        self.assert_type(param, arg, param_type)
-        self.assert_list(param, arg, list_arg)
-    
     def to_dict(self):
         return asdict(self)
-    
+
     def to_tuple(self):
         return astuple(self)
 
-@dataclass
+@dataclass(frozen=True)
+class ScrapingConfig:
+    target_states: tuple[str, ...]
+    start_date: str
+    news_crawlers: tuple[str, ...]
+
+    def __post_init__(self):
+        """sanity check"""
+        for state in self.target_states:
+            assert state in ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District Of Columbia', 
+                                     'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 
+                                     'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 
+                                     'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 
+                                     'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 
+                                     'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
+        assert bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", self.start_date))
+
+@dataclass(frozen=True)
+class TableConfig:
+    path: str
+    columns: list[str]
+
+@dataclass(frozen=True)
 class ConversionConfig(BaseConfig):
     json_source: str
-    
-    def __post_init__(self):
-        self.assert_config('json_source', self.list_json_source)
 
-@dataclass
+@dataclass(frozen=True)
 class RetrievalConfig(BaseConfig):
     question_batch: str
-        
-    def __post_init__(self):
-        self.assert_config('question_batch', self.list_question_batch)
 
-@dataclass
+@dataclass(frozen=True)
+class PathConfig:
+    # generated directories
+    dir_conversion: str
+    dir_retrieval: str
+    
+    # files
+    dict_api_key: str
+
+    df_record: str
+    df_record_news: str
+    df_news_articles: str
+
+    df_news_articles_score: str
+    df_news_articles_filter: str
+    
+    form57_pdf: str
+    form57_img: str
+    
+    form57_json: str
+    form57_json_group: str
+    form57_annotated: str
+    
+    df_retrieval: str
+    df_match: str
+    df_annotate: str
+    df_record_news_retrieval: str
+    
+    dict_answer_places: str
+    dict_idx_mapping: str
+    dict_col_indexing: str
+    
+    df_crossing: str
+
+@dataclass()
+class APIkeyConfig:
+    openai: str
+    textract: str
+
+@dataclass(frozen=True)
 class Config:
-    conversion: ConversionConfig
-    retrieval: RetrievalConfig
+    scrp: ScrapingConfig
+    conv: ConversionConfig
+    retr: RetrievalConfig
+    path: PathConfig
+    apikey: APIkeyConfig
 
-    def to_dict(self):
-        return asdict(self)
+def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> PathConfig:
+    dir_conversion = f"{conv_cfg.json_source}_{conv_cfg.api}_{conv_cfg.model}_{conv_cfg.n_generate}"
+    path_dir_conversion = os.path.join(DIR_DATA_ROOT, DIR_DATA_JSON, dir_conversion)
+    make_dir(path_dir_conversion)
+
+    dir_retrieval = f"{retr_cfg.question_batch}_{retr_cfg.api}_{retr_cfg.model}_{retr_cfg.n_generate}"
+    path_dir_retrieval = os.path.join(path_dir_conversion, DIR_DATA_RESULT, dir_retrieval)
+    make_dir(path_dir_retrieval)
+
+    return PathConfig(
+        dir_conversion=path_dir_conversion,
+        dir_retrieval=path_dir_retrieval,
+
+        dict_api_key=os.path.join(DIR_DATA_ROOT, FN_DICT_API_KEY),
+
+        df_record=os.path.join(DIR_DATA_ROOT, FN_DF_RECORD),
+        df_record_news=os.path.join(DIR_DATA_ROOT, FN_DF_RECORD_NEWS),
+        df_news_articles=os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_ARTICLES),
+        
+        df_news_articles_score=os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_ARTICLES_SCORE),
+        df_news_articles_filter=os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_ARTICLES_FILTER),
+        
+        form57_pdf=os.path.join(DIR_DATA_ROOT, FN_FORM57_PDF),
+        form57_img=os.path.join(DIR_DATA_ROOT, FN_FORM57_IMG),
+
+        form57_json=os.path.join(path_dir_conversion, FN_FORM57_JSON),
+        form57_json_group=os.path.join(path_dir_conversion, FN_FORM57_JSON_GROUP),
+        form57_annotated=os.path.join(path_dir_conversion, FN_FORM57_ANNOTATED),
+        
+        dict_answer_places=os.path.join(path_dir_conversion, FN_DICT_ANSWER_PLACES),
+        dict_idx_mapping=os.path.join(path_dir_conversion, FN_DICT_IDX_MAPPING),
+        dict_col_indexing=os.path.join(DIR_DATA_ROOT, FN_DICT_COL_INDEXING),
+        
+        df_retrieval=os.path.join(path_dir_retrieval, FN_DF_RETRIEVAL),
+        df_match=os.path.join(DIR_DATA_ROOT, FN_DF_MATCH),
+        df_annotate=os.path.join(DIR_DATA_ROOT, FN_DF_ANNOTATE),
+        df_record_news_retrieval=os.path.join(DIR_DATA_ROOT, FN_DF_RECORD_NEWS_RETRIEVAL),
+        
+        df_crossing=os.path.join(DIR_DATA_ROOT, FN_DF_CROSSING),
+    )
+
+def _load_api_key(path_cfg: PathConfig) -> APIkeyConfig:
+    with open(path_cfg.dict_api_key, 'r') as f:
+        dict_api_key = json.load(f)
+
+    return APIkeyConfig(
+        openai=dict_api_key['openai']['key'],
+        textract=dict_api_key['textract']['key']
+    )
+
+def build_config() -> Config:
+    args = parse_args()
+    args_dict = vars(args)
+    conv_args = {k.replace('c_', ''): v for k, v in args_dict.items() if k.startswith('c_')}
+    retr_args = {k.replace('r_', ''): v for k, v in args_dict.items() if k.startswith('r_')}
+    conv_args['model'] = sanitize_model_path(conv_args['model'])
+    retr_args['model'] = sanitize_model_path(retr_args['model'])
+    scrp_cfg = ScrapingConfig(TARGET_STATES, START_DATE, NEWS_CRAWLERS)
+    conv_cfg = ConversionConfig(**conv_args)
+    retr_cfg  = RetrievalConfig(**retr_args)
+    path_cfg = _compute_paths(conv_cfg, retr_cfg)
+    apikey_cfg = _load_api_key(path_cfg)
+    return Config(scrp=scrp_cfg, conv=conv_cfg, retr=retr_cfg, path=path_cfg, apikey=apikey_cfg)
 
 if __name__ == '__main__':
-    config_conversion = ConversionConfig(json_source='pdf', api='OpenAI', model='o4-mini', n_generate=5)
-    config_retrieval = RetrievalConfig(api='OpenAI', model='o4-mini', n_generate=1, question_batch='single')
-    config = Config(conversion=config_conversion, retrieval=config_retrieval)
+    cfg = build_config()
+    cfg.scrp.news_crawlers
+    cfg.conv.api
+    cfg.retr.model
+    cfg.path.df_annotate

@@ -1,2 +1,0 @@
-query1,query2,county,state,city,highway,incident_id,news_id,url,pub_date,title,np_url,tf_url,rd_url,gs_url,np_html,tf_html,rd_html,gs_html
-train,accident,ALAMEDA,CALIFORNIA,BERKELEY,CEDAR STREET,4db53323d9ebd1e2e1e6604dee2b93fa,,,,,,,,,,,,
