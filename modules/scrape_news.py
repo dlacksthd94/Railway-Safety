@@ -22,7 +22,7 @@ import os
 import subprocess
 import platform
 import copy
-from config import Config, TableConfig
+from .config import Config, TableConfig
 
 TIMEOUT = 5
 CONFIG_NP = newspaper.Config()

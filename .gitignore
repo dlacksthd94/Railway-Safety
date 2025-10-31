@@ -5,9 +5,12 @@ data2
 *Highway-Rail Grade Crossing Incident Data (Form 57).csv
 *NTAD_Railroad_Grade_Crossings*.csv
 web_screenshot.png
+sample_crossing.jpg
 inspect_news.py
 df_news.csv
 backup*
 error*
 aws*
 mapillary
+textract_accessKeys.csv
+merge.py

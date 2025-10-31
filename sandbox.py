@@ -299,4 +299,4 @@ array = np.array([2, 2, 3, 4]) # human-centric schema only
 array.mean()
 array.std()
 
-############### 
+############### mapillary API

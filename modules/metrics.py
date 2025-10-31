@@ -1,143 +1,17 @@
-import os
-import time
-import json5
-from tqdm import tqdm
-import numpy as np
 import pandas as pd
-from collections import Counter
+import json5
+import numpy as np
+from tqdm import tqdm
 from itertools import chain
-from transformers import pipeline
+from collections import Counter
 import datetime
+from transformers import pipeline
 import gc
 import torch
-import json
-import ast
+from .utils import text_binary_classification, as_float
 from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix, accuracy_score
 
-def make_dir(path: str) -> None:
-    os.makedirs(path, exist_ok=True)
-
-def sanitize_model_path(model_path: str) -> str:
-    """Replace path separators so model_path names are safe in folder names."""
-    return model_path.replace("/", "--")
-
-def desanitize_model_path(model_path: str) -> str:
-    """Replace path separators so model_path names are safe in folder names."""
-    return model_path.replace("--", "/")
-
-def generate_openai(client, model_path, content, generation_config=None):
-    messages = [
-        {
-            "role": "user",
-            "content": content,
-        },
-    ]
-    response = client.responses.create(model=model_path, input=messages)
-    output = response.output_text
-    return output
-
-def generate_hf(pipe, model_path, content, generation_config={}):
-    messages = [
-        {
-            "role": "user",
-            "content": content,
-        },
-    ]
-    # response = pipe(messages, return_full_text=False, generate_kwargs=generation_config)
-    response = pipe(messages, return_full_text=False, **generation_config)
-    output = response[0]['generated_text']
-    return output
-
-def select_generate_func(api):
-    if api == 'OpenAI':
-        generate_func = generate_openai
-    elif api == 'Huggingface':
-        generate_func = generate_hf
-    else:
-        raise ValueError(f"Unsupported API: {api}")
-    return generate_func
-
-class Timer:
-    def __init__(self, label):
-        self.label = label
-
-    def __enter__(self):
-        self._start = time.perf_counter()
-        return self           # (optional) so you can read .elapsed later
-    
-    def __exit__(self, exc_type, exc, tb):
-        self.elapsed = time.perf_counter() - self._start
-        elapsed = self.format_hms(self.elapsed)
-        print(f"[{self.label}]\t elapsed: {elapsed}")
-            
-    def format_hms(self, total_seconds):
-        h = int(total_seconds // 3600)
-        m = int((total_seconds % 3600) // 60)
-        s = total_seconds % 60               # still a float now
-        return f"{h:02d}:{m:02d}:{s:06.3f}"   # e.g. 00:01:02.357
-
-def as_float(val):
-    try:
-        return float(val)
-    except:
-        return val
-
-def lower_str(val):
-    if isinstance(val, str):
-        return val.lower()
-    else:
-        return val
-
-def parse_json_from_output(output):
-    """Parse JSON from the output text of OpenAI response.
-    If the output is a plain JSON string, it parses that directly.
-    Otherwise, find the code block containing JSON and parse it.
-    """
-    try:
-        if '```' in output:
-            json_start_index = output.index('```')
-            json_end_index = output.rindex('```')
-            str_form57 = output[json_start_index:json_end_index].strip('`')
-            if str_form57.startswith('json'):
-                str_form57 = str_form57.replace('json', '', 1)
-        else:
-            str_form57 = output
-        try:
-            dict_form57 = json.loads(str_form57)
-        except:
-            dict_form57 = ast.literal_eval(str_form57)
-    except:
-        dict_form57 = {}
-    return dict_form57
-
-def text_binary_classification(pipe, prompt, dict_answer_choice, num_sim):
-    list_output = pipe(prompt, max_new_tokens=1, num_return_sequences=num_sim, return_full_text=False)
-    list_answer = list(map(lambda output: output['generated_text'].upper(), list_output))
-    list_answer_filter = list(filter(lambda answer: answer in dict_answer_choice, list_answer))
-    list_answer_map = list(map(lambda answer: dict_answer_choice[answer], list_answer_filter))
-    return list_answer_map
-
-def text_generation(pipe, prompt, max_new_tokens=4096):
-    output = pipe(prompt, max_new_tokens=max_new_tokens, return_full_text=False)
-    answer = output[0]['generated_text']
-    return answer
-
-def merge_df(cfg):
-    df_retrieval = pd.read_csv(cfg.path.df_retrieval)
-    df_match = pd.read_csv(cfg.path.df_match)
-    df_match = df_match[df_match['match'] == 1]
-    assert df_match['news_id'].is_unique and df_retrieval['news_id'].is_unique, '==========Warning: News is not unique!!!==========='
-    
-    idx_content_match = df_match.columns.get_loc('content')
-    df_match = df_match.iloc[:, :idx_content_match + 1] # type: ignore
-    df_retrieval_drop = df_retrieval.set_index('news_id')
-    idx_content_retrieval = df_retrieval_drop.columns.get_loc('content')
-    df_retrieval_drop = df_retrieval_drop.iloc[:, idx_content_retrieval + 1:] # type: ignore
-    df_record_news_retrieval = df_match.merge(df_retrieval_drop, left_on='news_id', right_index=True, how='inner')
-    # df_record_news_retrieval.to_csv(cfg.path.df_record_news_retrieval)
-    return df_record_news_retrieval
-
-def get_acc_table(df_merge, list_answer_type_selected, cfg):
+def get_acc_table(list_answer_type_selected, cfg):
     df_record = pd.read_csv(cfg.path.df_record)
     df_record = df_record[df_record['State Name'].str.title().isin(cfg.scrp.target_states)]
     df_record['Date'] = pd.to_datetime(df_record['Date'])
@@ -145,6 +19,8 @@ def get_acc_table(df_merge, list_answer_type_selected, cfg):
 
     df_record['Date'] = df_record['Date'].astype(str)
     df_record = df_record.set_index('Report Key')
+
+    df_record_retrieval = pd.read_csv(cfg.path.df_record_retrieval)
 
     with open(cfg.path.dict_col_indexing, 'r') as f:
         dict_col_indexing = json5.load(f)
@@ -201,10 +77,10 @@ def get_acc_table(df_merge, list_answer_type_selected, cfg):
 
     pipe = pipeline(model='microsoft/phi-4', device_map='auto', **{'do_sample': False}) # type: ignore
 
-    df_acc = df_merge.copy(deep=True)
+    df_acc = df_record_retrieval.copy(deep=True)
     df_acc = df_acc.drop('match', axis=1, errors='ignore')
     df_acc.iloc[:, 12:] = np.nan
-    for idx_match, row_match in tqdm(df_merge.iterrows(), total=df_merge.shape[0]):
+    for idx_match, row_match in tqdm(df_record_retrieval.iterrows(), total=df_record_retrieval.shape[0]):
         report_key = row_match['report_key']
         row_csv = df_record.loc[report_key]
         list_score_temp = []
@@ -212,8 +88,8 @@ def get_acc_table(df_merge, list_answer_type_selected, cfg):
             col_name = dict_col_indexing[col_idx_form]
             # if col_idx_json not in row_match:
             #     continue
-            retrieval = row_match[col_idx_json]
-            label = row_csv[col_name]
+            retrieval = row_match.loc[col_idx_json]
+            label = row_csv.loc[col_name]
             if isinstance(retrieval, str):
                 retrieval = retrieval.strip('\'"').strip()
             acc_temp = np.nan
@@ -262,16 +138,22 @@ def get_acc_table(df_merge, list_answer_type_selected, cfg):
             list_score_temp.append(acc_temp)
         #     print(f'{acc_temp}\t{retrieval}=={label}\t{col_name}')
         # print('--------------------------------------------------')
-        df_acc.loc[idx_match, list(dict_idx_selected.keys())] = list_score_temp
+        df_acc.loc[idx_match, list(dict_idx_selected.keys())] = list_score_temp # type: ignore
     
     del pipe
     gc.collect()
     torch.cuda.empty_cache()
 
-    return df_acc
+    idx_news_content = df_acc.columns.get_loc('content')
+    acc = df_acc.iloc[:, idx_news_content + 1:].dropna(axis=1, how='all').mean().mean() # type: ignore
 
-def get_cov_table(df_annotate, list_answer_type_selected, cfg):
+    return df_acc, acc
+
+def get_cov_table(list_answer_type_selected, cfg):
     df_retrieval = pd.read_csv(cfg.path.df_retrieval)
+    df_annotate = pd.read_csv(cfg.path.df_annotate)
+    df_annotate = df_annotate[df_annotate['annotated'] == 1]
+
 
     with open(cfg.path.dict_col_indexing, 'r') as f:
         dict_col_indexing = json5.load(f)
@@ -307,10 +189,10 @@ def get_cov_table(df_annotate, list_answer_type_selected, cfg):
     df_annotate = df_annotate.drop('annotated', axis=1, errors='ignore')
     df_cov = df_annotate.copy(deep=True)
     idx_news_content = df_cov.columns.get_loc('content')
-    df_cov = df_cov.iloc[:, :idx_news_content + 1]
+    df_cov = df_cov.iloc[:, :idx_news_content + 1] # type: ignore
     df_cov['fnr'] = np.nan
 
-    list_col_idx_form = df_annotate.columns[idx_news_content + 1:]
+    list_col_idx_form = df_annotate.columns[idx_news_content + 1:] # type: ignore
     
     for idx_annotate, row_annotate in tqdm(df_annotate.iterrows(), total=df_annotate.shape[0]):
         news_id = row_annotate['news_id']
@@ -330,6 +212,9 @@ def get_cov_table(df_annotate, list_answer_type_selected, cfg):
         # cov_temp = f1_score(list_label, list_attempt, zero_division=0)
         tn, fp, fn, tp = confusion_matrix(list_label, list_attempt).ravel()
         cov_temp = tp / (fn + tp) if (fn + tp) > 0 else np.nan
-        df_cov.loc[idx_annotate, 'fnr'] = cov_temp
+        df_cov.loc[idx_annotate, 'fnr'] = cov_temp # type: ignore
+
+    idx_news_content = df_cov.columns.get_loc('content')
+    cov = df_cov.iloc[:, idx_news_content + 1:].dropna(axis=1, how='all').mean().mean() # type: ignore
     
-    return df_cov
+    return df_cov, cov

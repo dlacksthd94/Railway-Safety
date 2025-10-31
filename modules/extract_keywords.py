@@ -11,7 +11,7 @@ import re
 from PIL import Image
 import json5
 from openai import OpenAI
-from utils import parse_json_from_output, desanitize_model_path, generate_openai, generate_hf, select_generate_func
+from .utils import parse_json_from_output, desanitize_model_path, generate_openai, generate_hf, select_generate_func
 
 def to_answer_places(dict_form57):
     dict_answer_places = {}

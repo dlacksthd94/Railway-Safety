@@ -4,21 +4,24 @@ import os
 import argparse
 import re
 import json
-from utils import make_dir, sanitize_model_path
+from .utils import make_dir, remove_dir, sanitize_model_path
 
-DIR_DATA_ROOT: Final[str] = "data"
-DIR_DATA_JSON: Final[str] = "json"
-DIR_DATA_RESULT: Final[str] = "result"
+# directories
+DN_DATA_ROOT: Final[str] = "data"
+DN_DATA_JSON: Final[str] = "json"
+DN_DATA_RESULT: Final[str] = "result"
+DN_MAPILLARY: Final[str] = 'mapillary'
+DN_MSLS: Final[str] = 'street_level_seq'
+DNS_MSLS_IMAGE: Final[tuple[str, ...]] = tuple(f'msls_images_vol_{i}' for i in range(1, 7))
+DN_MSLS_META: Final[str] = 'msls_metadata'
+DN_MSLS_CROSSING: Final[str] = 'msls_crossing'
+# DIR_VISTAS: Final[str] = 'vistas/vistas2.0'
 
+# files
 FN_DICT_API_KEY: Final[str] = 'dict_api_key.json'
 
 FN_DF_RECORD: Final[str] = "250821 Highway-Rail Grade Crossing Incident Data (Form 57).csv"
 
-NEWS_CRAWLERS: Final[tuple[str, ...]] = ("np_url", "tf_url", "rd_url", "gs_url", "np_html", "tf_html", "rd_html", "gs_html")
-TARGET_STATES: Final[tuple[str, ...]] = ('California',)
-START_DATE: Final[str] = '2000-01-01'
-# COL_DF_RECORD_NEWS: Final[tuple[str, ...]] = ('query1', 'query2', 'county', 'state', 'city', 'highway', 'report_key', 'news_id')
-# COL_DF_NEWS_ARTICLES: Final[tuple[str, ...]] = ('news_id', 'url', 'pub_date', 'title')
 FN_DF_RECORD_NEWS: Final[str] = "df_record_news.csv"
 FN_DF_NEWS_ARTICLES: Final[str] = "df_news_articles.csv"
 
@@ -40,9 +43,16 @@ FN_DICT_COL_INDEXING: Final[str] = "dict_col_indexing.jsonc"
 FN_DF_RETRIEVAL: Final[str] = "df_retrieval.csv"
 FN_DF_MATCH: Final[str] = "df_match.csv"
 FN_DF_ANNOTATE: Final[str] = "df_annotate.csv"
-FN_DF_RECORD_NEWS_RETRIEVAL: Final[str] = 'df_record_news_retrieval.csv'
+FN_DF_RECORD_RETRIEVAL: Final[str] = 'df_record_retrieval.csv'
 
 FN_DF_CROSSING: Final[str] = '251009 NTAD_Railroad_Grade_Crossings_1739202960140128164.csv'
+FN_DF_MSLS_META: Final[str] = 'df_msls_meta.csv'
+
+# configurations
+NEWS_CRAWLERS: Final[tuple[str, ...]] = ("np_url", "tf_url", "rd_url", "gs_url", "np_html", "tf_html", "rd_html", "gs_html")
+TARGET_STATES: Final[tuple[str, ...]] = ('California',)
+TARGET_COUNTIES: Final[tuple[str, ...]] = ('San Francisco', )
+START_DATE: Final[str] = '2000-01-01'
 
 CONVERSION_API_MODEL_CHOICES: Final[dict[str, list[str]]] = {
     'Google_DocAI': ['form_parser', 'layout_parser'],
@@ -60,6 +70,7 @@ RETRIEVAL_API_MODELS_CHOICES: Final[dict[str, list[str]]] = {
 RETRIEVAL_BATCH_CHOICES: Final[list[str]] = ["single", "group", "all"]
 N_GENERATE_RANGE: Final[range] = range(9)
 
+US_CITIES = ('miami', 'austin', 'boston', 'phoenix', 'sf') # miami images don't provide geographic info (lon, lat)
 
 def parse_args() -> argparse.Namespace:
     """Create an argument parser for building configs from the CLI and parse CLI args."""
@@ -157,6 +168,7 @@ class BaseConfig:
 @dataclass(frozen=True)
 class ScrapingConfig:
     target_states: tuple[str, ...]
+    target_counties: tuple[str, ...]
     start_date: str
     news_crawlers: tuple[str, ...]
 
@@ -189,6 +201,11 @@ class PathConfig:
     # generated directories
     dir_conversion: str
     dir_retrieval: str
+    dir_msls: str
+    dirs_msls_image: tuple[str, ...]
+    dir_msls_meta: str
+    dir_msls_crossing: str
+    # dir_vistas: str
     
     # files
     dict_api_key: str
@@ -210,66 +227,85 @@ class PathConfig:
     df_retrieval: str
     df_match: str
     df_annotate: str
-    df_record_news_retrieval: str
+    df_record_retrieval: str
     
     dict_answer_places: str
     dict_idx_mapping: str
     dict_col_indexing: str
     
     df_crossing: str
+    df_msls_meta: str
 
 @dataclass()
 class APIkeyConfig:
     openai: str
     textract: str
 
+@dataclass()
+class CrossingConfig:
+    us_cities: tuple[str, ...]
+
 @dataclass(frozen=True)
 class Config:
     scrp: ScrapingConfig
     conv: ConversionConfig
     retr: RetrievalConfig
+    crss: CrossingConfig
     path: PathConfig
     apikey: APIkeyConfig
 
 def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> PathConfig:
-    dir_conversion = f"{conv_cfg.json_source}_{conv_cfg.api}_{conv_cfg.model}_{conv_cfg.n_generate}"
-    path_dir_conversion = os.path.join(DIR_DATA_ROOT, DIR_DATA_JSON, dir_conversion)
-    make_dir(path_dir_conversion)
+    dn_conversion = f"{conv_cfg.json_source}_{conv_cfg.api}_{conv_cfg.model}_{conv_cfg.n_generate}"
+    dp_conversion = os.path.join(DN_DATA_ROOT, DN_DATA_JSON, dn_conversion)
+    make_dir(dp_conversion)
 
-    dir_retrieval = f"{retr_cfg.question_batch}_{retr_cfg.api}_{retr_cfg.model}_{retr_cfg.n_generate}"
-    path_dir_retrieval = os.path.join(path_dir_conversion, DIR_DATA_RESULT, dir_retrieval)
-    make_dir(path_dir_retrieval)
+    dn_retrieval = f"{retr_cfg.question_batch}_{retr_cfg.api}_{retr_cfg.model}_{retr_cfg.n_generate}"
+    dp_retrieval = os.path.join(dp_conversion, DN_DATA_RESULT, dn_retrieval)
+    make_dir(dp_retrieval)
+
+    dp_msls = os.path.join(DN_DATA_ROOT, DN_MAPILLARY, DN_MSLS)
+    dp_msls_meta = os.path.join(dp_msls, DN_MSLS_META)
+
+    dp_msls_crossing = os.path.join(dp_msls, DN_MSLS_CROSSING)
+    remove_dir(dp_msls_crossing)
+    make_dir(dp_msls_crossing)
 
     return PathConfig(
-        dir_conversion=path_dir_conversion,
-        dir_retrieval=path_dir_retrieval,
+        dir_conversion=dp_conversion,
+        dir_retrieval=dp_retrieval,
+        dir_msls=dp_msls,
+        dirs_msls_image=tuple(map(lambda dn: os.path.join(dp_msls, dn), DNS_MSLS_IMAGE)),
+        dir_msls_meta=dp_msls_meta,
+        dir_msls_crossing=dp_msls_crossing,
+        # dir_vistas=os.path.join(DN_DATA_ROOT, DN_MAPILLARY, DIR_VISTAS),
 
-        dict_api_key=os.path.join(DIR_DATA_ROOT, FN_DICT_API_KEY),
+        dict_api_key=os.path.join(DN_DATA_ROOT, FN_DICT_API_KEY),
 
-        df_record=os.path.join(DIR_DATA_ROOT, FN_DF_RECORD),
-        df_record_news=os.path.join(DIR_DATA_ROOT, FN_DF_RECORD_NEWS),
-        df_news_articles=os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_ARTICLES),
+        df_record=os.path.join(DN_DATA_ROOT, FN_DF_RECORD),
+        df_record_news=os.path.join(DN_DATA_ROOT, FN_DF_RECORD_NEWS),
+        df_news_articles=os.path.join(DN_DATA_ROOT, FN_DF_NEWS_ARTICLES),
         
-        df_news_articles_score=os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_ARTICLES_SCORE),
-        df_news_articles_filter=os.path.join(DIR_DATA_ROOT, FN_DF_NEWS_ARTICLES_FILTER),
+        df_news_articles_score=os.path.join(DN_DATA_ROOT, FN_DF_NEWS_ARTICLES_SCORE),
+        df_news_articles_filter=os.path.join(DN_DATA_ROOT, FN_DF_NEWS_ARTICLES_FILTER),
         
-        form57_pdf=os.path.join(DIR_DATA_ROOT, FN_FORM57_PDF),
-        form57_img=os.path.join(DIR_DATA_ROOT, FN_FORM57_IMG),
+        form57_pdf=os.path.join(DN_DATA_ROOT, FN_FORM57_PDF),
+        form57_img=os.path.join(DN_DATA_ROOT, FN_FORM57_IMG),
 
-        form57_json=os.path.join(path_dir_conversion, FN_FORM57_JSON),
-        form57_json_group=os.path.join(path_dir_conversion, FN_FORM57_JSON_GROUP),
-        form57_annotated=os.path.join(path_dir_conversion, FN_FORM57_ANNOTATED),
+        form57_json=os.path.join(dp_conversion, FN_FORM57_JSON),
+        form57_json_group=os.path.join(dp_conversion, FN_FORM57_JSON_GROUP),
+        form57_annotated=os.path.join(dp_conversion, FN_FORM57_ANNOTATED),
         
-        dict_answer_places=os.path.join(path_dir_conversion, FN_DICT_ANSWER_PLACES),
-        dict_idx_mapping=os.path.join(path_dir_conversion, FN_DICT_IDX_MAPPING),
-        dict_col_indexing=os.path.join(DIR_DATA_ROOT, FN_DICT_COL_INDEXING),
+        dict_answer_places=os.path.join(dp_conversion, FN_DICT_ANSWER_PLACES),
+        dict_idx_mapping=os.path.join(dp_conversion, FN_DICT_IDX_MAPPING),
+        dict_col_indexing=os.path.join(DN_DATA_ROOT, FN_DICT_COL_INDEXING),
         
-        df_retrieval=os.path.join(path_dir_retrieval, FN_DF_RETRIEVAL),
-        df_match=os.path.join(DIR_DATA_ROOT, FN_DF_MATCH),
-        df_annotate=os.path.join(DIR_DATA_ROOT, FN_DF_ANNOTATE),
-        df_record_news_retrieval=os.path.join(DIR_DATA_ROOT, FN_DF_RECORD_NEWS_RETRIEVAL),
+        df_retrieval=os.path.join(dp_retrieval, FN_DF_RETRIEVAL),
+        df_match=os.path.join(DN_DATA_ROOT, FN_DF_MATCH),
+        df_annotate=os.path.join(DN_DATA_ROOT, FN_DF_ANNOTATE),
+        df_record_retrieval=os.path.join(dp_retrieval, FN_DF_RECORD_RETRIEVAL),
         
-        df_crossing=os.path.join(DIR_DATA_ROOT, FN_DF_CROSSING),
+        df_crossing=os.path.join(DN_DATA_ROOT, FN_DF_CROSSING),
+        df_msls_meta=os.path.join(dp_msls, FN_DF_MSLS_META),
     )
 
 def _load_api_key(path_cfg: PathConfig) -> APIkeyConfig:
@@ -288,12 +324,13 @@ def build_config() -> Config:
     retr_args = {k.replace('r_', ''): v for k, v in args_dict.items() if k.startswith('r_')}
     conv_args['model'] = sanitize_model_path(conv_args['model'])
     retr_args['model'] = sanitize_model_path(retr_args['model'])
-    scrp_cfg = ScrapingConfig(TARGET_STATES, START_DATE, NEWS_CRAWLERS)
+    scrp_cfg = ScrapingConfig(TARGET_STATES, TARGET_COUNTIES, START_DATE, NEWS_CRAWLERS)
     conv_cfg = ConversionConfig(**conv_args)
     retr_cfg  = RetrievalConfig(**retr_args)
+    crss_cfg = CrossingConfig(US_CITIES)
     path_cfg = _compute_paths(conv_cfg, retr_cfg)
     apikey_cfg = _load_api_key(path_cfg)
-    return Config(scrp=scrp_cfg, conv=conv_cfg, retr=retr_cfg, path=path_cfg, apikey=apikey_cfg)
+    return Config(scrp=scrp_cfg, conv=conv_cfg, retr=retr_cfg, crss=crss_cfg, path=path_cfg, apikey=apikey_cfg)
 
 if __name__ == '__main__':
     cfg = build_config()

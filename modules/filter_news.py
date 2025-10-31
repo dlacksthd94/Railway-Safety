@@ -2,13 +2,12 @@ from transformers import pipeline
 import pandas as pd
 import numpy as np
 import re
-import utils
 from tqdm import tqdm
 import os
 import torch
 import gc
 from itertools import combinations
-from utils import text_binary_classification, text_generation
+from .utils import text_binary_classification, text_generation
 
 pd.set_option('display.max_colwidth', 30)
 

@@ -4,10 +4,9 @@ import copy
 import os
 from pprint import pprint
 import pandas as pd
-import utils
 from PIL import Image
 import PIL
-from utils import parse_json_from_output, generate_openai, generate_hf, select_generate_func
+from .utils import Timer, parse_json_from_output, generate_openai, generate_hf, select_generate_func
 from typing import Any
 
 # DICT_FORM57_JSON_FORMAT = """```json
@@ -148,7 +147,7 @@ def transcribe_entries(api, generator, model_path, content, n_generate, generati
     list_response = []
     for i in range(n_generate):
         while True:
-            with utils.Timer(f'{i}\t' + model_path):
+            with Timer(f'{i}\t' + model_path):
                 output = generate_func(generator, model_path, content, generation_config)
             dict_form57 = parse_json_from_output(output)
 
@@ -164,7 +163,7 @@ def group_entries(api, generator, model_path, content, n_generate, generation_co
     list_response = []
     for i in range(n_generate):
         while True:
-            with utils.Timer(f'{i}\t' + model_path):
+            with Timer(f'{i}\t' + model_path):
                 output = generate_func(generator, model_path, content, generation_config)
             dict_form57_group = parse_json_from_output(output)
 
@@ -867,7 +866,7 @@ if __name__ == '__main__':
     Strictly follow the JSON format:
     {answer_format}
     """
-    # with utils.Timer(model_path):
+    # with Timer(model_path):
     #     # print(generate_hf(pipe, model_path, [{"type": "image", "image": image}, {"type": "text", "text": prompt},], generation_config_search)) # HF
     #     print(generate_openai(client, model_path, [{"type": "input_image", "file_id": img_file.id}, {"type": "input_text", "text": prompt},])) # OpenAI
     
