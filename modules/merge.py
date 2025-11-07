@@ -5,6 +5,7 @@ import os
 from scipy.spatial.distance import cdist
 import pathlib
 import shutil
+from .utils import prepare_df_record, prepare_df_crossing
 
 def merge_record_retrieval(cfg):
     df_retrieval = pd.read_csv(cfg.path.df_retrieval)
@@ -22,27 +23,14 @@ def merge_record_retrieval(cfg):
     return df_record_retrieval
 
 def merge_record_crossing_image(cfg):
-    df_record = pd.read_csv(cfg.path.df_record, parse_dates=['Date'])
-    df_record = df_record[df_record['Date'] >= cfg.scrp.start_date]
-    # df_record = df_record[df_record['State Name'].str.title().isin(cfg.scrp.target_states)]
-    # df_record = df_record[df_record['County Name'].str.title().isin(cfg.scrp.target_counties)]
+    df_record = prepare_df_record(cfg)
     df_record = df_record[['Report Key', 'Grade Crossing ID']].set_index('Report Key')
     
     # df_record_retrieval = pd.read_csv(cfg.path.df_record_retrieval)
     # idx_content = df_record_retrieval.columns.get_loc('content')
     # df_record_retrieval_drop = df_record_retrieval.iloc[:, :idx_content + 1] # type: ignore
     
-    df_crossing = pd.read_csv(cfg.path.df_crossing)
-    df_crossing = df_crossing[df_crossing['CITYNAME'].str.lower().isin(list(cfg.crss.us_cities) + ['san francisco'])]
-    # df_crossing = df_crossing[df_crossing['STATENAME'].str.title().isin(cfg.scrp.target_states)]
-    # df_crossing = df_crossing[df_crossing['COUNTYNAME'].str.title().isin(cfg.scrp.target_counties)]
-    df_crossing = df_crossing[df_crossing['CROSSINGCL'] == 2]
-    df_crossing = df_crossing[df_crossing['POSXING'] == 1]
-    df_crossing['EFFDATE'] = pd.to_datetime(df_crossing['EFFDATE'].astype(str).str.zfill(6), format='%y%m%d')
-    df_crossing[['REVISIONDA', 'LASTUPDATE']] = df_crossing[['REVISIONDA', 'LASTUPDATE']].apply(pd.to_datetime)
-    # list_useful = ['CROSSING', 'HIGHWAY', 'STREET', 'TYPEXING', 'POSXING', 'PRVCAT', 'PRVIND', 'PRVSIGN', 'LATITUDE', 'LONGITUD', 'LLSOURCE', 'WHISTBAN', 'INV_LINK', 'XPURPOSE']
-    list_locinfo = ['CROSSING', 'HIGHWAY', 'STREET', 'LATITUDE', 'LONGITUD', 'LLSOURCE']
-    df_crossing = df_crossing[list_locinfo].set_index('CROSSING')
+    df_crossing = prepare_df_crossing(cfg).set_index('CROSSING')
 
     df_msls_meta, df_dir_info = _concat_msls(cfg)
 

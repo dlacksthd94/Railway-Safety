@@ -15,7 +15,7 @@ DN_MSLS: Final[str] = 'street_level_seq'
 DNS_MSLS_IMAGE: Final[tuple[str, ...]] = tuple(f'msls_images_vol_{i}' for i in range(1, 7))
 DN_MSLS_META: Final[str] = 'msls_metadata'
 DN_MSLS_CROSSING: Final[str] = 'msls_crossing'
-# DIR_VISTAS: Final[str] = 'vistas/vistas2.0'
+DN_SCRAPED_IMAGES: Final[str] = 'scraped_image'
 
 # files
 FN_DICT_API_KEY: Final[str] = 'dict_api_key.json'
@@ -47,11 +47,11 @@ FN_DF_RECORD_RETRIEVAL: Final[str] = 'df_record_retrieval.csv'
 
 FN_DF_CROSSING: Final[str] = '251009 NTAD_Railroad_Grade_Crossings_1739202960140128164.csv'
 FN_DF_MSLS_META: Final[str] = 'df_msls_meta.csv'
+FN_DF_IMAGE: Final[str] = 'df_image.csv'
 
 # configurations
 NEWS_CRAWLERS: Final[tuple[str, ...]] = ("np_url", "tf_url", "rd_url", "gs_url", "np_html", "tf_html", "rd_html", "gs_html")
 TARGET_STATES: Final[tuple[str, ...]] = ('California',)
-TARGET_COUNTIES: Final[tuple[str, ...]] = ('San Francisco', )
 START_DATE: Final[str] = '2000-01-01'
 
 CONVERSION_API_MODEL_CHOICES: Final[dict[str, list[str]]] = {
@@ -70,7 +70,22 @@ RETRIEVAL_API_MODELS_CHOICES: Final[dict[str, list[str]]] = {
 RETRIEVAL_BATCH_CHOICES: Final[list[str]] = ["single", "group", "all"]
 N_GENERATE_RANGE: Final[range] = range(9)
 
-US_CITIES = ('miami', 'austin', 'boston', 'phoenix', 'sf') # miami images don't provide geographic info (lon, lat)
+US_CITIES: Final[tuple[str, ...]] = ('miami', 'austin', 'boston', 'phoenix', 'sf') # miami images don't provide geographic info (lon, lat)
+IMG_SEARCH_FIELDS: Final[tuple[str, ...]] = ("id",)
+IMG_DETAIL_FIELDS: Final[tuple[str, ...]] = (
+    "id",
+    "altitude", "computed_altitude", "geometry", "computed_geometry",  # geographic info
+    "captured_at",  # timestamp
+    "height", "width", "thumb_original_url",  # image
+    "compass_angle", "computed_compass_angle", "computed_rotation", "exif_orientation", # orientation info
+    "camera_type", "is_pano", "make", "model",  # camera info
+    "sequence",  # sequence info
+    "atomic_scale", "merge_cc", "mesh", "sfm_cluster", # SfM info
+    "creator",  # uploader info
+    # "detections", # object detection - can be fetched using other API: https://www.mapillary.com/developer/api-documentation#detection
+)
+BBOX_OFFSET: Final[float] = 0.0001 # 0.00001 ≒ 1.11 meters
+N_IMG: Final[int] = int((BBOX_OFFSET * 100000) ** 2 * 3) # 3 images per 1m²
 
 def parse_args() -> argparse.Namespace:
     """Create an argument parser for building configs from the CLI and parse CLI args."""
@@ -168,9 +183,13 @@ class BaseConfig:
 @dataclass(frozen=True)
 class ScrapingConfig:
     target_states: tuple[str, ...]
-    target_counties: tuple[str, ...]
     start_date: str
     news_crawlers: tuple[str, ...]
+
+    n_img: int
+    img_search_fields: tuple[str, ...]
+    img_detail_fields: tuple[str, ...]
+    bbox_offset: float
 
     def __post_init__(self):
         """sanity check"""
@@ -205,7 +224,7 @@ class PathConfig:
     dirs_msls_image: tuple[str, ...]
     dir_msls_meta: str
     dir_msls_crossing: str
-    # dir_vistas: str
+    dir_scraped_images: str
     
     # files
     dict_api_key: str
@@ -235,11 +254,13 @@ class PathConfig:
     
     df_crossing: str
     df_msls_meta: str
+    df_image: str
 
 @dataclass()
 class APIkeyConfig:
     openai: str
     textract: str
+    mapillary: str
 
 @dataclass()
 class CrossingConfig:
@@ -263,12 +284,15 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
     dp_retrieval = os.path.join(dp_conversion, DN_DATA_RESULT, dn_retrieval)
     make_dir(dp_retrieval)
 
-    dp_msls = os.path.join(DN_DATA_ROOT, DN_MAPILLARY, DN_MSLS)
+    dp_mapillary = os.path.join(DN_DATA_ROOT, DN_MAPILLARY)
+    dp_msls = os.path.join(dp_mapillary, DN_MSLS)
     dp_msls_meta = os.path.join(dp_msls, DN_MSLS_META)
-
     dp_msls_crossing = os.path.join(dp_msls, DN_MSLS_CROSSING)
     remove_dir(dp_msls_crossing)
     make_dir(dp_msls_crossing)
+
+    dp_scraped_images = os.path.join(dp_mapillary, DN_SCRAPED_IMAGES)
+    make_dir(dp_scraped_images)
 
     return PathConfig(
         dir_conversion=dp_conversion,
@@ -277,7 +301,7 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
         dirs_msls_image=tuple(map(lambda dn: os.path.join(dp_msls, dn), DNS_MSLS_IMAGE)),
         dir_msls_meta=dp_msls_meta,
         dir_msls_crossing=dp_msls_crossing,
-        # dir_vistas=os.path.join(DN_DATA_ROOT, DN_MAPILLARY, DIR_VISTAS),
+        dir_scraped_images=dp_scraped_images,
 
         dict_api_key=os.path.join(DN_DATA_ROOT, FN_DICT_API_KEY),
 
@@ -306,16 +330,15 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
         
         df_crossing=os.path.join(DN_DATA_ROOT, FN_DF_CROSSING),
         df_msls_meta=os.path.join(dp_msls, FN_DF_MSLS_META),
+        df_image=os.path.join(dp_scraped_images, FN_DF_IMAGE)
     )
 
 def _load_api_key(path_cfg: PathConfig) -> APIkeyConfig:
     with open(path_cfg.dict_api_key, 'r') as f:
         dict_api_key = json.load(f)
-
-    return APIkeyConfig(
-        openai=dict_api_key['openai']['key'],
-        textract=dict_api_key['textract']['key']
-    )
+    dict_api_key = {api: info['key'] for api, info in dict_api_key.items()}
+    
+    return APIkeyConfig(**dict_api_key)
 
 def build_config() -> Config:
     args = parse_args()
@@ -324,7 +347,10 @@ def build_config() -> Config:
     retr_args = {k.replace('r_', ''): v for k, v in args_dict.items() if k.startswith('r_')}
     conv_args['model'] = sanitize_model_path(conv_args['model'])
     retr_args['model'] = sanitize_model_path(retr_args['model'])
-    scrp_cfg = ScrapingConfig(TARGET_STATES, TARGET_COUNTIES, START_DATE, NEWS_CRAWLERS)
+    scrp_cfg = ScrapingConfig(
+        TARGET_STATES, START_DATE, NEWS_CRAWLERS,
+        N_IMG, IMG_SEARCH_FIELDS, IMG_DETAIL_FIELDS, BBOX_OFFSET
+    )
     conv_cfg = ConversionConfig(**conv_args)
     retr_cfg  = RetrievalConfig(**retr_args)
     crss_cfg = CrossingConfig(US_CITIES)

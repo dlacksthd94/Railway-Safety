@@ -4,12 +4,15 @@ from transformers import pipeline
 import json
 import ast
 import shutil
+import pandas as pd
+from pprint import pprint
 
 def make_dir(path: str) -> None:
     os.makedirs(path, exist_ok=True)
 
 def remove_dir(path: str) -> None:
-    shutil.rmtree(path)
+    if os.path.exists(path):
+        shutil.rmtree(path)
 
 def sanitize_model_path(model_path: str) -> str:
     """Replace path separators so model_path names are safe in folder names."""
@@ -76,6 +79,12 @@ def as_float(val):
     except:
         return val
 
+def as_int(val):
+    try:
+        return int(val)
+    except:
+        return val
+
 def lower_str(val):
     if isinstance(val, str):
         return val.lower()
@@ -115,3 +124,49 @@ def text_generation(pipe, prompt, max_new_tokens=4096):
     output = pipe(prompt, max_new_tokens=max_new_tokens, return_full_text=False)
     answer = output[0]['generated_text']
     return answer
+
+def prepare_df_record(cfg):
+    df_record = pd.read_csv(cfg.path.df_record, parse_dates=['Date'])
+    df_record = df_record[df_record['State Name'].str.title().isin(cfg.scrp.target_states)]
+    # df_record = df_record[df_record['County Name'].str.title().isin(cfg.scrp.target_counties)]
+    df_record = df_record[df_record['Date'] >= cfg.scrp.start_date]
+    assert df_record['Report Key'].is_unique
+    return df_record
+
+def prepare_df_crossing(cfg):
+    df_crossing = pd.read_csv(cfg.path.df_crossing)
+    assert df_crossing['CROSSING'].is_unique
+    df_crossing = df_crossing[df_crossing['STATENAME'].str.title().isin(cfg.scrp.target_states)]
+    # df_crossing = df_crossing[df_crossing['COUNTYNAME'].str.title().isin(cfg.scrp.target_counties)]
+    # df_crossing = df_crossing[df_crossing['CITYNAME'].str.lower().isin(list(cfg.crss.us_cities) + ['san francisco'])]
+    df_crossing = df_crossing[df_crossing['CROSSINGCL'] == 2]
+    df_crossing = df_crossing[df_crossing['POSXING'] == 1]
+    # df_crossing = df_crossing[df_crossing['XPURPOSE'] == 1]
+    df_crossing['EFFDATE'] = pd.to_datetime(df_crossing['EFFDATE'].astype(str).str.zfill(6), format='%y%m%d')
+    df_crossing[['REVISIONDA', 'LASTUPDATE']] = df_crossing[['REVISIONDA', 'LASTUPDATE']].apply(pd.to_datetime)
+    
+    ### EDA
+    # pprint(df_crossing[df_crossing['TYPEXING'] == '3'][df_crossing['CITYNAME'] == 'RIVERSIDE']
+    #        [['LATITUDE', 'LONGITUD', 'STREET', 'TYPEXING', 'PRVCAT']].iloc[20:30].to_records().tolist())
+    # df_crossing['LATITUDE'].iloc[3].item()
+    # df_crossing['y'].iloc[3].item()
+    # df_crossing['LONGITUD'].iloc[0].item()
+    # df_crossing['x'].iloc[0].item()
+    # df_crossing['XPURPOSE'].value_counts()
+
+    # list_useful = ['CROSSING', 'HIGHWAY', 'STREET', 'RAILROAD', 'RRDIV', 'RRSUBDIV', 'REASON', 'XPURPOSE', 'PRVCAT', 'TYPEXING', 'POSXING', 'PRVIND', 'PRVSIGN', 'LATITUDE', 'LONGITUD', 'LLSOURCE', 'WHISTBAN', 'INV_LINK']
+    list_locinfo = ['CROSSING', 'HIGHWAY', 'STREET', 'RAILROAD', 'RRDIV', 'RRSUBDIV', 'REASON', 'XPURPOSE', 'PRVCAT', 'LATITUDE', 'LONGITUD', 'LLSOURCE']
+    df_crossing = df_crossing[list_locinfo]
+    df_crossing = df_crossing.reset_index(drop=True)
+
+    return df_crossing
+
+def prepare_df_image(cfg):
+    df_image = pd.read_csv(cfg.path.df_image)
+    df_image = df_image.sort_values('crossing', ignore_index=True)
+    df_image['computed_rotation'] = df_image['computed_rotation'].apply(lambda x: ast.literal_eval(x) if pd.notna(x) else x)
+    df_image['mesh'] = df_image['mesh'].apply(lambda x: ast.literal_eval(x) if pd.notna(x) else x)
+    df_image['sfm_cluster'] = df_image['sfm_cluster'].apply(lambda x: ast.literal_eval(x) if pd.notna(x) else x)
+    # df_image['detections'] = df_image['detections'].apply(lambda x: ast.literal_eval(x) if pd.notna(x) else x)
+    
+    return df_image

@@ -6,7 +6,7 @@ from pprint import pprint
 import pandas as pd
 from PIL import Image
 import PIL
-from .utils import Timer, parse_json_from_output, generate_openai, generate_hf, select_generate_func
+from .utils import Timer, parse_json_from_output, generate_openai, generate_hf, select_generate_func, prepare_df_record
 from typing import Any
 
 # DICT_FORM57_JSON_FORMAT = """```json
@@ -189,12 +189,9 @@ def csv_to_json(cfg):
             dict_form57 = json.load(f)
 
     else:
-        df_data = pd.read_csv(cfg.path.df_record)
-        df_data = df_data[df_data['State Name'].str.title().isin(cfg.scrp.target_states)]
-        df_data['Date'] = pd.to_datetime(df_data['Date'])
-        df_data = df_data[df_data['Date'] >= cfg.scrp.start_date]
+        df_record = prepare_df_record(cfg)
 
-        list_col = df_data.columns.tolist()
+        list_col = df_record.columns.tolist()
 
         ############ Match the columns containing codes with the columns containing labels.
         dict_code_label = {}
@@ -207,7 +204,7 @@ def csv_to_json(cfg):
         ############ Extract the options (multiple choices), if any
         dict_entry_choice = {}
         for col_code, col_label in dict_code_label.items():
-            df_drop_na = df_data[[col_code, col_label]].dropna()
+            df_drop_na = df_record[[col_code, col_label]].dropna()
             df_astype = df_drop_na
             df_astype[col_code] = df_astype[col_code].apply(lambda x: int(x) if isinstance(x, float) else x)
             df_astype[col_code] = df_astype[col_code].astype(str)
@@ -242,7 +239,7 @@ def csv_to_json(cfg):
                 choices = dict_entry_choice[col]
                 dict_meta_info['answer_places'][col]['answer_type'] = 'single choice'
                 dict_meta_info['answer_places'][col]['choices'] = choices
-            elif pd.api.types.is_numeric_dtype(df_data[col]):
+            elif pd.api.types.is_numeric_dtype(df_record[col]):
                 dict_meta_info['answer_places'][col]['answer_type'] = 'digit'
             else:
                 dict_meta_info['answer_places'][col]['answer_type'] = 'free-text'

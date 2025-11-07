@@ -22,7 +22,11 @@ import os
 import subprocess
 import platform
 import copy
+import pathlib
 from .config import Config, TableConfig
+from .utils import as_int, as_float, prepare_df_record, prepare_df_crossing, prepare_df_image, remove_dir, make_dir
+from pprint import pprint
+from scipy.spatial.distance import cdist
 
 TIMEOUT = 5
 CONFIG_NP = newspaper.Config()
@@ -30,7 +34,7 @@ CONFIG_NP.request_timeout = TIMEOUT
 CONFIG_TF = copy.deepcopy(trafilatura.settings.DEFAULT_CONFIG) # type: ignore
 CONFIG_TF['DEFAULT']['DOWNLOAD_TIMEOUT'] = str(TIMEOUT)
 
-class Scrape:
+class ScrapeNews:
     driver: webdriver.Chrome
     df_record_news: pd.DataFrame
     df_news_articles: pd.DataFrame
@@ -275,15 +279,11 @@ def scrape_news(cfg: Config) -> tuple[pd.DataFrame | None, ...]:
     config_df_record_news = TableConfig(cfg.path.df_record_news, ['query1', 'query2', 'county', 'state', 'city', 'highway', 'report_key', 'news_id'])
     config_df_news_articles = TableConfig(cfg.path.df_news_articles, ['news_id', 'url', 'pub_date', 'title'] + list(cfg.scrp.news_crawlers))
 
-    df_data: pd.DataFrame = pd.read_csv(cfg.path.df_record)
-    df_data = df_data[df_data['State Name'].str.title().isin(cfg.scrp.target_states)]
-    df_data['Date'] = pd.to_datetime(df_data['Date'])
-    df_data = df_data[df_data['Date'] >= cfg.scrp.start_date]
-    assert df_data['Report Key'].is_unique
+    df_record = prepare_df_record(cfg)
     list_prior_info = ['Report Key', 'Railroad Name', 'Date', 'Nearest Station', 'County Name', 'State Name', 'City Name', 'Highway Name', 'Public/Private', 'Highway User', 'Equipment Type'] # keywords useful for searching
-    df_data = df_data.sort_values(['County Name', 'Date'], ascending=[True, False])
+    df_record = df_record.sort_values(['County Name', 'Date'], ascending=[True, False])
 
-    scrape = Scrape(config_df_record_news, config_df_news_articles)
+    scrape = ScrapeNews(config_df_record_news, config_df_news_articles)
     scrape.load_df_record_news()
     scrape.load_df_news_articles()
 
@@ -292,7 +292,7 @@ def scrape_news(cfg: Config) -> tuple[pd.DataFrame | None, ...]:
     list_query1 = ["train"]
     list_query2 = ["accident"]
 
-    pbar_row = tqdm(df_data.iterrows(), total=df_data.shape[0])
+    pbar_row = tqdm(df_record.iterrows(), total=df_record.shape[0])
     for i, row in pbar_row:
         row = row.fillna('')
         report_key, rail_company, date, station, county, state, city, highway, private, vehicle_type, train_type = row[list_prior_info]
@@ -339,3 +339,147 @@ def scrape_news(cfg: Config) -> tuple[pd.DataFrame | None, ...]:
                 if df_temp.shape[0] <= 1:
                     time.sleep(7)
     return scrape.df_record_news, scrape.df_news_articles
+
+
+class ScrapeImage:
+    def __init__(self, cfg):
+        self.cfg = cfg
+        self.api_key = self.cfg.apikey.mapillary
+        self.img_search_fields = ','.join(self.cfg.scrp.img_search_fields)
+        self.img_detail_fields = ','.join(self.cfg.scrp.img_detail_fields)
+        self.df_image = None
+    
+    def load_df_image(self):
+        if os.path.exists(self.cfg.path.df_image):
+            df_image = prepare_df_image(self.cfg)
+        else:
+            cols = list(self.cfg.scrp.img_detail_fields)
+            cols.remove('geometry')
+            cols.remove('computed_geometry')
+            cols.extend(['lon', 'lat', 'computed_lon', 'computed_lat', 'dist', 'computed_dist'])
+            cols = ['crossing'] + cols
+            df_image = pd.DataFrame(columns=cols)
+            df_image.to_csv(self.cfg.path.df_image, index=False)
+        return df_image
+    
+    def search_images(self, bbox: str, limit: int = 10):
+        """
+        Query Mapillary for images inside a bounding box.
+        Returns a list of image objects with basic metadata.
+        """
+        url = (
+            "https://graph.mapillary.com/images"
+            f"?access_token={self.api_key}"
+            f"&bbox={bbox}"
+            f"&fields={self.img_search_fields}"
+            f"&limit={limit}"
+        )
+
+        resp = requests.get(url)
+        resp.raise_for_status()
+        data = resp.json()
+
+        # Mapillary returns {"data": [ ...images... ], ...maybe paging...}
+        return data.get("data", [])
+
+    def get_image_details(self, image_id: str):
+        """
+        Ask Mapillary for richer metadata for one specific image.
+        Returns a dict with fields we asked for, including thumb_1024_url.
+        """
+        url = (
+            f"https://graph.mapillary.com/{image_id}"
+            f"?access_token={self.api_key}"
+            f"&fields={self.img_detail_fields}"
+        )
+
+        resp = requests.get(url)
+        resp.raise_for_status()
+        return resp.json()
+
+    def download_thumbnail(self, image_url: str, out_path: pathlib.Path):
+        """
+        Download the thumbnail JPG and save it locally.
+        """
+        resp = requests.get(image_url)
+        resp.raise_for_status()
+
+        out_path.write_bytes(resp.content)
+        return out_path
+
+def scrape_image(cfg: Config) -> pd.DataFrame:
+    df_crossing = prepare_df_crossing(cfg)
+    scraper = ScrapeImage(cfg)
+    df_image = scraper.load_df_image()
+    for i, row in tqdm(df_crossing[['CROSSING', 'LATITUDE', 'LONGITUD']].iterrows(), total=df_crossing.shape[0]):
+        crossing, lat, lon = row
+        if crossing in df_image['crossing'].values:
+            continue
+        bbox_exact_match = f"{lon - cfg.scrp.bbox_offset},{lat - cfg.scrp.bbox_offset},{lon + cfg.scrp.bbox_offset},{lat + cfg.scrp.bbox_offset}"
+        imgs = scraper.search_images(bbox_exact_match, limit=cfg.scrp.n_img)
+
+        details_concat = [{'crossing': crossing}]
+        for img in imgs:
+            img_id = img["id"]
+            details = scraper.get_image_details(img_id)
+            if details.get('geometry', None):
+                assert details['geometry']['type'] == 'Point'
+                geometry = details.pop('geometry')
+                details['lon'] = geometry['coordinates'][0]
+                details['lat'] = geometry['coordinates'][1]
+                dist = ((lat - details['lat'])**2 + (lon - details['lon'])**2)**0.5
+                details['dist'] = dist
+                assert dist <= cfg.scrp.bbox_offset * 2**0.5
+                if dist > cfg.scrp.bbox_offset:
+                    continue
+            if details.get('computed_geometry', None):
+                assert details['computed_geometry']['type'] == 'Point'
+                computed_geometry = details.pop('computed_geometry')
+                details['computed_lon'] = computed_geometry['coordinates'][0]
+                details['computed_lat'] = computed_geometry['coordinates'][1]
+                computed_dist = ((lon - details['computed_lon'])**2 + (lat - details['computed_lat'])**2)**0.5
+                details['computed_dist'] = computed_dist
+            if details.get('computed_rotation', None):
+                assert isinstance(details['computed_rotation'], list)
+            # print(f"computed:\t{computed_dist :.6f}")
+            # print(f"actual:\t{dist :.6f}")
+            # pprint(details, sort_dicts=False)
+
+            details['crossing'] = crossing
+            details_concat.append(details)
+        
+        df_image_temp = pd.DataFrame(details_concat, columns=df_image.columns)
+        if not df_image_temp.empty:
+            df_image = pd.concat([df_image, df_image_temp], ignore_index=True)
+        
+        if i % 10 == 0: # type: ignore
+            df_image.to_csv(cfg.path.df_image, index=False)
+        
+    df_image.to_csv(cfg.path.df_image, index=False)
+
+    for i, row in tqdm(df_image.iterrows(), total=df_image.shape[0]):
+        img_id = as_int(row['id'])
+        thumb_url = row["thumb_original_url"]
+        if pd.isna(img_id):
+            continue
+        output_file = pathlib.Path(os.path.join(cfg.path.dir_scraped_images, f"{img_id}.jpg"))
+        if not output_file.exists() and pd.notna(thumb_url):
+            scraper.download_thumbnail(thumb_url, output_file)
+
+    return df_image
+
+if __name__ == '__main__':
+    # remove_dir(cfg.path.dir_scraped_images)
+    # make_dir(cfg.path.dir_scraped_images)
+    # df_crossing[df_crossing['STREET'].str.upper().str.contains('SPRUCE')]
+    # df_crossing[df_crossing['STREET'].str.upper().str.contains('CHICAGO')]
+    # df_crossing[df_crossing['STREET'].str.upper().str.contains('IOWA AVE')]
+    # df_crossing[df_crossing['STREET'].str.upper().str.contains('PALM AVE')]
+    # df_crossing[df_crossing['STREET'].str.upper().str.contains('BROCKTON AVE')]
+    # df_crossing[df_crossing['STREET'].str.upper().str.contains('WASHINGTON')]
+    lat, lon = 33.990282, -117.356688 # SPRUCE ST 0.00002
+    lat, lon = 33.997812, -117.348500 # CHICAGO AVE 0.00004
+    lat, lon = 33.9942, -117.339849 # IOWA AVE 0.00007
+    lat, lon = 33.957269, -117.396787 # BROCKTON AVE 0.00004
+    lat, lon = 33.957246, -117.401092 # PALM AVE 0.00003
+    lat, lon = 33.938530, -117.396230 # WASHINGTON AVE 0.00003
