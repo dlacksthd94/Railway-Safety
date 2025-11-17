@@ -26,6 +26,7 @@ pip install streamlit
 pip install openai pytesseract # for transcribing report form in json format
 pip install transformers accelerate bitsandbytes torchvision # for labeling news & populating the report form
 pip install sentencepiece # for running VLMs from Hugging Face
+pip install py360convert # for extracting a perspective image from an equirectangular image
 
 ############ Modify code in `def postprocess` in `class ImageTextToTextPipeline` in transformers/pipelines/image_text_to_text.py
 # After `decoded_inputs = self.processor.post_process_image_text_to_text(input_ids, **postprocess_kwargs)` line, add the following codes:

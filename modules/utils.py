@@ -170,3 +170,7 @@ def prepare_df_image(cfg):
     # df_image['detections'] = df_image['detections'].apply(lambda x: ast.literal_eval(x) if pd.notna(x) else x)
     
     return df_image
+
+def prepare_df_image_seq(cfg):
+    df_image_seq = pd.read_csv(cfg.path.df_image_seq)
+    return df_image_seq

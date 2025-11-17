@@ -1,7 +1,7 @@
 import os
 from modules import (
     build_config, scrape_news, filter_news, convert_to_json, extract_keywords, 
-    merge_record_retrieval, scrape_image, merge_record_crossing_image
+    merge_record_retrieval, scrape_image, scrape_image_seq, merge_record_crossing_image
 )
 from modules.metrics import get_acc_table, get_cov_table
 
@@ -67,6 +67,7 @@ print('------------Merging DONE!!------------')
 
 ############### scrape crossing images from mapillary (ONLY ONE-TIME TASK FOR EVALUATION)
 df_image = scrape_image(cfg)
+df_image_seq = scrape_image_seq(cfg)
 print('------------Scraping Images DONE!!------------')
 
 

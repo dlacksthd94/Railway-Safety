@@ -16,6 +16,7 @@ DNS_MSLS_IMAGE: Final[tuple[str, ...]] = tuple(f'msls_images_vol_{i}' for i in r
 DN_MSLS_META: Final[str] = 'msls_metadata'
 DN_MSLS_CROSSING: Final[str] = 'msls_crossing'
 DN_SCRAPED_IMAGES: Final[str] = 'scraped_image'
+DN_IMAGE_SEQ: Final[str] = 'image_seq'
 
 # files
 FN_DICT_API_KEY: Final[str] = 'dict_api_key.json'
@@ -48,6 +49,7 @@ FN_DF_RECORD_RETRIEVAL: Final[str] = 'df_record_retrieval.csv'
 FN_DF_CROSSING: Final[str] = '251009 NTAD_Railroad_Grade_Crossings_1739202960140128164.csv'
 FN_DF_MSLS_META: Final[str] = 'df_msls_meta.csv'
 FN_DF_IMAGE: Final[str] = 'df_image.csv'
+FN_DF_IMAGE_SEQ: Final[str] = 'df_image_seq.csv'
 
 # configurations
 NEWS_CRAWLERS: Final[tuple[str, ...]] = ("np_url", "tf_url", "rd_url", "gs_url", "np_html", "tf_html", "rd_html", "gs_html")
@@ -84,7 +86,7 @@ IMG_DETAIL_FIELDS: Final[tuple[str, ...]] = (
     "creator",  # uploader info
     # "detections", # object detection - can be fetched using other API: https://www.mapillary.com/developer/api-documentation#detection
 )
-BBOX_OFFSET: Final[float] = 0.0001 # 0.00001 ≒ 1.11 meters
+BBOX_OFFSET: Final[float] = 0.0002 # 0.00001 ≒ 1.11 meters
 N_IMG: Final[int] = int((BBOX_OFFSET * 100000) ** 2 * 3) # 3 images per 1m²
 
 def parse_args() -> argparse.Namespace:
@@ -225,6 +227,7 @@ class PathConfig:
     dir_msls_meta: str
     dir_msls_crossing: str
     dir_scraped_images: str
+    dir_image_seq: str
     
     # files
     dict_api_key: str
@@ -255,6 +258,7 @@ class PathConfig:
     df_crossing: str
     df_msls_meta: str
     df_image: str
+    df_image_seq: str
 
 @dataclass()
 class APIkeyConfig:
@@ -294,6 +298,9 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
     dp_scraped_images = os.path.join(dp_mapillary, DN_SCRAPED_IMAGES)
     make_dir(dp_scraped_images)
 
+    dp_image_seq = os.path.join(dp_mapillary, DN_IMAGE_SEQ)
+    make_dir(dp_image_seq)
+
     return PathConfig(
         dir_conversion=dp_conversion,
         dir_retrieval=dp_retrieval,
@@ -302,6 +309,7 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
         dir_msls_meta=dp_msls_meta,
         dir_msls_crossing=dp_msls_crossing,
         dir_scraped_images=dp_scraped_images,
+        dir_image_seq=dp_image_seq,
 
         dict_api_key=os.path.join(DN_DATA_ROOT, FN_DICT_API_KEY),
 
@@ -330,7 +338,8 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
         
         df_crossing=os.path.join(DN_DATA_ROOT, FN_DF_CROSSING),
         df_msls_meta=os.path.join(dp_msls, FN_DF_MSLS_META),
-        df_image=os.path.join(dp_scraped_images, FN_DF_IMAGE)
+        df_image=os.path.join(dp_scraped_images, FN_DF_IMAGE),
+        df_image_seq=os.path.join(dp_image_seq, FN_DF_IMAGE_SEQ),
     )
 
 def _load_api_key(path_cfg: PathConfig) -> APIkeyConfig:
