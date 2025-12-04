@@ -11,7 +11,9 @@ import re
 from PIL import Image
 import json5
 from openai import OpenAI
-from .utils import parse_json_from_output, desanitize_model_path, generate_openai, generate_hf, select_generate_func
+from .utils import (parse_json_from_output, desanitize_model_path, 
+                    generate_openai, generate_hf, select_generate_func, 
+                    prepare_df_match, prepare_dict_form57, prepare_dict_form57_group)
 
 def to_answer_places(dict_form57):
     dict_answer_places = {}
@@ -45,8 +47,7 @@ def extract_keywords(cfg):
     #     #                       "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "30_record", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", 
     #     #                       "44", "45", "46_killed", "46_injured", "47", "48", "49_killed", "49_injured", "50", "51", "52_killed", "52_injured", "53a", "53b", "54", "55", "56", "57"]
     # else:
-    with open(cfg.path.form57_json, 'r') as f:
-        dict_form57 = json.load(f)
+    dict_form57 = prepare_dict_form57(cfg)
     dict_answer_places, dict_idx_ap = to_answer_places(dict_form57)
     list_answer_places = list(dict_answer_places.keys())
 
@@ -54,8 +55,7 @@ def extract_keywords(cfg):
         json.dump(dict_answer_places, f, indent=4)
 
     if question_batch == 'group':
-        with open(cfg.path.form57_json_group, 'r') as f:
-            dict_form57_group = json.load(f)
+        dict_form57_group = prepare_dict_form57_group(cfg)
     else:
         dict_form57_group = {}
 
@@ -63,8 +63,7 @@ def extract_keywords(cfg):
         df_retrieval = pd.read_csv(cfg.path.df_retrieval)
         df_retrieval = df_retrieval.fillna('')
     elif os.path.exists(cfg.path.df_match):
-        df_match = pd.read_csv(cfg.path.df_match)
-        df_match = df_match[df_match['match'] == 1]
+        df_match = prepare_df_match(cfg)
         df_retrieval = df_match[['news_id', 'url', 'pub_date', 'title', 'content']].copy(deep=True)
         df_retrieval[list_answer_places] = ''
     else:

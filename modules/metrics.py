@@ -8,7 +8,8 @@ import datetime
 from transformers import pipeline
 import gc
 import torch
-from .utils import text_binary_classification, as_float
+from .utils import (text_binary_classification, as_float, 
+                    prepare_dict_col_indexing, prepare_dict_idx_mapping, prepare_dict_answer_places)
 from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix, accuracy_score
 
 def get_acc_table(list_answer_type_selected, cfg):
@@ -22,17 +23,9 @@ def get_acc_table(list_answer_type_selected, cfg):
 
     df_record_retrieval = pd.read_csv(cfg.path.df_record_retrieval)
 
-    with open(cfg.path.dict_col_indexing, 'r') as f:
-        dict_col_indexing = json5.load(f)
-    
-    with open(cfg.path.dict_idx_mapping, 'r') as f:
-        dict_idx_mapping = json5.load(f)
-        dict_idx_mapping_inverse = {v: k for k, v in dict_idx_mapping.items()}
-        if '' in dict_idx_mapping_inverse:
-            dict_idx_mapping_inverse.pop('')
-
-    with open(cfg.path.dict_answer_places, 'r') as f:
-        dict_answer_places = json5.load(f)
+    dict_col_indexing = prepare_dict_col_indexing(cfg)
+    dict_idx_mapping, dict_idx_mapping_inverse = prepare_dict_idx_mapping(cfg)
+    dict_answer_places = prepare_dict_answer_places(cfg)
     
     dict_idx_answer_type = {
         'digit': ['5_month', '5_day', '5_year', '6_hour', '6_minute', '14', '18', '20c_quantity', '21', '28', '29', '30', '38', 
@@ -155,14 +148,8 @@ def get_cov_table(list_answer_type_selected, cfg):
     df_annotate = df_annotate[df_annotate['annotated'] == 1]
 
 
-    with open(cfg.path.dict_col_indexing, 'r') as f:
-        dict_col_indexing = json5.load(f)
-    
-    with open(cfg.path.dict_idx_mapping, 'r') as f:
-        dict_idx_mapping = json5.load(f)
-        dict_idx_mapping_inverse = {v: k for k, v in dict_idx_mapping.items()}
-        if '' in dict_idx_mapping_inverse:
-            dict_idx_mapping_inverse.pop('')
+    dict_col_indexing = prepare_dict_col_indexing(cfg)
+    dict_idx_mapping, dict_idx_mapping_inverse = prepare_dict_idx_mapping(cfg)
     
     dict_idx_answer_type = {
         'digit': ['5_month', '5_day', '5_year', '6_hour', '6_minute', '14', '18', '20c_quantity', '21', '28', '29', '30', '38', 

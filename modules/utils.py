@@ -2,6 +2,7 @@ import os
 import time
 from transformers import pipeline
 import json
+import json5
 import ast
 import shutil
 import pandas as pd
@@ -174,3 +175,45 @@ def prepare_df_image(cfg):
 def prepare_df_image_seq(cfg):
     df_image_seq = pd.read_csv(cfg.path.df_image_seq)
     return df_image_seq
+
+def prepare_df_retrieval(cfg):
+    df_retrieval = pd.read_csv(cfg.path.df_retrieval)
+    df_retrieval['pub_date'] = pd.to_datetime(df_retrieval['pub_date'])
+    assert df_retrieval['news_id'].is_unique, '==========Warning: News is not unique!!!==========='
+    return df_retrieval
+
+def prepare_df_match(cfg):
+    df_match = pd.read_csv(cfg.path.df_match)
+    df_match = df_match[df_match['match'] == 1]
+    idx_content_match = df_match.columns.get_loc('content')
+    df_match = df_match.iloc[:, :idx_content_match + 1] # type: ignore
+    assert df_match['news_id'].is_unique, '==========Warning: News is not unique!!!==========='
+    return df_match
+
+def prepare_dict_col_indexing(cfg):
+    with open(cfg.path.dict_col_indexing, 'r') as f:
+        dict_col_indexing = json5.load(f)
+    return dict_col_indexing
+
+def prepare_dict_idx_mapping(cfg):
+    with open(cfg.path.dict_idx_mapping, 'r') as f:
+        dict_idx_mapping = json5.load(f)
+        dict_idx_mapping_inverse = {v: k for k, v in dict_idx_mapping.items()}
+        if '' in dict_idx_mapping_inverse:
+            dict_idx_mapping_inverse.pop('')
+    return dict_idx_mapping, dict_idx_mapping_inverse
+
+def prepare_dict_answer_places(cfg):
+    with open(cfg.path.dict_answer_places, 'r') as f:
+        dict_answer_places = json5.load(f)
+    return dict_answer_places
+
+def prepare_dict_form57(cfg):
+    with open(cfg.path.form57_json, 'r') as f:
+        dict_form57 = json.load(f)
+    return dict_form57
+
+def prepare_dict_form57_group(cfg):
+    with open(cfg.path.form57_json_group, 'r') as f:
+        dict_form57_group = json5.load(f)
+    return dict_form57_group

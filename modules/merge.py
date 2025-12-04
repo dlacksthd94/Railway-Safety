@@ -5,16 +5,13 @@ import os
 from scipy.spatial.distance import cdist
 import pathlib
 import shutil
-from .utils import prepare_df_record, prepare_df_crossing
+from .utils import (prepare_df_record, prepare_df_crossing,
+                    prepare_df_retrieval, prepare_df_match, prepare_df_image_seq, prepare_df_image)
 
 def merge_record_retrieval(cfg):
     df_retrieval = pd.read_csv(cfg.path.df_retrieval)
-    df_match = pd.read_csv(cfg.path.df_match)
-    df_match = df_match[df_match['match'] == 1]
-    assert df_match['news_id'].is_unique and df_retrieval['news_id'].is_unique, '==========Warning: News is not unique!!!==========='
+    df_match = prepare_df_match(cfg)
     
-    idx_content_match = df_match.columns.get_loc('content')
-    df_match = df_match.iloc[:, :idx_content_match + 1] # type: ignore
     df_retrieval_drop = df_retrieval.set_index('news_id')
     idx_content_retrieval = df_retrieval_drop.columns.get_loc('content')
     df_retrieval_drop = df_retrieval_drop.iloc[:, idx_content_retrieval + 1:] # type: ignore
@@ -22,9 +19,27 @@ def merge_record_retrieval(cfg):
     df_record_retrieval.to_csv(cfg.path.df_record_retrieval, index=False)
     return df_record_retrieval
 
-def merge_record_crossing_image(cfg):
+def merge_news_image(cfg):
     df_record = prepare_df_record(cfg)
     df_record = df_record[['Report Key', 'Grade Crossing ID']].set_index('Report Key')
+    
+    df_match = prepare_df_match(cfg)
+    df_match = df_match[['news_id', 'report_key']]
+    df_retrieval = prepare_df_retrieval(cfg)
+
+    df_image_seq = prepare_df_image_seq(cfg)
+    crossings_w_image = df_image_seq['crossing_id'].unique()
+    df_image = prepare_df_image(cfg)
+
+    df_news_image = df_match.merge(df_record, left_on='report_key', right_index=True)
+    df_news_image = df_news_image.rename({'Grade Crossing ID': 'crossing_id'}, axis=1)
+    df_news_image = df_news_image[df_news_image['crossing_id'].isin(crossings_w_image)]
+    print(f"https://news.google.com/read/{df_news_image['news_id'].values[0]}")
+    # df_news_image.merge(df_image_seq, on='crossing_id')
+    
+    df_image_seq.merge(df_record, left_on='report_key')
+
+    
     
     # df_record_retrieval = pd.read_csv(cfg.path.df_record_retrieval)
     # idx_content = df_record_retrieval.columns.get_loc('content')

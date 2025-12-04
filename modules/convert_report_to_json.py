@@ -6,7 +6,8 @@ from pprint import pprint
 import pandas as pd
 from PIL import Image
 import PIL
-from .utils import Timer, parse_json_from_output, generate_openai, generate_hf, select_generate_func, prepare_df_record
+from .utils import (Timer, parse_json_from_output, generate_openai, generate_hf, select_generate_func, 
+                    prepare_df_record, prepare_dict_form57, prepare_dict_form57_group)
 from typing import Any
 
 # DICT_FORM57_JSON_FORMAT = """```json
@@ -185,8 +186,7 @@ def group_entries(api, generator, model_path, content, n_generate, generation_co
 def csv_to_json(cfg):
     
     if os.path.exists(cfg.path.form57_json):
-        with open(cfg.path.form57_json, 'r') as f:
-            dict_form57 = json.load(f)
+        dict_form57 = prepare_dict_form57(cfg)
 
     else:
         df_record = prepare_df_record(cfg)
@@ -551,8 +551,7 @@ def pdf_to_json(cfg):
 
         ############ transcribe
         if os.path.exists(cfg.path.form57_json):
-            with open(cfg.path.form57_json, 'r') as f:
-                dict_form57 = json.load(f)
+            dict_form57 = prepare_dict_form57(cfg)
 
         else:
             ############ transcribe the form N times
@@ -576,8 +575,7 @@ def pdf_to_json(cfg):
         
         ############ group the entries
         if os.path.exists(cfg.path.form57_json_group):
-            with open(cfg.path.form57_json_group, 'r') as f:
-                dict_form57_group = json.load(f)
+            dict_form57_group = prepare_dict_form57_group(cfg)
                 
         else:
             ############ group the entries N times
@@ -683,8 +681,7 @@ def img_to_json(cfg):
                 json.dump(list_dict_form57_temp, f, indent=4)
             
         if os.path.exists(cfg.path.form57_json):
-            with open(cfg.path.form57_json, 'r') as f:
-                dict_form57 = json.load(f)
+            dict_form57 = prepare_dict_form57(cfg)
         
         else:
             ############ merge the transcripts into one
@@ -720,8 +717,7 @@ def img_to_json(cfg):
                 json.dump(list_dict_form57_group_temp, f, indent=4)
             
         if os.path.exists(cfg.path.form57_json_group):
-            with open(cfg.path.form57_json_group, 'r') as f:
-                dict_form57_group = json.load(f)
+            dict_form57_group = prepare_dict_form57_group(cfg)
         
         else:
             ############ merge groupings into one
@@ -772,8 +768,7 @@ def img_to_json(cfg):
                 json.dump(list_dict_form57_temp, f, indent=4)
             
         if os.path.exists(cfg.path.form57_json):
-            with open(cfg.path.form57_json, 'r') as f:
-                dict_form57 = json.load(f)
+            dict_form57 = prepare_dict_form57(cfg)
             
         else:
             ############ merge the transcripts into one
@@ -808,8 +803,7 @@ def img_to_json(cfg):
                 json.dump(list_dict_form57_group_temp, f, indent=4)
         
         if os.path.exists(cfg.path.form57_json_group):
-            with open(cfg.path.form57_json_group, 'r') as f:
-                dict_form57_group = json.load(f)
+            dict_form57_group = prepare_dict_form57_group(cfg)
         
         else:
             ############ merge groupings into one

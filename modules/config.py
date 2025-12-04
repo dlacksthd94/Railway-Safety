@@ -349,9 +349,10 @@ def _load_api_key(path_cfg: PathConfig) -> APIkeyConfig:
     
     return APIkeyConfig(**dict_api_key)
 
-def build_config() -> Config:
-    args = parse_args()
-    args_dict = vars(args)
+def build_config(args_dict=None) -> Config:
+    if args_dict is None:
+        args = parse_args()
+        args_dict = vars(args)
     conv_args = {k.replace('c_', ''): v for k, v in args_dict.items() if k.startswith('c_')}
     retr_args = {k.replace('r_', ''): v for k, v in args_dict.items() if k.startswith('r_')}
     conv_args['model'] = sanitize_model_path(conv_args['model'])
