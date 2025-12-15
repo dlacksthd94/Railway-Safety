@@ -14,13 +14,14 @@
             "justMyCode": false,
             "args": [
                 // "--c_api", "None",
-                // "--c_api", "Huggingface",
-                "--c_api", "OpenAI",
+                "--c_api", "Huggingface",
+                // "--c_api", "OpenAI",
                 
                 // "--c_model", "None",
                 // "--c_model", "OpenGVLab/InternVL3_5-38B-HF",
                 // "--c_model", "Qwen/Qwen2.5-VL-72B-Instruct",
-                "--c_model", "o4-mini", // o1, o3, gpt-4.1 slightly poor (error in choice lists) / gpt-5 poor (too many errors) / gpt-4o very poor (not even completed)
+                "--c_model", "Qwen/Qwen3-VL-32B-Instruct",
+                // "--c_model", "o4-mini", // o1, o3, gpt-4.1 slightly poor (error in choice lists) / gpt-5 poor (too many errors) / gpt-4o very poor (not even completed)
                 
                 // "--c_n_generate", "0",
                 "--c_n_generate", "4",
@@ -37,8 +38,8 @@
                 // "--r_model", "o4-mini",
                 ////////// "Qwen/Qwen3-4B ~ 32B" and "openai/gpt-oss-20b" take too long and answers are too verbose
 
-                // "--r_question_batch", "single",
-                "--r_question_batch", "group",
+                "--r_question_batch", "single",
+                // "--r_question_batch", "group",
                 // "--r_question_batch", "all",
             ],
         }

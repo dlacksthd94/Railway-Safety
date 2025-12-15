@@ -6,7 +6,8 @@ from pprint import pprint
 import pandas as pd
 from PIL import Image
 import PIL
-from .utils import (Timer, parse_json_from_output, generate_openai, generate_hf, select_generate_func, 
+from .utils import (Timer, desanitize_model_path,
+                    parse_json_from_output, generate_openai, generate_hf, select_generate_func, 
                     prepare_df_record, prepare_dict_form57, prepare_dict_form57_group)
 from typing import Any
 
@@ -608,6 +609,7 @@ def img_to_json(cfg):
     
     dict_form57_group = None
     api, model_path, n_generate, _ = cfg.conv.to_tuple()
+    model_path = desanitize_model_path(model_path)
     image = Image.open(cfg.path.form57_img)
 
     if api == 'Huggingface':
@@ -619,38 +621,43 @@ def img_to_json(cfg):
             # 'Qwen/Qwen2.5-VL-7B-Instruct': {}, # good
             'Qwen/Qwen2.5-VL-32B-Instruct': {},
             'Qwen/Qwen2.5-VL-72B-Instruct': {'load_in_4bit': True},
+            'Qwen/Qwen3-VL-32B-Instruct': {},
             # 'microsoft/GUI-Actor-7B-Qwen2.5-VL': {}, # bad
             # 'OpenGVLab/InternVL3-8B': {}, #must be used with custom code to correctly load the model
             # 'OpenGVLab/InternVL3-8B-Instruct': {}, #must be used with custom code to correctly load the model
             # 'OpenGVLab/InternVL3-8B-hf': {}, # good
             # 'OpenGVLab/InternVL3-14B-hf': {},
             'OpenGVLab/InternVL3-38B-hf': {},
-            'OpenGVLab/InternVL3-78B-hf': {'load_in_8bit': True},
+            'OpenGVLab/InternVL3-78B-hf': {'load_in_4bit': True},
             'OpenGVLab/InternVL3_5-38B-HF': {},
             # 'microsoft/Phi-3.5-vision-instruct': {}, #error
             # 'google/gemma-3-4b-it': {}, # bad
-            'google/gemma-3-12b-it': {},
-            'google/gemma-3-27b-it': {},
+            # 'google/gemma-3-12b-it': {},
+            # 'google/gemma-3-27b-it': {},
             # 'microsoft/OmniParser-v2.0': {}, #error
             # 'U4R/StructTable-base': {}, #StructEqTable. cannot use chat template input
             # 'U4R/StructTable-InternVL2-1B': {}, #StructEqTable. must be used with custom code to correctly load the model
             # 'stepfun-ai/GOT-OCR-2.0-hf': {}, #cannot use chat template input
             ### https://github.com/haotian-liu/LLaVA/blob/main/docs/MODEL_ZOO.md
             # 'llava-hf/llava-1.5-7b-hf': {}, # bad
-            'llava-hf/llava-1.5-13b-hf': {'load_in_8bit': True},
+            # 'llava-hf/llava-1.5-13b-hf': {'load_in_8bit': True},
             # 'llava-hf/vip-llava-7b-hf': {}, # bad
-            'llava-hf/vip-llava-13b-hf': {'load_in_8bit': True},
+            # 'llava-hf/vip-llava-13b-hf': {'load_in_8bit': True},
             # 'llava-hf/llava-v1.6-vicuna-7b-hf': {}, # bad
             # 'llava-hf/llava-v1.6-mistral-7b-hf': {}, # bad
             'llava-hf/llava-v1.6-34b-hf': {'dtype': torch.float16},
             # 'llava-hf/llava-interleave-qwen-7b-hf': {}, # bad
             # 'llava-hf/llama3-llava-next-8b-hf': {}, # bad
+            'llava-hf/llava-next-72b-hf': {'load_in_4bit': True},
+            'llava-hf/llava-onevision-qwen2-72b-ov-hf': {'load_in_4bit': True},
+            'meta-llama/Llama-3.2-90B-Vision-Instruct': {'load_in_4bit': True},
             # 'allenai/olmOCR-7B-0225-preview': {}, #olmOCR(OLMo OCR)
             # 'meta-llama/Llama-3.2-11B-Vision': {}, # cannot use chat template input
             # 'meta-llama/Llama-3.2-11B-Vision-Instruct': {}, # bad
             # 'nvidia/Eagle2.5-8B': {}, # must be used with custom code to correctly load the model
             'ByteDance-Seed/UI-TARS-1.5-7B': {}, # good
             # 'ByteDance/Sa2VA-26B': {'load_in_8bit': True}, # must be used with custom code to correctly load the model
+            'ByteDance-Seed/UI-TARS-72B-DPO': {'load_in_4bit': True},
             # 'allenai/Molmo-7B-D-0924': {}, # must be used with custom code to correctly load the model
             # 'microsoft/layoutlmv3-large': {}, # maximum input size is 512 tokens / needs OCR / focused on small-sized receipts and invoices
         }

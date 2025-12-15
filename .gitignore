@@ -12,4 +12,4 @@ backup*
 error*
 aws*
 mapillary
-textract_accessKeys.csv
+dict_api_key.json

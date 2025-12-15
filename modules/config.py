@@ -61,7 +61,11 @@ CONVERSION_API_MODEL_CHOICES: Final[dict[str, list[str]]] = {
     'AWS_Textract': ['textract'],
     'Azure_FormRecognizer': ['form_recognizer'],
     "OpenAI": ["o4-mini"],
-    "Huggingface": ["Qwen/Qwen2.5-VL-72B-Instruct", "OpenGVLab/InternVL3_5-38B-HF"],
+    "Huggingface": ["Qwen/Qwen2.5-VL-72B-Instruct",
+                    "Qwen/Qwen3-VL-32B-Instruct",
+                    "OpenGVLab/InternVL3_5-38B-HF",
+                    'OpenGVLab/InternVL3-78B-hf',
+                    ],
     "None": ["None"],
 }
 CONVERSION_JSON_SOURCE_CHOICES: Final[list[str]] = ["csv", "pdf", "img", "None"]

@@ -1,14 +1,26 @@
 [
     {
-        "Identification": [
+        "Reporting Railroad Information": [
             "1",
-            "2",
-            "3",
-            "4"
+            "1a",
+            "1b"
         ],
-        "Accident Details": [
+        "Other Railroad/Entity Information": [
+            "2",
+            "2a",
+            "2b"
+        ],
+        "Track Maintenance Responsibility": [
+            "3",
+            "3a",
+            "3b"
+        ],
+        "Crossing Identification and Incident Details": [
+            "4",
             "5",
-            "6",
+            "6"
+        ],
+        "Location Information": [
             "7",
             "8",
             "9",
@@ -16,16 +28,18 @@
             "11",
             "12"
         ],
-        "Highway User Information": [
+        "Highway User Involved": [
             "13",
             "14",
             "15",
             "16"
         ],
-        "Rail Equipment Information": [
+        "Rail Equipment Involved": [
             "17",
             "18",
-            "19",
+            "19"
+        ],
+        "Hazardous Materials": [
             "20a",
             "20b",
             "20c"
@@ -33,7 +47,9 @@
         "Environmental Conditions": [
             "21",
             "22",
-            "23",
+            "23"
+        ],
+        "Train Consist and Track Details": [
             "24",
             "25",
             "26",
@@ -41,7 +57,9 @@
             "28",
             "29",
             "30",
-            "31",
+            "31"
+        ],
+        "Crossing Warning and Roadway Conditions": [
             "32",
             "33",
             "34",
@@ -49,17 +67,17 @@
             "36",
             "37"
         ],
-        "User Actions and Circumstances": [
+        "Highway User Behavior and Characteristics": [
             "38",
             "39",
             "40",
             "41",
             "42",
-            "43",
-            "44",
-            "45"
+            "43"
         ],
-        "Damage and Casualties": [
+        "Casualties and Damage": [
+            "44",
+            "45",
             "46",
             "47",
             "48",
@@ -68,27 +86,35 @@
             "51",
             "52"
         ],
-        "Special Study Block": [
+        "Special Study and Narrative": [
             "53a",
-            "53b"
+            "53b",
+            "54"
         ],
-        "Narrative and Signatures": [
-            "54",
+        "Reporter Information": [
             "55",
             "56",
             "57"
         ]
     },
     {
-        "Identification": [
+        "Reporting Railroad Information": [
             "1",
-            "2",
-            "3",
-            "4"
+            "1a",
+            "1b"
         ],
-        "Accident Details": [
-            "5",
-            "6",
+        "Other Railroad/Entity Information": [
+            "2",
+            "2a",
+            "2b"
+        ],
+        "Track Maintenance Responsibility": [
+            "3",
+            "3a",
+            "3b"
+        ],
+        "Crossing Identification and Location": [
+            "4",
             "7",
             "8",
             "9",
@@ -96,40 +122,15 @@
             "11",
             "12"
         ],
-        "Highway User Information": [
+        "Accident/Incident Timing": [
+            "5",
+            "6"
+        ],
+        "Highway User Details": [
             "13",
             "14",
             "15",
-            "16"
-        ],
-        "Rail Equipment Information": [
-            "17",
-            "18",
-            "19",
-            "20a",
-            "20b",
-            "20c"
-        ],
-        "Environmental Conditions": [
-            "21",
-            "22",
-            "23",
-            "24",
-            "25",
-            "26",
-            "27",
-            "28",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "35",
-            "36",
-            "37"
-        ],
-        "User Actions and Circumstances": [
+            "16",
             "38",
             "39",
             "40",
@@ -139,7 +140,36 @@
             "44",
             "45"
         ],
-        "Damage and Casualties": [
+        "Rail Equipment Details": [
+            "17",
+            "18",
+            "19",
+            "20a",
+            "20b",
+            "20c",
+            "24",
+            "25",
+            "26",
+            "27",
+            "28",
+            "29",
+            "30",
+            "31"
+        ],
+        "Environmental Conditions": [
+            "21",
+            "22",
+            "23",
+            "34"
+        ],
+        "Crossing Warning and Signals": [
+            "32",
+            "33",
+            "35",
+            "36",
+            "37"
+        ],
+        "Casualties and Damage": [
             "46",
             "47",
             "48",
@@ -148,27 +178,39 @@
             "51",
             "52"
         ],
-        "Special Study Block": [
+        "Special Study and Narrative": [
             "53a",
-            "53b"
+            "53b",
+            "54"
         ],
-        "Narrative and Signature": [
-            "54",
+        "Reporting and Signature": [
             "55",
             "56",
             "57"
         ]
     },
     {
-        "Identification": [
+        "Reporting Railroad Information": [
             "1",
-            "2",
-            "3",
-            "4"
+            "1a",
+            "1b"
         ],
-        "Accident Details": [
+        "Other Railroad/Entity Information": [
+            "2",
+            "2a",
+            "2b"
+        ],
+        "Track Maintenance Responsibility": [
+            "3",
+            "3a",
+            "3b"
+        ],
+        "Crossing Identification and Incident Details": [
+            "4",
             "5",
-            "6",
+            "6"
+        ],
+        "Location Details": [
             "7",
             "8",
             "9",
@@ -176,16 +218,18 @@
             "11",
             "12"
         ],
-        "Highway User Information": [
+        "Highway User Involved": [
             "13",
             "14",
             "15",
             "16"
         ],
-        "Rail Equipment Information": [
+        "Rail Equipment Involved": [
             "17",
             "18",
-            "19",
+            "19"
+        ],
+        "Hazardous Materials": [
             "20a",
             "20b",
             "20c"
@@ -193,7 +237,9 @@
         "Environmental Conditions": [
             "21",
             "22",
-            "23",
+            "23"
+        ],
+        "Train Consist and Movement": [
             "24",
             "25",
             "26",
@@ -201,7 +247,9 @@
             "28",
             "29",
             "30",
-            "31",
+            "31"
+        ],
+        "Crossing Warnings and Conditions": [
             "32",
             "33",
             "34",
@@ -209,44 +257,52 @@
             "36",
             "37"
         ],
-        "User Actions and Circumstances": [
+        "Highway User Behavior and Characteristics": [
             "38",
             "39",
             "40",
             "41",
             "42",
-            "43",
-            "44",
-            "45"
+            "43"
         ],
-        "Damage and Casualties": [
+        "Driver and Vehicle Status": [
+            "44",
+            "45",
             "46",
             "47",
-            "48",
+            "48"
+        ],
+        "Casualties and Occupants": [
             "49",
             "50",
             "51",
             "52"
         ],
-        "Special Study Block": [
+        "Special Study and Narrative": [
             "53a",
-            "53b"
+            "53b",
+            "54"
         ],
-        "Narrative and Signatures": [
-            "54",
+        "Reporting and Signature": [
             "55",
             "56",
             "57"
         ]
     },
     {
-        "Identification": [
+        "Reporting Entities": [
             "1",
+            "1a",
+            "1b",
             "2",
+            "2a",
+            "2b",
             "3",
-            "4"
+            "3a",
+            "3b"
         ],
-        "Accident Details": [
+        "Accident/Incident Details": [
+            "4",
             "5",
             "6",
             "7",
@@ -260,36 +316,7 @@
             "13",
             "14",
             "15",
-            "16"
-        ],
-        "Rail Equipment Information": [
-            "17",
-            "18",
-            "19",
-            "20a",
-            "20b",
-            "20c"
-        ],
-        "Environmental Conditions": [
-            "21",
-            "22",
-            "23",
-            "24",
-            "25",
-            "26",
-            "27",
-            "28",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "35",
-            "36",
-            "37"
-        ],
-        "User Actions and Circumstances": [
+            "16",
             "38",
             "39",
             "40",
@@ -299,7 +326,34 @@
             "44",
             "45"
         ],
-        "Damage and Casualties": [
+        "Rail Equipment Information": [
+            "17",
+            "18",
+            "19",
+            "20a",
+            "20b",
+            "20c",
+            "24",
+            "25",
+            "26",
+            "27",
+            "28",
+            "29",
+            "30",
+            "31"
+        ],
+        "Environmental Conditions": [
+            "21",
+            "22",
+            "23",
+            "32",
+            "33",
+            "34",
+            "35",
+            "36",
+            "37"
+        ],
+        "Casualties and Damage": [
             "46",
             "47",
             "48",
@@ -308,12 +362,12 @@
             "51",
             "52"
         ],
-        "Special Study Block": [
+        "Special Study and Narrative": [
             "53a",
-            "53b"
+            "53b",
+            "54"
         ],
-        "Narrative and Signatures": [
-            "54",
+        "Reporting Signature": [
             "55",
             "56",
             "57"

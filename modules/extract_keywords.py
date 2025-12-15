@@ -36,6 +36,28 @@ def to_answer_places(dict_form57):
             assert False, 'why # of answer places < 1?'
     return dict_answer_places, dict_idx_ap
 
+def extract_helper(api, news_content, question, generate_func, generator, model_path, generation_config=None):
+    if api == 'Huggingface':
+        # prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}\n\nAnswer:\n({answer_start_idx}):"
+        prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}\n\nAnswer:\n"
+        content = prompt
+        answers = generate_func(generator, model_path, content, generation_config)
+    
+    elif api == 'OpenAI':
+        prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}"
+        content = [
+            {"type": "input_text", "text": prompt},
+        ]
+        answers = generate_func(generator, model_path, content, generation_config=None)
+    
+    else:
+        raise ValueError(f'{api} is not supported here.')
+    
+    # dict_answer = dict(re.findall(r'\((.+)\):\s*([^\n]+)', answers))
+    dict_answer = parse_json_from_output(answers)
+
+    return dict_answer
+
 def extract_keywords(cfg):
     _, _, _, json_source = cfg.conv.to_tuple()
     api, model_path, n_generate, question_batch = cfg.retr.to_tuple()
@@ -151,25 +173,8 @@ def extract_keywords(cfg):
                     answer_start_idx = dict_idx_ap[entry_idx][0]
                 
                     try:
-                        if api == 'Huggingface':
-                            # prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}\n\nAnswer:\n({answer_start_idx}):"
-                            prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}\n\nAnswer:\n"
-                            content = prompt
-                            generation_config = {'max_new_tokens': 30}
-                            answers = generate_func(generator, model_path, content, generation_config)
-                        
-                        elif api == 'OpenAI':
-                            prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}"
-                            content = [
-                                {"type": "input_text", "text": prompt},
-                            ]
-                            answers = generate_func(generator, model_path, content, generation_config=None)
-                        
-                        else:
-                            raise ValueError(f'{api} is not supported here.')
-                        
-                        # dict_answer = dict(re.findall(r'\((.+)\):\s*([^\n]+)', answers))
-                        dict_answer = parse_json_from_output(answers)
+                        generation_config = {'max_new_tokens': 30} # will be used only for Huggingface
+                        dict_answer = extract_helper(api, news_content, question, generate_func, generator, model_path, generation_config)
 
                         # print(question)
                         # print()
@@ -202,25 +207,8 @@ def extract_keywords(cfg):
                 answer_start_idx = dict_idx_ap[group[0]][0]
                 
                 try:
-                    if api == 'Huggingface':
-                        # prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n({answer_start_idx}):"
-                        prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}\n\nAnswer:\n"
-                        content = prompt
-                        generation_config = {}
-                        answers = generate_func(generator, model_path, content, generation_config)
-                    
-                    elif api == 'OpenAI':
-                        prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}"
-                        content = [
-                            {"type": "input_text", "text": prompt},
-                        ]
-                        answers = generate_func(generator, model_path, content, generation_config=None)
-                    
-                    else:
-                        raise ValueError(f'{api} is not supported here.')
-
-                    # dict_answer = dict(re.findall(r'\((.+)\):\s*([^\n]+)', answers))
-                    dict_answer = parse_json_from_output(answers)
+                    generation_config = {}
+                    dict_answer = extract_helper(api, news_content, question, generate_func, generator, model_path, generation_config)
 
                     # print(question)
                     # print()
@@ -239,49 +227,33 @@ def extract_keywords(cfg):
             # df_retrieval.loc[idx_content, :].to_dict()
 
         elif question_batch == 'all':
-            list_answer_places_str = ', '.join(list(map(lambda x: f'({x})', list_answer_places))).replace(', (54)', '').replace(', (105)', '')
-            question_base = (
-                "From the given context, answer each field in the form.\n"
-                f"The field indices to be answered are: {list_answer_places_str}.\n"
-            )
-            question = question_base + answer_format
+            question = question_base + '\n'
+            for entry_idx in tqdm(dict_form57.keys(), leave=False):
+                if entry_idx in ['54', '105']:
+                    continue
+                entry = dict_form57[entry_idx]
+                entry_name = entry['name']
+                for entry_idx_suffix in dict_idx_ap[entry_idx]:
+                    answer_place = dict_answer_places[entry_idx_suffix]
+                    description = f"({answer_place['answer_place_name']})" if len(dict_idx_ap[entry_idx]) > 1 else ''
+                    answer_place_info = answer_place['answer_place_info']
+                    # question += f'({entry_idx_suffix}): ' + entry_name + description + f' {str(answer_place_info)}' + '\n'
+                    question += f'{entry_idx_suffix}: ' + entry_name + description + f' {str(answer_place_info)}' + '\n'
+            question += answer_format
+            answer_start_idx = dict_idx_ap[list(dict_form57.keys())[0]][0]
+            
+            try:
+                generation_config = {}
+                dict_answer = extract_helper(api, news_content, question, generate_func, generator, model_path, generation_config)
 
-            if api == 'Huggingface':
-                prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}\n\nAnswer:\n"
-                if model_path == 'microsoft/phi-4':
-                    content = prompt
-                    generation_config = {}
-                    answers = generate_func(generator, model_path, content, generation_config)
-                elif model_path == 'Qwen/Qwen2.5-VL-72B-Instruct':
-                    content = [
-                        {"type": "image", "image": img_obj},
-                        {"type": "text", "text": prompt},
-                    ]
-                    generation_config = {}
-                    answers = generate_func(generator, model_path, content, generation_config)
-                else:
-                    raise ValueError(f'{model_path} is not supported here.')
-
-            elif api == 'OpenAI':
-                prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}"
-                content = [
-                    {"type": "input_text", "text": prompt},
-                    {"type": "input_image", "file_id": img_obj.id}, # type: ignore
-                ]
-                answers = generate_func(generator, model_path, content, generation_config=None)
+                list_entry_idx_suffix = list(chain.from_iterable([dict_idx_ap[entry_idx] for entry_idx in dict_form57]))
+                for entry_idx_suffix in list_entry_idx_suffix:
+                    answer = dict_answer.get(entry_idx_suffix, '')
+                    df_retrieval.loc[idx_content, entry_idx_suffix] = answer # type: ignore
             
-            else:
-                raise ValueError(f'{api} is not supported here.')
+            except:
+                pass
             
-            dict_answer = parse_json_from_output(answers)
-            
-            for entry_idx, answer in dict_answer.items():
-                if entry_idx in list_answer_places:
-                    try:
-                        df_retrieval.loc[idx_content, entry_idx] = answer # type: ignore
-                    except:
-                        pass
-        
         if idx_content % 10 == 0: # type: ignore
             df_retrieval.to_csv(cfg.path.df_retrieval, index=False)
 
@@ -304,3 +276,30 @@ def extract_keywords(cfg):
 #                     '46_1', '46_2', '47', '48', '49_1', '49_2', '50', '51', '52_1', '52_2', '53a', '53b', '54', '55', '56', '57']
 #     df_retrieval.columns = list_col_new
 #     df_retrieval.to_csv(cfg.path.df_retrieval, index=False)
+
+#     if api == 'Huggingface':
+#         prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}\n\nAnswer:\n"
+#         if model_path == 'microsoft/phi-4':
+#             content = prompt
+#             generation_config = {}
+#             answers = generate_func(generator, model_path, content, generation_config)
+#         elif model_path == 'Qwen/Qwen2.5-VL-72B-Instruct':
+#             content = [
+#                 {"type": "image", "image": img_obj},
+#                 {"type": "text", "text": prompt},
+#             ]
+#             generation_config = {}
+#             answers = generate_func(generator, model_path, content, generation_config)
+#         else:
+#             raise ValueError(f'{model_path} is not supported here.')
+
+#     elif api == 'OpenAI':
+#         prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}"
+#         content = [
+#             {"type": "input_text", "text": prompt},
+#             {"type": "input_image", "file_id": img_obj.id}, # type: ignore
+#         ]
+#         answers = generate_func(generator, model_path, content, generation_config=None)
+    
+#     else:
+#         raise ValueError(f'{api} is not supported here.')
