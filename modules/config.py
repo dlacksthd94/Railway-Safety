@@ -126,6 +126,12 @@ def parse_args() -> argparse.Namespace:
         required=True,
         help="Source of JSON data"
     )
+    g_conv.add_argument(
+        "--c_seed",
+        type=int,
+        required=True,
+        help="Simulation seed number for reproducibility"
+    )
 
     g_ret = parser.add_argument_group("retrieval")
     g_ret.add_argument(
@@ -216,6 +222,7 @@ class TableConfig:
 @dataclass(frozen=True)
 class ConversionConfig(BaseConfig):
     json_source: str
+    seed: int
 
 @dataclass(frozen=True)
 class RetrievalConfig(BaseConfig):
@@ -285,7 +292,7 @@ class Config:
 
 def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> PathConfig:
     dn_conversion = f"{conv_cfg.json_source}_{conv_cfg.api}_{conv_cfg.model}_{conv_cfg.n_generate}"
-    dp_conversion = os.path.join(DN_DATA_ROOT, DN_DATA_JSON, dn_conversion)
+    dp_conversion = os.path.join(DN_DATA_ROOT, DN_DATA_JSON, dn_conversion, str(conv_cfg.seed))
     make_dir(dp_conversion)
 
     dn_retrieval = f"{retr_cfg.question_batch}_{retr_cfg.api}_{retr_cfg.model}_{retr_cfg.n_generate}"

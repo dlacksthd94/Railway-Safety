@@ -1,6 +1,6 @@
 import pandas as pd
 import json
-from transformers import pipeline
+from transformers import pipeline, set_seed
 import torch
 import gc
 from pprint import pprint
@@ -59,9 +59,11 @@ def extract_helper(api, news_content, question, generate_func, generator, model_
     return dict_answer
 
 def extract_keywords(cfg):
-    _, _, _, json_source = cfg.conv.to_tuple()
+    _, _, _, json_source, seed = cfg.conv.to_tuple()
     api, model_path, n_generate, question_batch = cfg.retr.to_tuple()
     model_path = desanitize_model_path(model_path)
+
+    set_seed(seed)
 
     # if json_source == 'None':
     #     # list_answer_places = ["1", "2", "3", "4", "5_month", "5_day", "5_year", "6", "6_ampm", "7", "8", "9", "10", "11", "12", "12_ownership", 

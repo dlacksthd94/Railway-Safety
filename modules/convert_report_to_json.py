@@ -608,14 +608,16 @@ def pdf_to_json(cfg):
 def img_to_json(cfg):
     
     dict_form57_group = None
-    api, model_path, n_generate, _ = cfg.conv.to_tuple()
+    api, model_path, n_generate, _, seed = cfg.conv.to_tuple()
     model_path = desanitize_model_path(model_path)
     image = Image.open(cfg.path.form57_img)
 
     if api == 'Huggingface':
         import torch
         import gc
-        from transformers import pipeline
+        from transformers import pipeline, set_seed
+        
+        set_seed(seed)
 
         dict_model_config = {
             # 'Qwen/Qwen2.5-VL-7B-Instruct': {}, # good

@@ -19,24 +19,10 @@
 ### CSV source
 # python main.py --c_api None --c_model None --c_n_generate 0 --c_json_source csv --r_question_batch single --r_api Huggingface --r_model microsoft/phi-4
 
-# python main.py --c_api OpenAI --c_model o4-mini --c_n_generate 4 --c_json_source img --r_question_batch single --r_api Huggingface --r_model microsoft/phi-4
-# python main.py --c_api OpenAI --c_model o4-mini --c_n_generate 4 --c_json_source img --r_question_batch group --r_api Huggingface --r_model microsoft/phi-4
-# python main.py --c_api OpenAI --c_model o4-mini --c_n_generate 4 --c_json_source img --r_question_batch all --r_api Huggingface --r_model microsoft/phi-4
-
-### python main.py --c_api Huggingface --c_model Qwen/Qwen2.5-VL-72B-Instruct --c_n_generate 4 --c_json_source img --r_question_batch single --r_api Huggingface --r_model microsoft/phi-4
-### python main.py --c_api Huggingface --c_model Qwen/Qwen2.5-VL-72B-Instruct --c_n_generate 4 --c_json_source img --r_question_batch group --r_api Huggingface --r_model microsoft/phi-4
-### python main.py --c_api Huggingface --c_model Qwen/Qwen2.5-VL-72B-Instruct --c_n_generate 4 --c_json_source img --r_question_batch all --r_api Huggingface --r_model microsoft/phi-4
-
-python main.py --c_api Huggingface --c_model Qwen/Qwen3-VL-32B-Instruct --c_n_generate 4 --c_json_source img --r_question_batch single --r_api Huggingface --r_model microsoft/phi-4
-python main.py --c_api Huggingface --c_model Qwen/Qwen3-VL-32B-Instruct --c_n_generate 4 --c_json_source img --r_question_batch group --r_api Huggingface --r_model microsoft/phi-4
-python main.py --c_api Huggingface --c_model Qwen/Qwen3-VL-32B-Instruct --c_n_generate 4 --c_json_source img --r_question_batch all --r_api Huggingface --r_model microsoft/phi-4
-
-# python main.py --c_api Huggingface --c_model OpenGVLab/InternVL3_5-38B-HF --c_n_generate 4 --c_json_source img --r_question_batch single --r_api Huggingface --r_model microsoft/phi-4
-# python main.py --c_api Huggingface --c_model OpenGVLab/InternVL3_5-38B-HF --c_n_generate 4 --c_json_source img --r_question_batch group --r_api Huggingface --r_model microsoft/phi-4
-# python main.py --c_api Huggingface --c_model OpenGVLab/InternVL3_5-38B-HF --c_n_generate 4 --c_json_source img --r_question_batch all --r_api Huggingface --r_model microsoft/phi-4
-
-python main.py --c_api OpenAI --c_model o4-mini --c_n_generate 4 --c_json_source img --r_question_batch single --r_api OpenAI --r_model o4-mini
-python main.py --c_api OpenAI --c_model o4-mini --c_n_generate 4 --c_json_source img --r_question_batch group --r_api OpenAI --r_model o4-mini
-python main.py --c_api OpenAI --c_model o4-mini --c_n_generate 4 --c_json_source img --r_question_batch all --r_api OpenAI --r_model o4-mini
-
-# python main.py --c_api None --c_model None --c_n_generate 0 --c_json_source csv --r_question_batch single --r_api OpenAI --r_model o4-mini
+for s in 1 2 3 4; do
+    for b in single group all; do
+        python main.py --c_api Huggingface --c_model Qwen/Qwen3-VL-32B-Instruct --c_n_generate 4 --c_json_source img --c_seed "$s" --r_question_batch "$b" --r_api Huggingface --r_model microsoft/phi-4
+        python main.py --c_api Huggingface --c_model OpenGVLab/InternVL3_5-38B-HF --c_n_generate 4 --c_json_source img --c_seed "$s" --r_question_batch "$b" --r_api Huggingface --r_model microsoft/phi-4
+        python main.py --c_api OpenAI --c_model o4-mini --c_n_generate 4 --c_json_source img --c_seed "$s" --r_question_batch "$b" --r_api Huggingface --r_model microsoft/phi-4
+    done
+done

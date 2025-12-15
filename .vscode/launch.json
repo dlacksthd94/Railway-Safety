@@ -14,14 +14,14 @@
             "justMyCode": false,
             "args": [
                 // "--c_api", "None",
-                // "--c_api", "Huggingface",
-                "--c_api", "OpenAI",
+                "--c_api", "Huggingface",
+                // "--c_api", "OpenAI",
                 
                 // "--c_model", "None",
                 // "--c_model", "OpenGVLab/InternVL3_5-38B-HF",
                 // "--c_model", "Qwen/Qwen2.5-VL-72B-Instruct",
-                // "--c_model", "Qwen/Qwen3-VL-32B-Instruct",
-                "--c_model", "o4-mini", // o1, o3, gpt-4.1 slightly poor (error in choice lists) / gpt-5 poor (too many errors) / gpt-4o very poor (not even completed)
+                "--c_model", "Qwen/Qwen3-VL-32B-Instruct",
+                // "--c_model", "o4-mini", // o1, o3, gpt-4.1 slightly poor (error in choice lists) / gpt-5 poor (too many errors) / gpt-4o very poor (not even completed)
                 
                 // "--c_n_generate", "0",
                 "--c_n_generate", "4",
@@ -29,6 +29,8 @@
                 // "--c_json_source", "None",
                 // "--c_json_source", "csv",
                 "--c_json_source", "img",
+
+                "--c_seed", "1",
                 
                 "--r_api", "Huggingface",
                 // "--r_api", "OpenAI",

@@ -147,17 +147,5 @@ with right_panel:
                         retrieved_value = selected[col]
                         subfield_name = list(dict_form57[field]['answer_places'].keys())[i]
                         st.markdown(f"- {subfield_name}: {retrieved_value}")
-                
-                
-        #         if field in dict_idx_mapping_inverse:
-        #             field_name = dict_idx_mapping_inverse[field]
-        #             field_value = selected[field] if pd.notna(selected[field]) else "N/A"
-        #             st.markdown(f"**{field_name}**: {field_value}")
-        # for field in selected.index[content_idx + 1:]:
-        #     if field in dict_idx_mapping_inverse:
-        #         dict_idx_mapping_inverse[field]
-        #     if field in dict_col_indexing:
-        #         dict_col_indexing[field]
-        # st.write(selected['1'])
     else:
         st.info("Select a news item to view details.")
