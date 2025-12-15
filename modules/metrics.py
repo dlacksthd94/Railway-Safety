@@ -25,6 +25,8 @@ def get_acc_table(list_answer_type_selected, cfg):
 
     dict_col_indexing = prepare_dict_col_indexing(cfg)
     dict_idx_mapping, dict_idx_mapping_inverse = prepare_dict_idx_mapping(cfg)
+    assert len(dict_idx_mapping) == 63
+    dict_idx_mapping_cleaned = {k: v for k, v in dict_idx_mapping.items() if v != ''}
     dict_answer_places = prepare_dict_answer_places(cfg)
     
     dict_idx_answer_type = {
@@ -64,23 +66,20 @@ def get_acc_table(list_answer_type_selected, cfg):
     duplicates = [item for item, count in counts.items() if count > 1]
     assert len(duplicates) == 0
 
-    dict_idx_selected = {dict_idx_mapping[k]: k for answer_type_selected in list_answer_type_selected for k, v in dict_idx_answer_type[answer_type_selected].items()}
-    if '' in dict_idx_selected:
-        dict_idx_selected.pop('')
-
     pipe = pipeline(model='microsoft/phi-4', device_map='auto', **{'do_sample': False}) # type: ignore
 
+    idx_content = df_record_retrieval.columns.get_loc('content')
     df_acc = df_record_retrieval.copy(deep=True)
+    df_acc = df_acc.iloc[:, :idx_content + 1] # type: ignore
+    df_acc[list(dict_idx_mapping_cleaned.keys())] = np.nan
     df_acc = df_acc.drop('match', axis=1, errors='ignore')
-    df_acc.iloc[:, 12:] = np.nan
     for idx_match, row_match in tqdm(df_record_retrieval.iterrows(), total=df_record_retrieval.shape[0]):
         report_key = row_match['report_key']
         row_csv = df_record.loc[report_key]
+        
         list_score_temp = []
-        for col_idx_json, col_idx_form  in dict_idx_selected.items():
+        for col_idx_form, col_idx_json in dict_idx_mapping_cleaned.items():
             col_name = dict_col_indexing[col_idx_form]
-            # if col_idx_json not in row_match:
-            #     continue
             retrieval = row_match.loc[col_idx_json]
             label = row_csv.loc[col_name]
             if isinstance(retrieval, str):
@@ -131,7 +130,7 @@ def get_acc_table(list_answer_type_selected, cfg):
             list_score_temp.append(acc_temp)
         #     print(f'{acc_temp}\t{retrieval}=={label}\t{col_name}')
         # print('--------------------------------------------------')
-        df_acc.loc[idx_match, list(dict_idx_selected.keys())] = list_score_temp # type: ignore
+        df_acc.loc[idx_match, list(dict_idx_mapping_cleaned.keys())] = list_score_temp # type: ignore
     
     del pipe
     gc.collect()
@@ -147,53 +146,29 @@ def get_cov_table(list_answer_type_selected, cfg):
     df_annotate = pd.read_csv(cfg.path.df_annotate)
     df_annotate = df_annotate[df_annotate['annotated'] == 1]
 
-
-    dict_col_indexing = prepare_dict_col_indexing(cfg)
     dict_idx_mapping, dict_idx_mapping_inverse = prepare_dict_idx_mapping(cfg)
-    
-    dict_idx_answer_type = {
-        'digit': ['5_month', '5_day', '5_year', '6_hour', '6_minute', '14', '18', '20c_quantity', '21', '28', '29', '30', '38', 
-                    '46_killed', '46_injured', '47', '48', '49_killed', '49_injured', '50', '52_killed', '52_injured'],
-        'text': ['1', '2', '3', '5', '6', '7', '9', '11', '12', '20c_name', '20c_measure', '26'],
-        'choice': ['6_ampm', '12_ownership', '13', '15', '16', '17', '19', '20a', '20b', '22', '23', '24', '25', '30_record', '31', 
-                    '34', '35', '36', '37', '39', '40', '41', '42', '43', '44', '45'],
-        'etc': ['8', '10', '27'],
-    }
-    dict_idx_answer_type = {k: {idx: dict_col_indexing[idx] for idx in v} for k, v in dict_idx_answer_type.items()}
-
-    # sanity check
-    list_all = list(chain.from_iterable(map(set, dict_idx_answer_type.values())))
-    counts = Counter(list_all)
-    duplicates = [item for item, count in counts.items() if count > 1]
-    assert len(duplicates) == 0
-
-    dict_idx_selected = {dict_idx_mapping[k]: k for answer_type_selected in list_answer_type_selected for k, v in dict_idx_answer_type[answer_type_selected].items()}
-    if '' in dict_idx_selected:
-        dict_idx_selected.pop('')
-    if '20c' in dict_idx_selected:
-        dict_idx_selected.pop('20c')
+    assert len(dict_idx_mapping) == 63
+    dict_idx_mapping_cleaned = {k: v for k, v in dict_idx_mapping.items() if v != ''}
 
     df_annotate = df_annotate.drop('annotated', axis=1, errors='ignore')
     df_cov = df_annotate.copy(deep=True)
     idx_news_content = df_cov.columns.get_loc('content')
     df_cov = df_cov.iloc[:, :idx_news_content + 1] # type: ignore
     df_cov['fnr'] = np.nan
-
-    list_col_idx_form = df_annotate.columns[idx_news_content + 1:] # type: ignore
     
     for idx_annotate, row_annotate in tqdm(df_annotate.iterrows(), total=df_annotate.shape[0]):
         news_id = row_annotate['news_id']
         row_retrieval = df_retrieval[df_retrieval['news_id'] == news_id].squeeze()
         list_attempt = []
         list_label = []
-        for col_idx_form in list_col_idx_form:
+        for col_idx_form, col_idx_json in dict_idx_mapping_cleaned.items():
             try:
-                col_idx_json = dict_idx_mapping[col_idx_form]
                 pred = str(row_retrieval[col_idx_json]).lower() != 'unknown'
                 label = row_annotate[col_idx_form] == 'True'
                 list_attempt.append(pred)
                 list_label.append(label)
             except:
+                # print(f'{col_idx_form} not in df_annotate')
                 pass
         
         # cov_temp = f1_score(list_label, list_attempt, zero_division=0)
