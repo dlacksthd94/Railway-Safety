@@ -1,0 +1,3014 @@
+[
+    {
+        "1": {
+            "name": "Name of Reporting Railroad",
+            "answer_places": {
+                "reporting_railroad": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "1a": {
+            "name": "Alphabetic Code",
+            "answer_places": {
+                "alphabetic_code": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "1b": {
+            "name": "Railroad Accident/Incident Number",
+            "answer_places": {
+                "accident_incident_number": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "2": {
+            "name": "Name of Other Railroad or Other Entity Filing for Equipment Involved in Train Accident/Incident",
+            "answer_places": {
+                "other_reporting_entity": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "2a": {
+            "name": "Alphabetic Code",
+            "answer_places": {
+                "alphabetic_code": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "2b": {
+            "name": "Railroad Accident/Incident Number",
+            "answer_places": {
+                "accident_incident_number": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "3": {
+            "name": "Name of Railroad or Other Entity Responsible for Track Maintenance",
+            "answer_places": {
+                "maintenance_entity": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "3a": {
+            "name": "Alphabetic Code",
+            "answer_places": {
+                "alphabetic_code": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "3b": {
+            "name": "Railroad Accident/Incident Number",
+            "answer_places": {
+                "accident_incident_number": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "4": {
+            "name": "U.S. DOT Grade Crossing Identification Number",
+            "answer_places": {
+                "dot_crossing_id": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "5": {
+            "name": "Date of Accident/Incident",
+            "answer_places": {
+                "month": {
+                    "answer_type": "digit"
+                },
+                "day": {
+                    "answer_type": "digit"
+                },
+                "year": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "6": {
+            "name": "Time of Accident/Incident",
+            "answer_places": {
+                "time": {
+                    "answer_type": "free-text"
+                },
+                "am_pm": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "AM": "AM",
+                        "PM": "PM"
+                    }
+                }
+            }
+        },
+        "7": {
+            "name": "Nearest Railroad Station",
+            "answer_places": {
+                "nearest_station": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "8": {
+            "name": "Subdivision",
+            "answer_places": {
+                "subdivision": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "9": {
+            "name": "County",
+            "answer_places": {
+                "county": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "10": {
+            "name": "State",
+            "answer_places": {
+                "state_abbreviation": {
+                    "answer_type": "free-text"
+                },
+                "state_code": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "11": {
+            "name": "City (if in a city)",
+            "answer_places": {
+                "city": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "12": {
+            "name": "Highway Name or Number",
+            "answer_places": {
+                "highway_name_or_number": {
+                    "answer_type": "free-text"
+                },
+                "ownership": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "Public": "Public",
+                        "Private": "Private"
+                    }
+                }
+            }
+        },
+        "13": {
+            "name": "Highway User Type",
+            "answer_places": {
+                "code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "A": "Auto",
+                        "B": "Truck",
+                        "C": "Truck-trailer",
+                        "D": "Pick-up truck",
+                        "E": "Van",
+                        "F": "Bus",
+                        "G": "School bus",
+                        "H": "Motorcycle",
+                        "J": "Other motor vehicle",
+                        "K": "Pedestrian",
+                        "M": "Other"
+                    }
+                },
+                "other_specify": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "14": {
+            "name": "Vehicle Speed (est. mph at impact)",
+            "answer_places": {
+                "vehicle_speed_mph": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "15": {
+            "name": "Direction (geographical)",
+            "answer_places": {
+                "direction_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "North",
+                        "2": "South",
+                        "3": "East",
+                        "4": "West"
+                    }
+                }
+            }
+        },
+        "16": {
+            "name": "Position of Highway User",
+            "answer_places": {
+                "position_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Stalled or stuck on crossing",
+                        "2": "Stopped on crossing",
+                        "3": "Moving over crossing",
+                        "4": "Trapped on crossing by traffic",
+                        "5": "Blocked on crossing by gates"
+                    }
+                }
+            }
+        },
+        "17": {
+            "name": "Rail Equipment Involved",
+            "answer_places": {
+                "numeric_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Train (units pulling)",
+                        "2": "Train (units pushing)",
+                        "3": "Train (standing)",
+                        "4": "Car(s) (moving)",
+                        "5": "Car(s) (standing)",
+                        "6": "Light loco(s) (moving)",
+                        "7": "Light loco(s) (standing)",
+                        "8": "Other"
+                    }
+                },
+                "other_specify": {
+                    "answer_type": "free-text"
+                },
+                "letter_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "A": "Train pulling \u2013 RCL",
+                        "B": "Train pushing \u2013 RCL",
+                        "C": "Train standing \u2013 RCL",
+                        "D": "EMU Locomotive(s)",
+                        "E": "DMU Locomotive(s)"
+                    }
+                }
+            }
+        },
+        "18": {
+            "name": "Position of Car Unit in Train",
+            "answer_places": {
+                "car_position": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "19": {
+            "name": "Circumstance",
+            "answer_places": {
+                "circumstance_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Rail equipment struck highway user",
+                        "2": "Rail equipment struck by highway user"
+                    }
+                }
+            }
+        },
+        "20a": {
+            "name": "Impact Involved Transporting Hazardous Materials",
+            "answer_places": {
+                "transporting_haz_materials_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Highway user",
+                        "2": "Rail equipment",
+                        "3": "Both",
+                        "4": "Neither"
+                    }
+                }
+            }
+        },
+        "20b": {
+            "name": "Hazardous Materials Release By",
+            "answer_places": {
+                "haz_materials_release_by_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Highway user",
+                        "2": "Rail equipment",
+                        "3": "Both",
+                        "4": "Neither"
+                    }
+                }
+            }
+        },
+        "20c": {
+            "name": "Name and Quantity of Hazardous Material Released",
+            "answer_places": {
+                "hazardous_material_released": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "21": {
+            "name": "Temperature (\u00b0F)",
+            "answer_places": {
+                "temperature_F": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "22": {
+            "name": "Visibility",
+            "answer_places": {
+                "visibility_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Dawn",
+                        "2": "Day",
+                        "3": "Dusk",
+                        "4": "Dark"
+                    }
+                }
+            }
+        },
+        "23": {
+            "name": "Weather",
+            "answer_places": {
+                "weather_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Clear",
+                        "2": "Cloudy",
+                        "3": "Rain",
+                        "4": "Fog",
+                        "5": "Sleet",
+                        "6": "Snow"
+                    }
+                }
+            }
+        },
+        "24": {
+            "name": "Type of Equipment Consist",
+            "answer_places": {
+                "equipment_consist_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Freight Train",
+                        "2": "Passenger Train-Pulling",
+                        "3": "Commuter Train-Pulling",
+                        "4": "Work train",
+                        "5": "Single Car",
+                        "6": "Cut of cars",
+                        "7": "Yard/switching",
+                        "8": "Light loco(s)",
+                        "9": "Maint/inspect Car",
+                        "A": "Spec. Mov./Equip.",
+                        "B": "Passenger Train-Pushing",
+                        "C": "Commuter Train-Pushing",
+                        "D": "EMU",
+                        "E": "DMU"
+                    }
+                }
+            }
+        },
+        "25": {
+            "name": "Track Type Used by Rail Equipment Involved",
+            "answer_places": {
+                "track_type_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Main",
+                        "2": "Yard",
+                        "3": "Siding",
+                        "4": "Industry"
+                    }
+                }
+            }
+        },
+        "26": {
+            "name": "Track Number or Name",
+            "answer_places": {
+                "track_number_or_name": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "27": {
+            "name": "FRA Track Class",
+            "answer_places": {
+                "fra_track_class": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "28": {
+            "name": "Number of Locomotive Units",
+            "answer_places": {
+                "number_of_locomotive_units": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "29": {
+            "name": "Number of Cars",
+            "answer_places": {
+                "number_of_cars": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "30": {
+            "name": "Consist Speed",
+            "answer_places": {
+                "speed_type_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "R": "Recorded",
+                        "E": "Estimated"
+                    }
+                },
+                "speed_mph": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "31": {
+            "name": "Time Table Direction",
+            "answer_places": {
+                "time_table_direction_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "North",
+                        "2": "South",
+                        "3": "East",
+                        "4": "West"
+                    }
+                }
+            }
+        },
+        "32": {
+            "name": "Type of Crossing Warning",
+            "answer_places": {
+                "crossing_warning_code": {
+                    "answer_type": "multiple choice",
+                    "choices": {
+                        "1": "Gates",
+                        "2": "Cantilever FLS",
+                        "3": "Standard FLS",
+                        "4": "Wig wags",
+                        "5": "Hwy. traffic signals",
+                        "6": "Audible",
+                        "7": "Crossbucks",
+                        "8": "Stop signs",
+                        "9": "Watchman",
+                        "10": "Flagged by crew",
+                        "11": "Other",
+                        "12": "None"
+                    }
+                },
+                "other_specify": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "33": {
+            "name": "Signaled Crossing Warning",
+            "answer_places": {
+                "signaled_crossing_warning_code": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "34": {
+            "name": "Roadway Conditions",
+            "answer_places": {
+                "roadway_conditions_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "A": "Dry",
+                        "B": "Wet",
+                        "C": "Snow/slush",
+                        "D": "Ice",
+                        "E": "Sand, Mud, Dirt, Oil, Gravel",
+                        "F": "Water (standing, moving)"
+                    }
+                }
+            }
+        },
+        "35": {
+            "name": "Location of Warning",
+            "answer_places": {
+                "location_of_warning_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Both sides",
+                        "2": "Side of vehicle approach",
+                        "3": "Opposite side of vehicle approach"
+                    }
+                }
+            }
+        },
+        "36": {
+            "name": "Crossing Warning Interconnected with Highway Signals",
+            "answer_places": {
+                "interconnected_with_highway_signals_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No",
+                        "3": "Unknown"
+                    }
+                }
+            }
+        },
+        "37": {
+            "name": "Crossing Illuminated by Street/Special Lights",
+            "answer_places": {
+                "illuminated_by_lights_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No",
+                        "3": "Unknown"
+                    }
+                }
+            }
+        },
+        "38": {
+            "name": "Highway User's Age",
+            "answer_places": {
+                "highway_user_age": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "39": {
+            "name": "Highway User's Gender",
+            "answer_places": {
+                "gender_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Male",
+                        "2": "Female"
+                    }
+                }
+            }
+        },
+        "40": {
+            "name": "User Struck by Second Train",
+            "answer_places": {
+                "struck_by_second_train_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No",
+                        "3": "Unknown"
+                    }
+                }
+            }
+        },
+        "41": {
+            "name": "Highway User Action",
+            "answer_places": {
+                "action_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Around the gate",
+                        "2": "Went around/between barriers",
+                        "3": "Stopped and proceeded",
+                        "4": "Did not stop",
+                        "5": "Stopped on crossing",
+                        "6": "Other",
+                        "7": "Went through gate",
+                        "8": "Suicide/Attempted suicide"
+                    }
+                },
+                "other_specify": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "42": {
+            "name": "Driver Passed Standing Highway Vehicle",
+            "answer_places": {
+                "passed_standing_vehicle_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No",
+                        "3": "Unknown"
+                    }
+                }
+            }
+        },
+        "43": {
+            "name": "View of Track Obscured By",
+            "answer_places": {
+                "obstruction_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Permanent structure",
+                        "2": "Standing railroad equipment",
+                        "3": "Passing train",
+                        "4": "Topography",
+                        "5": "Vegetation",
+                        "6": "Highway vehicles",
+                        "7": "Other",
+                        "8": "Not obstructed"
+                    }
+                },
+                "other_specify": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "44": {
+            "name": "Driver Was",
+            "answer_places": {
+                "driver_status_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Killed",
+                        "2": "Injured",
+                        "3": "Uninjured"
+                    }
+                }
+            }
+        },
+        "45": {
+            "name": "Was Driver in the Vehicle?",
+            "answer_places": {
+                "driver_in_vehicle_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No"
+                    }
+                }
+            }
+        },
+        "46": {
+            "name": "Highway-Rail Crossing Users (casualties)",
+            "answer_places": {
+                "killed": {
+                    "answer_type": "digit"
+                },
+                "injured": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "47": {
+            "name": "Highway Vehicle Property Damage (est. $)",
+            "answer_places": {
+                "property_damage": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "48": {
+            "name": "Total Number of Vehicle Occupants",
+            "answer_places": {
+                "total_vehicle_occupants": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "49": {
+            "name": "Railroad Employees (casualties)",
+            "answer_places": {
+                "killed": {
+                    "answer_type": "digit"
+                },
+                "injured": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "50": {
+            "name": "Total Number of People on Train",
+            "answer_places": {
+                "total_people_on_train": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "51": {
+            "name": "Rail Equipment Accident/Incident Report Being Filed?",
+            "answer_places": {
+                "report_filed_code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No"
+                    }
+                }
+            }
+        },
+        "52": {
+            "name": "Passengers on Train",
+            "answer_places": {
+                "passengers_on_train": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "53a": {
+            "name": "Special Study Block",
+            "answer_places": {
+                "video_taken": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "Yes": "Yes",
+                        "No": "No"
+                    }
+                },
+                "video_used": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "Yes": "Yes",
+                        "No": "No"
+                    }
+                }
+            }
+        },
+        "53b": {
+            "name": "Special Study Block Details",
+            "answer_places": {
+                "details": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "54": {
+            "name": "Narrative Description",
+            "answer_places": {
+                "narrative_description": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "55": {
+            "name": "Typed Name & Title",
+            "answer_places": {
+                "typed_name_and_title": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "56": {
+            "name": "Signature",
+            "answer_places": {
+                "signature": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "57": {
+            "name": "Date",
+            "answer_places": {
+                "date": {
+                    "answer_type": "free-text"
+                }
+            }
+        }
+    },
+    {
+        "1": {
+            "name": "Name of Reporting Railroad",
+            "answer_places": {
+                "reporting railroad name": {
+                    "answer_type": "free-text"
+                },
+                "alphabetic code": {
+                    "answer_type": "free-text"
+                },
+                "railroad accident/incident number": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "2": {
+            "name": "Name of Other Railroad or Other Entity Filing for Equipment Involved in Train Accident/Incident",
+            "answer_places": {
+                "other railroad/entity name": {
+                    "answer_type": "free-text"
+                },
+                "alphabetic code": {
+                    "answer_type": "free-text"
+                },
+                "railroad accident/incident number": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "3": {
+            "name": "Name of Railroad or Other Entity Responsible for Track Maintenance",
+            "answer_places": {
+                "responsible entity name": {
+                    "answer_type": "free-text"
+                },
+                "alphabetic code": {
+                    "answer_type": "free-text"
+                },
+                "railroad accident/incident number": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "4": {
+            "name": "U.S. DOT Grade Crossing Identification Number",
+            "answer_places": {
+                "crossing identification number": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "5": {
+            "name": "Date of Accident/Incident",
+            "answer_places": {
+                "month": {
+                    "answer_type": "digit"
+                },
+                "day": {
+                    "answer_type": "digit"
+                },
+                "year": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "6": {
+            "name": "Time of Accident/Incident",
+            "answer_places": {
+                "accident time": {
+                    "answer_type": "free-text"
+                },
+                "am/pm": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "AM": "AM",
+                        "PM": "PM"
+                    }
+                }
+            }
+        },
+        "7": {
+            "name": "Nearest Railroad Station",
+            "answer_places": {
+                "railroad station": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "8": {
+            "name": "Subdivision",
+            "answer_places": {
+                "subdivision": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "9": {
+            "name": "County",
+            "answer_places": {
+                "county": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "10": {
+            "name": "State",
+            "answer_places": {
+                "state abbreviation": {
+                    "answer_type": "free-text"
+                },
+                "state code": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "11": {
+            "name": "City (if in a city)",
+            "answer_places": {
+                "city": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "12": {
+            "name": "Highway Name or Number",
+            "answer_places": {
+                "highway name or number": {
+                    "answer_type": "free-text"
+                },
+                "highway ownership": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "Public": "Public",
+                        "Private": "Private"
+                    }
+                }
+            }
+        },
+        "13": {
+            "name": "Type of Highway User Involved",
+            "answer_places": {
+                "highway user type": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "A": "Auto",
+                        "B": "Truck",
+                        "C": "Truck-trailer",
+                        "D": "Pick-up truck",
+                        "E": "Van",
+                        "F": "Bus",
+                        "G": "School bus",
+                        "H": "Motorcycle",
+                        "J": "Other motor vehicle",
+                        "K": "Pedestrian",
+                        "M": "Other (specify)"
+                    }
+                }
+            }
+        },
+        "14": {
+            "name": "Vehicle Speed (est. mph at impact)",
+            "answer_places": {
+                "vehicle speed": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "15": {
+            "name": "Direction (geographical)",
+            "answer_places": {
+                "direction": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "North",
+                        "2": "South",
+                        "3": "East",
+                        "4": "West"
+                    }
+                }
+            }
+        },
+        "16": {
+            "name": "Position of Highway User",
+            "answer_places": {
+                "position": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Stalled or stuck on crossing",
+                        "2": "Stopped on crossing",
+                        "3": "Moving over crossing",
+                        "4": "Trapped on crossing by traffic",
+                        "5": "Blocked on crossing by gates"
+                    }
+                }
+            }
+        },
+        "17": {
+            "name": "Equipment Involved (rail)",
+            "answer_places": {
+                "rail equipment type": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Train (units pulling)",
+                        "2": "Train (units pushing)",
+                        "3": "Train (standing)",
+                        "4": "Car(s) moving",
+                        "5": "Car(s) standing",
+                        "6": "Light loco(s) moving",
+                        "7": "Light loco(s) standing",
+                        "8": "Other (specify)"
+                    }
+                }
+            }
+        },
+        "18": {
+            "name": "Position of Car Unit in Train",
+            "answer_places": {
+                "position in train": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "19": {
+            "name": "Circumstance",
+            "answer_places": {
+                "circumstance": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Rail equipment struck highway user",
+                        "2": "Rail equipment struck by highway user"
+                    }
+                }
+            }
+        },
+        "20a": {
+            "name": "Was the highway user and/or rail equipment involved in the impact transporting hazardous materials?",
+            "answer_places": {
+                "transporting hazardous materials": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Highway user",
+                        "2": "Rail equipment",
+                        "3": "Both",
+                        "4": "Neither"
+                    }
+                }
+            }
+        },
+        "20b": {
+            "name": "Was there a hazardous materials release by",
+            "answer_places": {
+                "hazardous materials release": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Highway user",
+                        "2": "Rail equipment",
+                        "3": "Both",
+                        "4": "Neither"
+                    }
+                }
+            }
+        },
+        "20c": {
+            "name": "Name and quantity of hazardous material released",
+            "answer_places": {
+                "hazmat details": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "21": {
+            "name": "Temperature (Specify if minus) \u00b0F",
+            "answer_places": {
+                "temperature": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "22": {
+            "name": "Visibility",
+            "answer_places": {
+                "visibility": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Dawn",
+                        "2": "Day",
+                        "3": "Dusk",
+                        "4": "Dark"
+                    }
+                }
+            }
+        },
+        "23": {
+            "name": "Weather",
+            "answer_places": {
+                "weather": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Clear",
+                        "2": "Cloudy",
+                        "3": "Rain",
+                        "4": "Fog",
+                        "5": "Sleet",
+                        "6": "Snow"
+                    }
+                }
+            }
+        },
+        "24": {
+            "name": "Type of Equipment Consist",
+            "answer_places": {
+                "equipment consist type": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Freight Train",
+                        "2": "Passenger Train-Pulling",
+                        "3": "Commuter Train-Pulling",
+                        "4": "Work train",
+                        "5": "Single Car",
+                        "6": "Cut of cars",
+                        "7": "Yard/switching",
+                        "8": "Light loco(s)",
+                        "9": "Maint./Inspect. Car",
+                        "A": "Spec. Mov. Equipment",
+                        "B": "Passenger Train-Pushing",
+                        "C": "Commuter Train-Pushing",
+                        "D": "EMU",
+                        "E": "DMU"
+                    }
+                }
+            }
+        },
+        "25": {
+            "name": "Track Type Used by Rail Equipment Involved",
+            "answer_places": {
+                "track type": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Main",
+                        "2": "Yard",
+                        "3": "Siding",
+                        "4": "Industry"
+                    }
+                }
+            }
+        },
+        "26": {
+            "name": "Track Number or Name",
+            "answer_places": {
+                "track number or name": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "27": {
+            "name": "FRA Track Class",
+            "answer_places": {
+                "track class": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "28": {
+            "name": "Number of Locomotive Units",
+            "answer_places": {
+                "locomotive units": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "29": {
+            "name": "Number of Cars",
+            "answer_places": {
+                "number of cars": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "30": {
+            "name": "Consist Speed",
+            "answer_places": {
+                "speed": {
+                    "answer_type": "digit"
+                },
+                "speed type": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "R": "Recorded",
+                        "E": "Estimated"
+                    }
+                }
+            }
+        },
+        "31": {
+            "name": "Time Table Direction",
+            "answer_places": {
+                "timetable direction": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "North",
+                        "2": "South",
+                        "3": "East",
+                        "4": "West"
+                    }
+                }
+            }
+        },
+        "32": {
+            "name": "Type of Crossing Warning",
+            "answer_places": {
+                "crossing warning types": {
+                    "answer_type": "multiple choice",
+                    "choices": {
+                        "1": "Gates",
+                        "2": "Cantilever FLS",
+                        "3": "Standard FLS",
+                        "4": "Wig wag",
+                        "5": "Hwy. traffic signals",
+                        "6": "Audible",
+                        "7": "Crossbucks",
+                        "8": "Stop signs",
+                        "9": "Watchman",
+                        "10": "Flagged by crew",
+                        "11": "Other (specify)",
+                        "12": "None"
+                    }
+                }
+            }
+        },
+        "33": {
+            "name": "Signaled Crossing Warning",
+            "answer_places": {
+                "signaled crossing warning": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "34": {
+            "name": "Roadway Conditions",
+            "answer_places": {
+                "roadway conditions": {
+                    "answer_type": "multiple choice",
+                    "choices": {
+                        "A": "Dry",
+                        "B": "Wet",
+                        "C": "Snow/slush",
+                        "D": "Ice",
+                        "E": "Sand, Mud, Dirt, Oil, Gravel",
+                        "F": "Water (standing/moving)"
+                    }
+                }
+            }
+        },
+        "35": {
+            "name": "Location of Warning",
+            "answer_places": {
+                "location of warning": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Both sides",
+                        "2": "Side of vehicle approach",
+                        "3": "Opposite side of vehicle approach"
+                    }
+                }
+            }
+        },
+        "36": {
+            "name": "Crossing Warning Interconnected with Highway Signals",
+            "answer_places": {
+                "warning interconnected": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No",
+                        "3": "Unknown"
+                    }
+                }
+            }
+        },
+        "37": {
+            "name": "Crossing Illuminated by Street Lights or Special Lights",
+            "answer_places": {
+                "crossing illumination": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No",
+                        "3": "Unknown"
+                    }
+                }
+            }
+        },
+        "38": {
+            "name": "Highway User's Age",
+            "answer_places": {
+                "highway user age": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "39": {
+            "name": "Highway User's Gender",
+            "answer_places": {
+                "highway user gender": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Male",
+                        "2": "Female"
+                    }
+                }
+            }
+        },
+        "40": {
+            "name": "Highway User Went Behind or in Front of Train and Struck or was Struck by Second Train",
+            "answer_places": {
+                "struck by second train": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No",
+                        "3": "Unknown"
+                    }
+                }
+            }
+        },
+        "41": {
+            "name": "Highway User Action",
+            "answer_places": {
+                "highway user action": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Ran around the gate",
+                        "2": "Stopped on crossing",
+                        "3": "Did not stop",
+                        "4": "Stopped and then proceeded",
+                        "5": "Other (specify)",
+                        "6": "Went around/through temporary barricade",
+                        "7": "Went around/through gate",
+                        "8": "Suicide/Attempted suicide"
+                    }
+                }
+            }
+        },
+        "42": {
+            "name": "Driver Passed Standing Highway Vehicle",
+            "answer_places": {
+                "passed standing vehicle": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No",
+                        "3": "Unknown"
+                    }
+                }
+            }
+        },
+        "43": {
+            "name": "View of Track Obscured by (primary obstruction)",
+            "answer_places": {
+                "view obstruction": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Permanent structure",
+                        "2": "Standing railroad equipment",
+                        "3": "Passing train",
+                        "4": "Topography",
+                        "5": "Vegetation",
+                        "6": "Highway vehicles",
+                        "7": "Other (specify)",
+                        "8": "Not obstructed"
+                    }
+                }
+            }
+        },
+        "44": {
+            "name": "Driver Casualty",
+            "answer_places": {
+                "killed": {
+                    "answer_type": "digit"
+                },
+                "injured": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "45": {
+            "name": "Was Driver in the Vehicle?",
+            "answer_places": {
+                "driver in vehicle": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No"
+                    }
+                }
+            }
+        },
+        "46": {
+            "name": "Highway-Rail Crossing Users Casualty",
+            "answer_places": {
+                "killed": {
+                    "answer_type": "digit"
+                },
+                "injured": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "47": {
+            "name": "Highway Vehicle Property Damage (est. dollar damage)",
+            "answer_places": {
+                "property damage": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "48": {
+            "name": "Total Number of Vehicle Occupants (including driver)",
+            "answer_places": {
+                "total occupants": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "49": {
+            "name": "Railroad Employees Casualty",
+            "answer_places": {
+                "killed": {
+                    "answer_type": "digit"
+                },
+                "injured": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "50": {
+            "name": "Total Number of People on Train",
+            "answer_places": {
+                "total on train": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "51": {
+            "name": "Is a Rail Equipment Accident/Incident Report Being Filed?",
+            "answer_places": {
+                "report filed": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No"
+                    }
+                }
+            }
+        },
+        "52": {
+            "name": "Passengers on Train Casualty",
+            "answer_places": {
+                "killed": {
+                    "answer_type": "digit"
+                },
+                "injured": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "53a": {
+            "name": "Special Study Block \u2013 Video Taken/Video Used",
+            "answer_places": {
+                "video taken": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "Yes": "Yes",
+                        "No": "No"
+                    }
+                },
+                "video used": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "Yes": "Yes",
+                        "No": "No"
+                    }
+                }
+            }
+        },
+        "53b": {
+            "name": "Special Study Block",
+            "answer_places": {
+                "special study block": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "54": {
+            "name": "Narrative Description",
+            "answer_places": {
+                "narrative": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "55": {
+            "name": "Typed Name & Title",
+            "answer_places": {
+                "name and title": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "56": {
+            "name": "Signature",
+            "answer_places": {
+                "signature": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "57": {
+            "name": "Date",
+            "answer_places": {
+                "date": {
+                    "answer_type": "free-text"
+                }
+            }
+        }
+    },
+    {
+        "1": {
+            "name": "Name of Reporting Railroad",
+            "answer_places": {
+                "Reporting Railroad Name": {
+                    "answer_type": "free-text"
+                },
+                "Alphabetic Code": {
+                    "answer_type": "free-text"
+                },
+                "Railroad Accident/Incident No.": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "2": {
+            "name": "Name of Other Railroad or Other Entity Filing for Equipment Involved in Train Accident/Incident",
+            "answer_places": {
+                "Other Entity Name": {
+                    "answer_type": "free-text"
+                },
+                "Alphabetic Code": {
+                    "answer_type": "free-text"
+                },
+                "Railroad Accident/Incident No.": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "3": {
+            "name": "Name of Railroad or Other Entity Responsible for Track Maintenance",
+            "answer_places": {
+                "Entity Name": {
+                    "answer_type": "free-text"
+                },
+                "Alphabetic Code": {
+                    "answer_type": "free-text"
+                },
+                "Railroad Accident/Incident No.": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "4": {
+            "name": "U.S. DOT Grade Crossing Identification Number",
+            "answer_places": {
+                "Grade Crossing ID": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "5": {
+            "name": "Date of Accident/Incident",
+            "answer_places": {
+                "Month": {
+                    "answer_type": "digit"
+                },
+                "Day": {
+                    "answer_type": "digit"
+                },
+                "Year": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "6": {
+            "name": "Time of Accident/Incident",
+            "answer_places": {
+                "Time": {
+                    "answer_type": "free-text"
+                },
+                "AM/PM": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "AM": "AM",
+                        "PM": "PM"
+                    }
+                }
+            }
+        },
+        "7": {
+            "name": "Nearest Railroad Station",
+            "answer_places": {
+                "Station Name": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "8": {
+            "name": "Subdivision",
+            "answer_places": {
+                "Subdivision Name": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "9": {
+            "name": "County",
+            "answer_places": {
+                "County": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "10": {
+            "name": "State",
+            "answer_places": {
+                "State Abbreviation": {
+                    "answer_type": "free-text"
+                },
+                "State Code": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "11": {
+            "name": "City (if in a city)",
+            "answer_places": {
+                "City": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "12": {
+            "name": "Highway Name or Number",
+            "answer_places": {
+                "Highway Name/Number": {
+                    "answer_type": "free-text"
+                },
+                "Ownership": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "Public": "Public",
+                        "Private": "Private"
+                    }
+                }
+            }
+        },
+        "13": {
+            "name": "Highway User Type",
+            "answer_places": {
+                "Type Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "A": "Auto",
+                        "B": "Truck",
+                        "C": "Truck-trailer",
+                        "D": "Pick-up truck",
+                        "E": "Van",
+                        "F": "Bus",
+                        "G": "School bus",
+                        "H": "Motorcycle",
+                        "J": "Other motor vehicle",
+                        "K": "Pedestrian",
+                        "L": "Other (specify)"
+                    }
+                }
+            }
+        },
+        "14": {
+            "name": "Vehicle Speed (est. mph at impact)",
+            "answer_places": {
+                "Speed (mph)": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "15": {
+            "name": "Direction (geographical)",
+            "answer_places": {
+                "Direction Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "North",
+                        "2": "South",
+                        "3": "East",
+                        "4": "West"
+                    }
+                }
+            }
+        },
+        "16": {
+            "name": "Position of Highway User",
+            "answer_places": {
+                "Position Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Stalled or stuck on crossing",
+                        "2": "Stopped on crossing",
+                        "3": "Moving over crossing",
+                        "4": "Trapped on crossing by traffic",
+                        "5": "Blocked on crossing by gates"
+                    }
+                }
+            }
+        },
+        "17": {
+            "name": "Rail Equipment Involved \u2013 Equipment",
+            "answer_places": {
+                "Equipment Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Train (units pulling)",
+                        "2": "Train (units pushing)",
+                        "3": "Train (standing)",
+                        "4": "Car(s) (moving)",
+                        "5": "Car(s) (standing)",
+                        "6": "Light loco(s) (moving)",
+                        "7": "Light loco(s) (standing)",
+                        "8": "Other (specify)"
+                    }
+                }
+            }
+        },
+        "18": {
+            "name": "Position of Car Unit in Train",
+            "answer_places": {
+                "Position in Train": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "19": {
+            "name": "Circumstance",
+            "answer_places": {
+                "Circumstance Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Rail equipment struck highway user",
+                        "2": "Rail equipment struck by highway user"
+                    }
+                }
+            }
+        },
+        "20a": {
+            "name": "Transporting Hazardous Materials Involved",
+            "answer_places": {
+                "HM Involvement Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Highway user",
+                        "2": "Rail equipment",
+                        "3": "Both",
+                        "4": "Neither"
+                    }
+                }
+            }
+        },
+        "20b": {
+            "name": "Hazardous Materials Release By",
+            "answer_places": {
+                "Release By Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Highway user",
+                        "2": "Rail equipment",
+                        "3": "Both",
+                        "4": "Neither"
+                    }
+                }
+            }
+        },
+        "20c": {
+            "name": "Name and Quantity of Hazardous Material Released",
+            "answer_places": {
+                "Hazardous Material Details": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "21": {
+            "name": "Temperature (Specify if minus) F",
+            "answer_places": {
+                "Temperature (\u00b0F)": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "22": {
+            "name": "Visibility",
+            "answer_places": {
+                "Visibility": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "23": {
+            "name": "Weather",
+            "answer_places": {
+                "Weather Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Clear",
+                        "2": "Cloudy",
+                        "3": "Rain",
+                        "4": "Fog",
+                        "5": "Sleet",
+                        "6": "Snow"
+                    }
+                }
+            }
+        },
+        "24": {
+            "name": "Type of Equipment Consist",
+            "answer_places": {
+                "Consist Type Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Freight Train",
+                        "2": "Passenger Train-Pulling",
+                        "3": "Commuter Train-Pulling",
+                        "4": "Work train",
+                        "5": "Single Car",
+                        "6": "Cut of cars",
+                        "7": "Yard/switching",
+                        "8": "Light loco(s)",
+                        "9": "Maint/inspect Car",
+                        "A": "Spec. Mov Equip.",
+                        "C": "Passenger Train-Pushing",
+                        "D": "EMU",
+                        "E": "DMU"
+                    }
+                }
+            }
+        },
+        "25": {
+            "name": "Track Type Used by Rail Equipment Involved",
+            "answer_places": {
+                "Track Type Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Main",
+                        "2": "Yard",
+                        "3": "Siding",
+                        "4": "Industry"
+                    }
+                }
+            }
+        },
+        "26": {
+            "name": "Track Number or Name",
+            "answer_places": {
+                "Track Identifier": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "27": {
+            "name": "FRA Track Class (1-9, X)",
+            "answer_places": {
+                "Track Class": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "28": {
+            "name": "Number of Locomotive Units",
+            "answer_places": {
+                "Locomotive Units": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "29": {
+            "name": "Number of Cars",
+            "answer_places": {
+                "Cars": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "30": {
+            "name": "Consist Speed",
+            "answer_places": {
+                "Speed (MPH)": {
+                    "answer_type": "digit"
+                },
+                "Speed Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "R": "Recorded",
+                        "E": "Estimated"
+                    }
+                }
+            }
+        },
+        "31": {
+            "name": "Time Table Direction",
+            "answer_places": {
+                "Direction Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "North",
+                        "2": "South",
+                        "3": "East",
+                        "4": "West"
+                    }
+                }
+            }
+        },
+        "32": {
+            "name": "Type of Crossing Warning",
+            "answer_places": {
+                "Warning Type Codes": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Gates",
+                        "2": "Cantilever FLS",
+                        "3": "Standard FLS",
+                        "4": "Wig wags",
+                        "5": "Hwy. traffic signals",
+                        "6": "Audible",
+                        "7": "Crossbucks",
+                        "8": "Stop signs",
+                        "9": "Watchman",
+                        "10": "Flagged by crew",
+                        "11": "Other (specify)",
+                        "12": "None"
+                    }
+                }
+            }
+        },
+        "33": {
+            "name": "Signaled Crossing Warning",
+            "answer_places": {
+                "Signal Code": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "34": {
+            "name": "Roadway Conditions",
+            "answer_places": {
+                "Roadway Condition Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "A": "Dry",
+                        "B": "Wet",
+                        "C": "Snow/slush",
+                        "D": "Ice",
+                        "E": "Sand, Mud, Dirt, Oil, Gravel",
+                        "F": "Water (Standing, Moving)"
+                    }
+                }
+            }
+        },
+        "35": {
+            "name": "Location of Warning",
+            "answer_places": {
+                "Location Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Both sides",
+                        "2": "Side of vehicle approach",
+                        "3": "Opposite side of vehicle approach"
+                    }
+                }
+            }
+        },
+        "36": {
+            "name": "Crossing Warning Interconnected with Highway Signals",
+            "answer_places": {
+                "Interconnect Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No",
+                        "3": "Unknown"
+                    }
+                }
+            }
+        },
+        "37": {
+            "name": "Crossing Illuminated by Street Lights or Special Lights",
+            "answer_places": {
+                "Illumination Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No",
+                        "3": "Unknown"
+                    }
+                }
+            }
+        },
+        "38": {
+            "name": "Highway User's Age",
+            "answer_places": {
+                "Age": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "39": {
+            "name": "Highway User's Gender",
+            "answer_places": {
+                "Gender Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Male",
+                        "2": "Female"
+                    }
+                }
+            }
+        },
+        "40": {
+            "name": "User Went Behind/In Front of Train Struck by Second Train",
+            "answer_places": {
+                "Exposure Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No",
+                        "3": "Unknown"
+                    }
+                }
+            }
+        },
+        "41": {
+            "name": "Highway User Action at Crossing",
+            "answer_places": {
+                "Action Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Went around the gate",
+                        "2": "Went around barricade",
+                        "3": "Stopped and proceeded",
+                        "4": "Did not stop",
+                        "5": "Other (specify)",
+                        "6": "Went through the gate",
+                        "7": "Suicide/Attempted suicide"
+                    }
+                }
+            }
+        },
+        "42": {
+            "name": "Driver Passed Standing Highway Vehicle",
+            "answer_places": {
+                "Pass Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No",
+                        "3": "Unknown"
+                    }
+                }
+            }
+        },
+        "43": {
+            "name": "View of Track Obscured by (primary obstruction)",
+            "answer_places": {
+                "Obstruction Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Permanent structure",
+                        "2": "Standing railroad equipment",
+                        "3": "Passing train",
+                        "4": "Topography",
+                        "5": "Vegetation",
+                        "6": "Highway vehicles",
+                        "7": "Other (specify)",
+                        "8": "Not obstructed"
+                    }
+                }
+            }
+        },
+        "44": {
+            "name": "Driver Was",
+            "answer_places": {
+                "Driver Condition Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Killed",
+                        "2": "Injured",
+                        "3": "Uninjured"
+                    }
+                }
+            }
+        },
+        "45": {
+            "name": "Was Driver in the Vehicle?",
+            "answer_places": {
+                "Driver In Vehicle Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No"
+                    }
+                }
+            }
+        },
+        "46": {
+            "name": "Highway-Rail Crossing Users Casualties",
+            "answer_places": {
+                "Killed": {
+                    "answer_type": "digit"
+                },
+                "Injured": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "47": {
+            "name": "Highway Vehicle Property Damage",
+            "answer_places": {
+                "Damage ($)": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "48": {
+            "name": "Total Number of Vehicle Occupants (including driver)",
+            "answer_places": {
+                "Occupants": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "49": {
+            "name": "Railroad Employees Casualties",
+            "answer_places": {
+                "Killed": {
+                    "answer_type": "digit"
+                },
+                "Injured": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "50": {
+            "name": "Total Number of People on Train",
+            "answer_places": {
+                "People on Train": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "51": {
+            "name": "Is a Rail Equipment Accident/Incident Report Being Filed?",
+            "answer_places": {
+                "Report Filed Code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No"
+                    }
+                }
+            }
+        },
+        "52": {
+            "name": "Passengers on Train",
+            "answer_places": {
+                "Passengers": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "53a": {
+            "name": "Video Taken/Used",
+            "answer_places": {
+                "Video Taken": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "Yes": "Yes",
+                        "No": "No"
+                    }
+                },
+                "Video Used": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "Yes": "Yes",
+                        "No": "No"
+                    }
+                }
+            }
+        },
+        "53b": {
+            "name": "Special Study Block",
+            "answer_places": {
+                "Study Block": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "54": {
+            "name": "Narrative Description",
+            "answer_places": {
+                "Narrative": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "55": {
+            "name": "Typed Name & Title",
+            "answer_places": {
+                "Name & Title": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "56": {
+            "name": "Signature",
+            "answer_places": {
+                "Signature": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "57": {
+            "name": "Date",
+            "answer_places": {
+                "Date": {
+                    "answer_type": "free-text"
+                }
+            }
+        }
+    },
+    {
+        "1": {
+            "name": "Name of Reporting Railroad",
+            "answer_places": {
+                "reporting railroad": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "1a": {
+            "name": "Alphabetic Code",
+            "answer_places": {
+                "alphabetic code": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "1b": {
+            "name": "Railroad Accident/Incident No.",
+            "answer_places": {
+                "incident number": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "2": {
+            "name": "Name of Other Railroad or Other Entity Filing for Equipment Involved in Train Accident/Incident",
+            "answer_places": {
+                "other entity name": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "2a": {
+            "name": "Alphabetic Code",
+            "answer_places": {
+                "alphabetic code": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "2b": {
+            "name": "Railroad Accident/Incident No.",
+            "answer_places": {
+                "incident number": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "3": {
+            "name": "Name of Railroad or Other Entity Responsible for Track Maintenance",
+            "answer_places": {
+                "maintenance entity name": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "3a": {
+            "name": "Alphabetic Code",
+            "answer_places": {
+                "alphabetic code": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "3b": {
+            "name": "Railroad Accident/Incident No.",
+            "answer_places": {
+                "incident number": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "4": {
+            "name": "U.S. DOT Grade Crossing Identification Number",
+            "answer_places": {
+                "crossing ID": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "5": {
+            "name": "Date of Accident/Incident",
+            "answer_places": {
+                "month": {
+                    "answer_type": "digit"
+                },
+                "day": {
+                    "answer_type": "digit"
+                },
+                "year": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "6": {
+            "name": "Time of Accident/Incident",
+            "answer_places": {
+                "time": {
+                    "answer_type": "free-text"
+                },
+                "am_pm": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "AM": "AM",
+                        "PM": "PM"
+                    }
+                }
+            }
+        },
+        "7": {
+            "name": "Nearest Railroad Station",
+            "answer_places": {
+                "railroad station": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "8": {
+            "name": "Subdivision",
+            "answer_places": {
+                "subdivision": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "9": {
+            "name": "County",
+            "answer_places": {
+                "county": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "10": {
+            "name": "State",
+            "answer_places": {
+                "state abbreviation": {
+                    "answer_type": "free-text"
+                },
+                "state code": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "11": {
+            "name": "City (if in a city)",
+            "answer_places": {
+                "city": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "12": {
+            "name": "Highway Name or Number",
+            "answer_places": {
+                "highway name/number": {
+                    "answer_type": "free-text"
+                },
+                "ownership": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "Public": "Public",
+                        "Private": "Private"
+                    }
+                }
+            }
+        },
+        "13": {
+            "name": "Type of Highway User Involved",
+            "answer_places": {
+                "type code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "A": "Auto",
+                        "B": "Truck",
+                        "C": "Truck-trailer",
+                        "D": "Pick-up truck",
+                        "E": "Van",
+                        "F": "Bus",
+                        "G": "School bus",
+                        "H": "Motorcycle",
+                        "I": "Pedestrian",
+                        "J": "Other motor vehicle",
+                        "K": "Other"
+                    }
+                },
+                "other specify": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "14": {
+            "name": "Vehicle Speed (est. mph at impact)",
+            "answer_places": {
+                "speed": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "15": {
+            "name": "Direction (geographical)",
+            "answer_places": {
+                "direction": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "North",
+                        "2": "South",
+                        "3": "East",
+                        "4": "West"
+                    }
+                }
+            }
+        },
+        "16": {
+            "name": "Position of Highway User",
+            "answer_places": {
+                "position": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Stalled or stuck on crossing",
+                        "2": "Stopped on crossing",
+                        "3": "Moving over crossing",
+                        "4": "Trapped on crossing by traffic",
+                        "5": "Blocked on crossing by gates"
+                    }
+                }
+            }
+        },
+        "17": {
+            "name": "Rail Equipment Involved \u2013 Equipment",
+            "answer_places": {
+                "equipment numeric code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Train (units pulling)",
+                        "2": "Train (units pushing)",
+                        "3": "Train (standing)",
+                        "4": "Car(s) (moving)",
+                        "5": "Car(s) (standing)",
+                        "6": "Light loco(s) (moving)",
+                        "7": "Light loco(s) (standing)",
+                        "8": "Other"
+                    }
+                },
+                "equipment other specify": {
+                    "answer_type": "free-text"
+                },
+                "equipment letter code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "A": "Train pulling \u2013 RCL",
+                        "B": "Train pushing \u2013 RCL",
+                        "C": "Train standing \u2013 RCL",
+                        "D": "EMU Locomotive(s)",
+                        "E": "DMU Locomotive(s)"
+                    }
+                }
+            }
+        },
+        "18": {
+            "name": "Position of Car Unit in Train",
+            "answer_places": {
+                "car unit position": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "19": {
+            "name": "Circumstance",
+            "answer_places": {
+                "circumstance": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Rail equipment struck highway user",
+                        "2": "Rail equipment struck by highway user"
+                    }
+                }
+            }
+        },
+        "20a": {
+            "name": "Was highway user and/or rail equipment involved transporting hazardous materials?",
+            "answer_places": {
+                "hazmat involvement": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Highway user",
+                        "2": "Rail equipment",
+                        "3": "Both",
+                        "4": "Neither"
+                    }
+                }
+            }
+        },
+        "20b": {
+            "name": "Was there a hazardous materials release by",
+            "answer_places": {
+                "hazmat release by": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Highway user",
+                        "2": "Rail equipment",
+                        "3": "Both",
+                        "4": "Neither"
+                    }
+                }
+            }
+        },
+        "20c": {
+            "name": "Name and quantity of hazardous material released",
+            "answer_places": {
+                "hazmat details": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "21": {
+            "name": "Temperature (Specify if minus) \u00b0F",
+            "answer_places": {
+                "temperature": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "22": {
+            "name": "Visibility",
+            "answer_places": {
+                "visibility": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "23": {
+            "name": "Weather",
+            "answer_places": {
+                "weather": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Clear",
+                        "2": "Cloudy",
+                        "3": "Rain",
+                        "4": "Fog",
+                        "5": "Sleet",
+                        "6": "Snow"
+                    }
+                }
+            }
+        },
+        "24": {
+            "name": "Type of Equipment Consist",
+            "answer_places": {
+                "consist type": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Freight Train",
+                        "2": "Passenger Train-Pulling",
+                        "3": "Commuter Train-Pulling",
+                        "4": "Work train",
+                        "5": "Single Car",
+                        "6": "Cut of cars",
+                        "7": "Yard/switching",
+                        "8": "Light loco(s)",
+                        "9": "Maint/inspect Car",
+                        "A": "Spec. Mov. Equip.",
+                        "B": "Passenger Train-Pushing",
+                        "C": "Commuter Train-Pushing",
+                        "D": "EMU",
+                        "E": "DMU"
+                    }
+                }
+            }
+        },
+        "25": {
+            "name": "Track Type Used by Rail Equipment Involved",
+            "answer_places": {
+                "track type": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Main",
+                        "2": "Yard",
+                        "3": "Siding",
+                        "4": "Industry"
+                    }
+                }
+            }
+        },
+        "26": {
+            "name": "Track Number or Name",
+            "answer_places": {
+                "track number/name": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "27": {
+            "name": "FRA Track Class",
+            "answer_places": {
+                "track class": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Class 1",
+                        "2": "Class 2",
+                        "3": "Class 3",
+                        "4": "Class 4",
+                        "5": "Class 5",
+                        "6": "Class 6",
+                        "7": "Class 7",
+                        "8": "Class 8",
+                        "9": "Class 9",
+                        "X": "Exception"
+                    }
+                }
+            }
+        },
+        "28": {
+            "name": "Number of Locomotive Units",
+            "answer_places": {
+                "locomotive units": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "29": {
+            "name": "Number of Cars",
+            "answer_places": {
+                "number of cars": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "30": {
+            "name": "Consist Speed",
+            "answer_places": {
+                "speed (MPH)": {
+                    "answer_type": "digit"
+                },
+                "speed type": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "R": "Recorded",
+                        "E": "Estimated"
+                    }
+                }
+            }
+        },
+        "31": {
+            "name": "Time Table Direction",
+            "answer_places": {
+                "timetable direction": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "North",
+                        "2": "South",
+                        "3": "East",
+                        "4": "West"
+                    }
+                }
+            }
+        },
+        "32": {
+            "name": "Type of Crossing Warning",
+            "answer_places": {
+                "warning types": {
+                    "answer_type": "multiple choice",
+                    "choices": {
+                        "1": "Gates",
+                        "2": "Cantilever FLS",
+                        "3": "Standard FLS",
+                        "4": "Wig wags",
+                        "5": "Hwy. traffic signals",
+                        "6": "Audible",
+                        "7": "Crossbucks",
+                        "8": "Stop signs",
+                        "9": "Watchman",
+                        "10": "Flagged by crew",
+                        "11": "Other",
+                        "12": "None"
+                    }
+                },
+                "other specify": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "33": {
+            "name": "Signaled Crossing Warning",
+            "answer_places": {
+                "warning codes": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "34": {
+            "name": "Roadway Conditions",
+            "answer_places": {
+                "roadway condition": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "A": "Dry",
+                        "B": "Wet",
+                        "C": "Snow/slush",
+                        "D": "Ice",
+                        "E": "Sand, Mud, Dirt, Oil, Gravel",
+                        "F": "Water (Standing, Moving)"
+                    }
+                }
+            }
+        },
+        "35": {
+            "name": "Location of Warning",
+            "answer_places": {
+                "warning location": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Both sides",
+                        "2": "Side of vehicle approach",
+                        "3": "Opposite side of vehicle approach"
+                    }
+                }
+            }
+        },
+        "36": {
+            "name": "Crossing Warning Interconnected with Highway Signals",
+            "answer_places": {
+                "interconnected": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No",
+                        "3": "Unknown"
+                    }
+                }
+            }
+        },
+        "37": {
+            "name": "Crossing Illuminated by Street Lights or Special Lights",
+            "answer_places": {
+                "illuminated": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No",
+                        "3": "Unknown"
+                    }
+                }
+            }
+        },
+        "38": {
+            "name": "Highway User's Age",
+            "answer_places": {
+                "age": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "39": {
+            "name": "Highway User's Gender",
+            "answer_places": {
+                "gender": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Male",
+                        "2": "Female"
+                    }
+                }
+            }
+        },
+        "40": {
+            "name": "Highway User Went Behind or in Front of Train and Struck or was Struck by Second Train",
+            "answer_places": {
+                "second train involvement": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No",
+                        "3": "Unknown"
+                    }
+                }
+            }
+        },
+        "41": {
+            "name": "Highway User Action",
+            "answer_places": {
+                "action code": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Around the gate",
+                        "2": "Stopped and then proceeded",
+                        "3": "Did not stop",
+                        "4": "Stopped on crossing",
+                        "5": "Other",
+                        "6": "Went around/new temporary barricade",
+                        "7": "Went through the gate",
+                        "8": "Suicide/Attempted suicide"
+                    }
+                },
+                "other specify": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "42": {
+            "name": "Driver Passed Standing Highway Vehicle",
+            "answer_places": {
+                "passed standing vehicle": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No",
+                        "3": "Unknown"
+                    }
+                }
+            }
+        },
+        "43": {
+            "name": "View of Track Obscured by (primary obstruction)",
+            "answer_places": {
+                "obstruction": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Permanent structure",
+                        "2": "Standing railroad equipment",
+                        "3": "Passing train",
+                        "4": "Topography",
+                        "5": "Vegetation",
+                        "6": "Highway vehicles",
+                        "7": "Other",
+                        "8": "Not obstructed"
+                    }
+                },
+                "other specify": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "44": {
+            "name": "Driver was",
+            "answer_places": {
+                "driver status": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Killed",
+                        "2": "Injured",
+                        "3": "Uninjured"
+                    }
+                }
+            }
+        },
+        "45": {
+            "name": "Was Driver in the Vehicle?",
+            "answer_places": {
+                "in vehicle": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No"
+                    }
+                }
+            }
+        },
+        "46": {
+            "name": "Highway-Rail Crossing Users (casualties)",
+            "answer_places": {
+                "killed": {
+                    "answer_type": "digit"
+                },
+                "injured": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "47": {
+            "name": "Highway Vehicle Property Damage (est. dollar damage)",
+            "answer_places": {
+                "damage": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "48": {
+            "name": "Total Number of Vehicle Occupants (including driver)",
+            "answer_places": {
+                "occupants": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "49": {
+            "name": "Railroad Employees (casualties)",
+            "answer_places": {
+                "killed": {
+                    "answer_type": "digit"
+                },
+                "injured": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "50": {
+            "name": "Total Number of People on Train",
+            "answer_places": {
+                "people on train": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "51": {
+            "name": "Is a Rail Equipment Accident/Incident Report Being Filed?",
+            "answer_places": {
+                "being filed": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "1": "Yes",
+                        "2": "No"
+                    }
+                }
+            }
+        },
+        "52": {
+            "name": "Passengers on Train (casualties)",
+            "answer_places": {
+                "killed": {
+                    "answer_type": "digit"
+                },
+                "injured": {
+                    "answer_type": "digit"
+                }
+            }
+        },
+        "53a": {
+            "name": "Special Study Block \u2013 Video Taken/Used",
+            "answer_places": {
+                "video taken": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "Yes": "Yes",
+                        "No": "No"
+                    }
+                },
+                "video used": {
+                    "answer_type": "single choice",
+                    "choices": {
+                        "Yes": "Yes",
+                        "No": "No"
+                    }
+                }
+            }
+        },
+        "53b": {
+            "name": "Special Study Block",
+            "answer_places": {
+                "block details": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "54": {
+            "name": "Narrative Description",
+            "answer_places": {
+                "narrative": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "55": {
+            "name": "Typed Name & Title",
+            "answer_places": {
+                "name & title": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "56": {
+            "name": "Signature",
+            "answer_places": {
+                "signature": {
+                    "answer_type": "free-text"
+                }
+            }
+        },
+        "57": {
+            "name": "Date",
+            "answer_places": {
+                "date": {
+                    "answer_type": "free-text"
+                }
+            }
+        }
+    }
+]

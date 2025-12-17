@@ -21,9 +21,9 @@ def random_idx():
 DIR_DATA_ROOT = 'data'
 DIR_JSON = os.path.join(DIR_DATA_ROOT, 'json')
 # DIR_CONV_MODEL = os.path.join(DIR_JSON, 'img_OpenAI_o4-mini_4')
-DIR_CONV_MODEL = os.path.join(DIR_JSON, 'None_None_None_0')
+DIR_CONV_MODEL = os.path.join(DIR_JSON, 'img_Huggingface_Qwen--Qwen3-VL-32B-Instruct_4/1')
 DIR_RESULT = os.path.join(DIR_CONV_MODEL, 'result')
-DIR_RETR_MODEL = os.path.join(DIR_RESULT, 'OpenAI_o4-mini_1_all')
+DIR_RETR_MODEL = os.path.join(DIR_RESULT, 'group_Huggingface_microsoft--phi-4_1')
 
 path_form57_csv = os.path.join(DIR_DATA_ROOT, '250821 Highway-Rail Grade Crossing Incident Data (Form 57).csv')
 path_form57_img = os.path.join(DIR_DATA_ROOT, 'FRA F 6180.57 (Form 57) form only.jpg')
@@ -36,7 +36,7 @@ path_form57_json = os.path.join(DIR_CONV_MODEL, 'form57.json')
 path_dict_answer_places = os.path.join(DIR_CONV_MODEL, 'dict_answer_places.jsonc')
 path_dict_idx_mapping = os.path.join(DIR_CONV_MODEL, 'dict_idx_mapping.jsonc')
 
-path_df_form57_retrieval = os.path.join(DIR_RETR_MODEL, 'df_form57_retrieval.csv')
+path_df_form57_retrieval = os.path.join(DIR_RETR_MODEL, 'df_retrieval.csv')
 
 with open(path_dict_col_indexing, 'r') as f:
     dict_col_indexing = json5.load(f)
@@ -92,7 +92,7 @@ if st.session_state.idx:
 
         st.write(news_content)
     with col_df:
-        df_check = pd.DataFrame(sr_annotate)
+        df_check = pd.DataFrame(sr_annotate.iloc[3:])
         df_check['name'] = df_check.rename(index=dict_col_indexing).index
         df_check['checkbox'] = False
         # mask_empty = (df_check[0].str.lower() == 'unknown') | df_check[0].isna() | (df_check[0] == '')
@@ -109,12 +109,13 @@ if st.session_state.idx:
                 "name": st.column_config.TextColumn(required=True),
                 "checkbox": st.column_config.CheckboxColumn(),
             },
-            height=750,
+            height=500,
+            width=300,
         )
         # df_edited = st.data_editor(df_check, height=800)
 
         if st.button("Next", type="primary", help="Commit the edits and save to disk"):
-            st.session_state.df_annotate.iloc[st.session_state.idx, 3:] = df_edited['checkbox'][3:]
+            st.session_state.df_annotate.iloc[st.session_state.idx, 3:] = df_edited['checkbox']
 
             st.session_state.df_annotate.to_csv(path_df_annotate, index=False)
 
