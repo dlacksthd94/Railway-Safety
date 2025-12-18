@@ -1,10 +1,10 @@
 {
-    "Reporting Information": [
+    "Reporting Details": [
         "1",
         "2",
         "3"
     ],
-    "Accident/Incident Details": [
+    "Accident/Incident Identification": [
         "4",
         "5",
         "6"
@@ -58,7 +58,9 @@
     "Highway User Details": [
         "38",
         "39",
-        "40",
+        "40"
+    ],
+    "Driver and Vehicle Details": [
         "41",
         "42",
         "43",
@@ -68,18 +70,22 @@
     "Casualties and Damage": [
         "46",
         "47",
-        "48",
+        "48"
+    ],
+    "Railroad Employee Details": [
         "49",
-        "50",
+        "50"
+    ],
+    "Additional Details": [
         "51",
         "52"
     ],
-    "Special Study and Narrative": [
+    "Special Study Block": [
         "53a",
-        "53b",
-        "54"
+        "53b"
     ],
-    "Form Completion": [
+    "Narrative and Signatures": [
+        "54",
         "55",
         "56",
         "57"

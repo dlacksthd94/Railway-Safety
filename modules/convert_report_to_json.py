@@ -666,7 +666,7 @@ def img_to_json(cfg):
 
         quant_config = dict_model_config[model_path]
         generation_config_base = {'max_new_tokens': 8192}
-        generation_config_sample = {**generation_config_base, 'do_sample': True}#, 'temperature': 1, 'top_p': 0.95} # sample or beam sample
+        generation_config_sample = {'generate_kwargs': {**generation_config_base, 'do_sample': True, 'top_p': 0.8, 'temperature': 0.7, 'top_k': 20}} # sample or beam sample
         generation_config_search = {**generation_config_base, 'do_sample': False} # greedy search or beam search
 
         pipe = pipeline(model=model_path, device_map='auto', model_kwargs=quant_config) # type: ignore

@@ -125,4 +125,5 @@ else:
     st.warning('All samples have been annotated!')
 
 # df = pd.read_csv(path_form57_csv)
+# (df[df['Highway User Code'] == 'K']['User Struck By Second Train'].unique())
 # pprint(df[df['Report Key'] == 'SCRT03082023202303'].to_dict(), indent=4, sort_dicts=False)

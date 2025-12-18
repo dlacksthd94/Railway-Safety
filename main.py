@@ -29,50 +29,50 @@ dict_form57, dict_form57_group = convert_to_json(cfg)
 print('------------Conversion DONE!!------------')
 
 
-############### extract keywords
-df_retrieval = extract_keywords(cfg)
-print('------------Retrieval DONE!!------------')
+# ############### extract keywords
+# df_retrieval = extract_keywords(cfg)
+# print('------------Retrieval DONE!!------------')
 
 
-############### match samples manually by running following command in terminal (ONLY ONE-TIME TASK FOR EVALUATION)
-# streamlit run match_record_news.py
-assert os.path.exists(cfg.path.df_match)
-print('------------Matching DONE!!------------')
+# ############### match samples manually by running following command in terminal (ONLY ONE-TIME TASK FOR EVALUATION)
+# # streamlit run match_record_news.py
+# assert os.path.exists(cfg.path.df_match)
+# print('------------Matching DONE!!------------')
 
 
-############### annotate samples manually by running following command in terminal (ONLY ONE-TIME TASK FOR EVALUATION)
-# streamlit run annotate_news.py
-assert os.path.exists(cfg.path.df_annotate)
-print('------------Annotating DONE!!------------')
+# ############### annotate samples manually by running following command in terminal (ONLY ONE-TIME TASK FOR EVALUATION)
+# # streamlit run annotate_news.py
+# assert os.path.exists(cfg.path.df_annotate)
+# print('------------Annotating DONE!!------------')
 
 
-############### merge news-record pair and retrieval results
-df_record_retrieval = merge_record_retrieval(cfg)
-print('------------Merging DONE!!------------')
+# ############### merge news-record pair and retrieval results
+# df_record_retrieval = merge_record_retrieval(cfg)
+# print('------------Merging DONE!!------------')
 
 
-# ############### calculate the accuracy and coverage
-# assert os.path.exists(cfg.path.dict_idx_mapping), "Must map index names shared accross the models with form transcription manually"
+# # ############### calculate the accuracy and coverage
+# # assert os.path.exists(cfg.path.dict_idx_mapping), "Must map index names shared accross the models with form transcription manually"
 
-# list_answer_type_selected = ['digit', 'text', 'choice']
-# df_acc, acc = get_acc_table(list_answer_type_selected, cfg)
-# print(f'ACCURACY\n{" + ".join(list_answer_type_selected)}:\t', acc)
+# # list_answer_type_selected = ['digit', 'text', 'choice']
+# # df_acc, acc = get_acc_table(list_answer_type_selected, cfg)
+# # print(f'ACCURACY\n{" + ".join(list_answer_type_selected)}:\t', acc)
 
-# list_answer_type_selected = ['digit', 'text', 'choice']
-# df_cov, cov = get_cov_table(list_answer_type_selected, cfg)
-# print(f'COVERAGE\n{" + ".join(list_answer_type_selected)}:\t', cov)
+# # list_answer_type_selected = ['digit', 'text', 'choice']
+# # df_cov, cov = get_cov_table(list_answer_type_selected, cfg)
+# # print(f'COVERAGE\n{" + ".join(list_answer_type_selected)}:\t', cov)
 
-# print('------------Metrics DONE!!------------')
-
-
-# ############### scrape crossing images from mapillary (ONLY ONE-TIME TASK FOR EVALUATION)
-# df_image = scrape_image(cfg)
-# df_image_seq = scrape_image_seq(cfg)
-# print('------------Scraping Images DONE!!------------')
+# # print('------------Metrics DONE!!------------')
 
 
-# # ############### merge retrieval-record
-# df_rci = merge_news_image(cfg)
+# # ############### scrape crossing images from mapillary (ONLY ONE-TIME TASK FOR EVALUATION)
+# # df_image = scrape_image(cfg)
+# # df_image_seq = scrape_image_seq(cfg)
+# # print('------------Scraping Images DONE!!------------')
 
-print('###########################################################################')
-print('###########################################################################')
+
+# # # ############### merge retrieval-record
+# # df_rci = merge_news_image(cfg)
+
+# print('###########################################################################')
+# print('###########################################################################')
