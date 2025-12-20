@@ -23,7 +23,7 @@ pip install pandas json5 scikit-learn
 pip install feedparser requests # for Google RSS
 pip install selenium newspaper3k lxml_html_clean trafilatura readability-lxml goose3 # for scraping news articles
 pip install streamlit
-pip install openai pytesseract # for transcribing report form in json format
+pip install openai pytesseract google-genai # for transcribing report form in json format
 pip install transformers accelerate bitsandbytes torchvision # for labeling news & populating the report form
 pip install sentencepiece # for running VLMs from Hugging Face
 pip install py360convert # for extracting a perspective image from an equirectangular image

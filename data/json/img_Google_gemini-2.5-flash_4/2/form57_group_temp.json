@@ -1,0 +1,382 @@
+[
+    {
+        "Accident Identification & Reporting Entities": [
+            "1",
+            "1a",
+            "1b",
+            "2",
+            "2a",
+            "2b",
+            "3",
+            "3a",
+            "3b",
+            "4"
+        ],
+        "Accident Date & Time": [
+            "5",
+            "6"
+        ],
+        "Accident Location Details": [
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12"
+        ],
+        "Highway User Details": [
+            "13",
+            "14",
+            "15",
+            "16"
+        ],
+        "Rail Equipment Details": [
+            "17",
+            "18"
+        ],
+        "Accident Event & Hazardous Materials": [
+            "19",
+            "20a",
+            "20b",
+            "20c"
+        ],
+        "Environmental Conditions": [
+            "21",
+            "22",
+            "23"
+        ],
+        "Rail Consist & Track Information": [
+            "24",
+            "25",
+            "26",
+            "27",
+            "28",
+            "29",
+            "30",
+            "31"
+        ],
+        "Crossing Warning Systems": [
+            "32",
+            "33",
+            "35",
+            "36",
+            "37"
+        ],
+        "Roadway Conditions": [
+            "34"
+        ],
+        "Highway User Actions & Obstructions": [
+            "38",
+            "39",
+            "40",
+            "41",
+            "42",
+            "43"
+        ],
+        "Driver Status": [
+            "44",
+            "45"
+        ],
+        "Casualties and Damages Summary": [
+            "46",
+            "47",
+            "48",
+            "49",
+            "50",
+            "51",
+            "52"
+        ],
+        "Special Study & Narrative Report": [
+            "53a",
+            "53b",
+            "54"
+        ],
+        "Report Submission": [
+            "55",
+            "56",
+            "57"
+        ]
+    },
+    {
+        "Reporting Entities & IDs": [
+            "1",
+            "1a",
+            "1b",
+            "2",
+            "2a",
+            "2b",
+            "3",
+            "3a",
+            "3b"
+        ],
+        "Accident Location & Time": [
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12"
+        ],
+        "Highway User Information & Hazardous Materials": [
+            "13",
+            "14",
+            "15",
+            "16",
+            "20a",
+            "20b",
+            "20c"
+        ],
+        "Rail Equipment Involved Details": [
+            "17",
+            "18",
+            "19"
+        ],
+        "Environmental Conditions": [
+            "21",
+            "22",
+            "23"
+        ],
+        "Train & Track Characteristics": [
+            "24",
+            "25",
+            "26",
+            "27",
+            "28",
+            "29",
+            "30",
+            "31"
+        ],
+        "Crossing Warning & Roadway Conditions": [
+            "32",
+            "33",
+            "34",
+            "35",
+            "36",
+            "37"
+        ],
+        "Highway User/Driver Actions & Obstructions": [
+            "38",
+            "39",
+            "40",
+            "41",
+            "42",
+            "43",
+            "44",
+            "45"
+        ],
+        "Casualty & Damage Summary": [
+            "46",
+            "47",
+            "48",
+            "49",
+            "50",
+            "51",
+            "52"
+        ],
+        "Special Study & Narrative": [
+            "53a",
+            "53b",
+            "54"
+        ],
+        "Report Certification": [
+            "55",
+            "56",
+            "57"
+        ]
+    },
+    {
+        "Reporting and Involved Railroads": [
+            "1",
+            "1a",
+            "1b",
+            "2",
+            "2a",
+            "2b",
+            "3",
+            "3a",
+            "3b"
+        ],
+        "Accident Identification and Time": [
+            "4",
+            "5",
+            "6"
+        ],
+        "Accident Location": [
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12"
+        ],
+        "Highway User Details": [
+            "13",
+            "14",
+            "15",
+            "16"
+        ],
+        "Rail Equipment Details": [
+            "17",
+            "18",
+            "19"
+        ],
+        "Hazardous Materials Information": [
+            "20a",
+            "20b",
+            "20c"
+        ],
+        "Environmental Conditions": [
+            "21",
+            "22",
+            "23"
+        ],
+        "Rail Consist and Track Data": [
+            "24",
+            "25",
+            "26",
+            "27",
+            "28",
+            "29",
+            "30",
+            "31"
+        ],
+        "Crossing Warning System": [
+            "32",
+            "33",
+            "35",
+            "36",
+            "37"
+        ],
+        "Crossing Environmental Factors": [
+            "34"
+        ],
+        "Highway User Demographics and Actions": [
+            "38",
+            "39",
+            "40",
+            "41",
+            "42"
+        ],
+        "View Obstruction": [
+            "43"
+        ],
+        "Casualties and Property Damage": [
+            "44",
+            "45",
+            "46",
+            "47",
+            "48",
+            "49",
+            "50",
+            "52"
+        ],
+        "Related Reporting Status": [
+            "51"
+        ],
+        "Special Study Data": [
+            "53a",
+            "53b"
+        ],
+        "Report Finalization": [
+            "54",
+            "55",
+            "56",
+            "57"
+        ]
+    },
+    {
+        "Railroad & Accident Identification": [
+            "1",
+            "1a",
+            "1b",
+            "2",
+            "2a",
+            "2b",
+            "3",
+            "3a",
+            "3b",
+            "4",
+            "5",
+            "6"
+        ],
+        "Accident Location & Highway Details": [
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12"
+        ],
+        "Highway User Involved Details": [
+            "13",
+            "14",
+            "15",
+            "16"
+        ],
+        "Rail Equipment Involved Details": [
+            "17",
+            "18"
+        ],
+        "Incident Circumstances & Hazardous Materials": [
+            "19",
+            "20a",
+            "20b",
+            "20c"
+        ],
+        "Environmental & Roadway Conditions": [
+            "21",
+            "22",
+            "23",
+            "34"
+        ],
+        "Train Movement & Characteristics": [
+            "24",
+            "25",
+            "26",
+            "27",
+            "28",
+            "29",
+            "30",
+            "31"
+        ],
+        "Crossing Warning & Illumination Systems": [
+            "32",
+            "33",
+            "35",
+            "36",
+            "37"
+        ],
+        "Highway User Demographics & Actions at Crossing": [
+            "38",
+            "39",
+            "40",
+            "41",
+            "42",
+            "43"
+        ],
+        "Casualties, Damages, and Related Reports": [
+            "44",
+            "45",
+            "46",
+            "47",
+            "48",
+            "49",
+            "50",
+            "51",
+            "52"
+        ],
+        "Special Study Block": [
+            "53a",
+            "53b"
+        ],
+        "Reporting Narrative and Official Endorsement": [
+            "54",
+            "55",
+            "56",
+            "57"
+        ]
+    }
+]

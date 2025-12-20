@@ -7,7 +7,7 @@ import pandas as pd
 from PIL import Image
 import PIL
 from .utils import (Timer, desanitize_model_path,
-                    parse_json_from_output, generate_openai, generate_hf, select_generate_func, 
+                    parse_json_from_output, select_generate_func, 
                     prepare_df_record, prepare_dict_form57, prepare_dict_form57_group)
 from typing import Any
 
@@ -822,6 +822,65 @@ def img_to_json(cfg):
                 {"type": "input_text", "text": json_to_str(dict_form57)},
                 {"type": "input_text", "text": json_to_str(list_dict_form57_group_temp)}
             ]
+            list_dict_form57_group = group_entries(api, client, model_path, content, n_generate=1, generation_config=None)
+            dict_form57_group = list_dict_form57_group[0]
+
+            with open(cfg.path.form57_json_group, 'w') as f:
+                json.dump(dict_form57_group, f, indent=4)
+    
+    elif api == 'Google':
+        from google import genai
+
+        client = genai.Client(api_key=cfg.apikey.google)
+
+        ############ transcribe
+        path_form57_json_temp = cfg.path.form57_json.replace('.json', '') + '_temp.json'
+        
+        if os.path.exists(path_form57_json_temp):
+            with open(path_form57_json_temp, 'r') as f:
+                list_dict_form57_temp = json.load(f)
+
+        else:
+            ############ transcribe the form N times
+            content = [image, PROMPT_DICT_FORM57_TEMP]
+            list_dict_form57_temp = transcribe_entries(api, client, model_path, content, n_generate, generation_config=None)
+
+            with open(path_form57_json_temp, 'w') as f:
+                json.dump(list_dict_form57_temp, f, indent=4)
+            
+        if os.path.exists(cfg.path.form57_json):
+            dict_form57 = prepare_dict_form57(cfg)
+            
+        else:
+            ############ merge the transcripts into one
+            content = [image, PROMPT_DICT_FORM57 + '\n\n' + json_to_str(list_dict_form57_temp)]
+            list_dict_form57 = transcribe_entries(api, client, model_path, content, n_generate=1, generation_config=None)
+            dict_form57 = list_dict_form57[0]
+            
+            with open(cfg.path.form57_json, 'w') as f:
+                json.dump(dict_form57, f, indent=4)
+        
+        ############ group the entries
+        path_form57_json_group_temp = cfg.path.form57_json_group.replace('.json', '') + '_temp.json'
+
+        if os.path.exists(path_form57_json_group_temp):
+            with open(path_form57_json_group_temp, 'r') as f:
+                list_dict_form57_group_temp = json.load(f)
+                
+        else:
+            ############ group the entries N times
+            content = [image, PROMPT_DICT_FORM57_GROUP_TEMP + '\n\n' + json_to_str(dict_form57)]
+            list_dict_form57_group_temp = group_entries(api, client, model_path, content, n_generate, generation_config=None)
+
+            with open(path_form57_json_group_temp, 'w') as f:
+                json.dump(list_dict_form57_group_temp, f, indent=4)
+        
+        if os.path.exists(cfg.path.form57_json_group):
+            dict_form57_group = prepare_dict_form57_group(cfg)
+        
+        else:
+            ############ merge groupings into one
+            content = [image, PROMPT_DICT_FORM57_GROUP + '\n\n' + json_to_str(dict_form57) + '\n\n' + json_to_str(list_dict_form57_group_temp)]
             list_dict_form57_group = group_entries(api, client, model_path, content, n_generate=1, generation_config=None)
             dict_form57_group = list_dict_form57_group[0]
 

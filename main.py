@@ -24,14 +24,14 @@ print('------------Configuration DONE!!------------')
 # print('------------Filtering DONE!!------------')
 
 
-# ############### convert to json
-# dict_form57, dict_form57_group = convert_to_json(cfg)
-# print('------------Conversion DONE!!------------')
+############### convert to json
+dict_form57, dict_form57_group = convert_to_json(cfg)
+print('------------Conversion DONE!!------------')
 
 
-# ############### extract keywords
-# df_retrieval = extract_keywords(cfg)
-# print('------------Retrieval DONE!!------------')
+############### extract keywords
+df_retrieval = extract_keywords(cfg)
+print('------------Retrieval DONE!!------------')
 
 
 ############### match samples manually by running following command in terminal (ONLY ONE-TIME TASK FOR EVALUATION)

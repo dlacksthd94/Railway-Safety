@@ -61,6 +61,7 @@ CONVERSION_API_MODEL_CHOICES: Final[dict[str, list[str]]] = {
     'AWS_Textract': ['textract'],
     'Azure_FormRecognizer': ['form_recognizer'],
     "OpenAI": ["o4-mini"],
+    "Google": ["gemini-2.5-flash"],
     "Huggingface": ["Qwen/Qwen2.5-VL-72B-Instruct",
                     "Qwen/Qwen3-VL-32B-Instruct",
                     "OpenGVLab/InternVL3_5-38B-HF",
@@ -274,6 +275,7 @@ class PathConfig:
 @dataclass()
 class APIkeyConfig:
     openai: str
+    google: str
     textract: str
     mapillary: str
 

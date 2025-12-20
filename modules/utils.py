@@ -46,11 +46,21 @@ def generate_hf(pipe, model_path, content, generation_config={}):
     output = response[0]['generated_text']
     return output
 
+def generate_google(client, model_path, content, generation_config=None):
+    response = client.models.generate_content(
+        model=model_path,
+        contents=content,
+    )
+    output = response.text
+    return output
+
 def select_generate_func(api):
     if api == 'OpenAI':
         generate_func = generate_openai
     elif api == 'Huggingface':
         generate_func = generate_hf
+    elif api == 'Google':
+        generate_func = generate_google
     else:
         raise ValueError(f"Unsupported API: {api}")
     return generate_func
