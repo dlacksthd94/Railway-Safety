@@ -80,53 +80,56 @@ def get_acc_table(list_answer_type_selected, cfg):
         list_score_temp = []
         for col_idx_form, col_idx_json in dict_idx_mapping_cleaned.items():
             col_name = dict_col_indexing[col_idx_form]
-            retrieval = row_match.loc[col_idx_json]
-            label = row_csv.loc[col_name]
-            if isinstance(retrieval, str):
-                retrieval = retrieval.strip('\'"').strip()
-            acc_temp = np.nan
-            if not (isinstance(retrieval, str) and retrieval.lower() == 'unknown') and pd.notna(retrieval) and pd.notna(label):
-                if col_idx_form in dict_idx_answer_type['text']:
-                    dict_answer_choice = {'YES': True, 'NO': False}
-                    context = f"ground-truth label: {label.lower()}\ninference output: {retrieval.lower()}"
-                    if col_name == 'Time':
-                        question = f"Is the inferred time within a tolerance of ±1 hour of the ground-truth time, disregarding AM/PM? Answer only { '/'.join(dict_answer_choice) }."
-                    elif col_name == 'Highway Name':
-                        question = f"Do any of the inferred highway names fuzzy-match the ground-truth highway names? Answer only { '/'.join(dict_answer_choice) }." # 10
+            if col_idx_json not in row_match.index:
+                acc_temp = np.nan
+            else:
+                retrieval = row_match.loc[col_idx_json]
+                label = row_csv.loc[col_name]
+                if isinstance(retrieval, str):
+                    retrieval = retrieval.strip('\'"').strip()
+                acc_temp = np.nan
+                if not (isinstance(retrieval, str) and retrieval.lower() == 'unknown') and pd.notna(retrieval) and pd.notna(label):
+                    if col_idx_form in dict_idx_answer_type['text']:
+                        dict_answer_choice = {'YES': True, 'NO': False}
+                        context = f"ground-truth label: {label.lower()}\ninference output: {retrieval.lower()}"
+                        if col_name == 'Time':
+                            question = f"Is the inferred time within a tolerance of ±1 hour of the ground-truth time, disregarding AM/PM? Answer only { '/'.join(dict_answer_choice) }."
+                        elif col_name == 'Highway Name':
+                            question = f"Do any of the inferred highway names fuzzy-match the ground-truth highway names? Answer only { '/'.join(dict_answer_choice) }." # 10
+                        else:
+                            question = f"Does the inference output fuzzy-match the ground-truth label? Answer only {'/'.join(dict_answer_choice)}" # 23
+                        prompt = f"{context}\n\nQuestion:\n{question}\n\nAnswer:\n"
+                        acc_temp = text_binary_classification(pipe, prompt, dict_answer_choice, num_sim=1)[0]
+                    elif col_idx_form in dict_idx_answer_type['digit']:
+                        retrieval = as_float(retrieval)
+                        acc_temp = (retrieval == label)
+                        if np.issubdtype(np.array(retrieval).dtype, np.number):
+                            if col_name == 'Incident Year':
+                                if retrieval:
+                                    retrieval_dt = datetime.datetime(year=int(retrieval), month=1, day=1).strftime('%y')
+                                else:
+                                    retrieval_dt = '0'
+                                label_dt = datetime.datetime(year=int(label), month=1, day=1).strftime('%y')
+                                acc_temp = retrieval_dt == label_dt
+                            # elif col_name == 'Day':
+                            #     acc_temp = abs(retrieval - label) <= 1
+                            elif col_name in ['User Age', 'Train Speed', 'Estimated Vehicle Speed', 'Number People On Train']:
+                                acc_temp = abs(retrieval - label) <= 10
+                    elif col_idx_form in dict_idx_answer_type['choice']:
+                        choices = dict_answer_places[col_idx_json]['answer_place_info']['choices']
+                        retrieval_choie_key = retrieval.upper() if isinstance(retrieval, str) else str(int(retrieval)).upper()
+                        retrieval_choice_value = choices.get(retrieval_choie_key, '').upper()
+                        label_choice_key = label.upper() if isinstance(label, str) else str(int(label))
+                        label_choice_value = choices.get(label_choice_key, '').upper()
+                        
+                        acc_temp_by_key_key = (retrieval_choie_key == label_choice_key)
+                        acc_temp_by_key_value = (retrieval_choie_key == label_choice_value)
+                        acc_temp_by_value_key = (retrieval_choice_value == label_choice_key)
+                        acc_temp = any([acc_temp_by_key_key, acc_temp_by_key_value, acc_temp_by_value_key])
+                    elif col_idx_form in dict_idx_answer_type['etc']:
+                        pass
                     else:
-                        question = f"Does the inference output fuzzy-match the ground-truth label? Answer only {'/'.join(dict_answer_choice)}" # 23
-                    prompt = f"{context}\n\nQuestion:\n{question}\n\nAnswer:\n"
-                    acc_temp = text_binary_classification(pipe, prompt, dict_answer_choice, num_sim=1)[0]
-                elif col_idx_form in dict_idx_answer_type['digit']:
-                    retrieval = as_float(retrieval)
-                    acc_temp = (retrieval == label)
-                    if np.issubdtype(np.array(retrieval).dtype, np.number):
-                        if col_name == 'Incident Year':
-                            if retrieval:
-                                retrieval_dt = datetime.datetime(year=int(retrieval), month=1, day=1).strftime('%y')
-                            else:
-                                retrieval_dt = '0'
-                            label_dt = datetime.datetime(year=int(label), month=1, day=1).strftime('%y')
-                            acc_temp = retrieval_dt == label_dt
-                        # elif col_name == 'Day':
-                        #     acc_temp = abs(retrieval - label) <= 1
-                        elif col_name in ['User Age', 'Train Speed', 'Estimated Vehicle Speed', 'Number People On Train']:
-                            acc_temp = abs(retrieval - label) <= 10
-                elif col_idx_form in dict_idx_answer_type['choice']:
-                    choices = dict_answer_places[col_idx_json]['answer_place_info']['choices']
-                    retrieval_choie_key = retrieval.upper() if isinstance(retrieval, str) else str(int(retrieval)).upper()
-                    retrieval_choice_value = choices.get(retrieval_choie_key, '').upper()
-                    label_choice_key = label.upper() if isinstance(label, str) else str(int(label))
-                    label_choice_value = choices.get(label_choice_key, '').upper()
-                    
-                    acc_temp_by_key_key = (retrieval_choie_key == label_choice_key)
-                    acc_temp_by_key_value = (retrieval_choie_key == label_choice_value)
-                    acc_temp_by_value_key = (retrieval_choice_value == label_choice_key)
-                    acc_temp = any([acc_temp_by_key_key, acc_temp_by_key_value, acc_temp_by_value_key])
-                elif col_idx_form in dict_idx_answer_type['etc']:
-                    pass
-                else:
-                    raise BaseException(f"no col like {col_idx_form}: {col_name}")
+                        raise BaseException(f"no col like {col_idx_form}: {col_name}")
             list_score_temp.append(acc_temp)
         #     print(f'{acc_temp}\t{retrieval}=={label}\t{col_name}')
         # print('--------------------------------------------------')
@@ -180,3 +183,23 @@ def get_cov_table(list_answer_type_selected, cfg):
     cov = df_cov.iloc[:, idx_news_content + 1:].dropna(axis=1, how='all').mean().mean() # type: ignore
     
     return df_cov, cov
+
+def get_stats(df_acc, cfg):
+    idx_content = df_acc.columns.get_loc('content')
+    most_failed_cnt = (df_acc.iloc[:, idx_content + 1:] == False).sum().sort_values(ascending=False)
+    most_failed_acc = 1 - most_failed_cnt / df_acc[most_failed_cnt.index].notna().sum()
+    df_most_failed = pd.DataFrame({
+        'failed_count': most_failed_cnt,
+        'accuracy': most_failed_acc
+    })
+    print("Top 5 Most Failed Items:", df_most_failed[:5], sep="\n")
+
+    answered_cnt = (df_acc.iloc[:, idx_content + 1:].notna()).sum().sort_values(ascending=False)
+    answered_cnt = answered_cnt[answered_cnt >= 50]
+    least_acc = most_failed_acc[answered_cnt.index]
+    df_least_acc = pd.DataFrame({
+        'answered_cnt': answered_cnt,
+        'accuracy': least_acc
+    })
+    df_least_acc = df_least_acc.sort_values('accuracy')
+    print("Top 5 Least Accurate Items:", df_least_acc[:5], sep="\n")

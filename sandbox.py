@@ -293,10 +293,87 @@ generation_config_search = {**generation_config_base, 'do_sample': False} # gree
 ############### calculating transcription error rate
 
 import numpy as np
-array = np.array([5, 6, 4, 8]) # both
-array = np.array([8, 6, 7, 6]) # sample aggregation only
-array = np.array([2, 2, 3, 4]) # human-centric schema only
+array = np.array([1, 3, 3, 4]) # both
+# array = np.array([3, 6, 7, 6]) # sample aggregation only
+array = np.array([3, 3, 3, 3]) # human-centric schema only
 array.mean()
 array.std()
+
+############### calculating acc + cov
+
+import numpy as np
+
+# intern - single
+array = np.array([47.70, 45.90, 44.17, 38.33]) # acc
+array.mean()
+array.std()
+array = np.array([77.05, 79.53, 77.18, 74.64]) # cov
+array.mean()
+array.std()
+
+# intern - group
+array = np.array([55.26, 56.59, 54.53, 51.47]) # acc
+array.mean()
+array.std()
+array = np.array([81.92, 96.29, 82.38, 85.63]) # cov
+array.mean()
+array.std()
+
+# intern - all
+array = np.array([56.87, 59.47, 53.96, 53.36]) # acc
+array.mean()
+array.std()
+array = np.array([73.32, 86.01, 72.40, 73.55]) # cov
+array.mean()
+array.std()
+
+# qwen3 - single
+array = np.array([55.58, 54.68, 55.44, 56.03]) # acc
+array.mean()
+array.std()
+array = np.array([89.37, 88.80, 89.14, 88.97]) # cov
+array.mean()
+array.std()
+
+# qwen3 - group
+array = np.array([68.49, 66.82, 65.21, 67.34]) # acc
+array.mean()
+array.std()
+array = np.array([93.85, 94.24, 95.03, 95.44]) # cov
+array.mean()
+array.std()
+
+# qwen3 - all
+array = np.array([70.65, 69.33, 70.93, 72.35]) # acc
+array.mean()
+array.std()
+array = np.array([90.60, 89.99, 90.07, 91.13]) # cov
+array.mean()
+array.std()
+
+# o4 - single
+array = np.array([59.13, 55.86, 54.85, 52.34]) # acc
+array.mean()
+array.std()
+array = np.array([88.14, 91.56, 89.65, 82.37]) # cov
+array.mean()
+array.std()
+
+# o4 - group
+array = np.array([67.92, 65.50, 63.92, 61.05]) # acc
+array.mean()
+array.std()
+array = np.array([97.18, 91.61, 92.09, 77.01]) # cov
+array.mean()
+array.std()
+
+# o4 - all
+array = np.array([68.80, 69.39, 68.34, 61.25]) # acc
+array.mean()
+array.std()
+array = np.array([92.61, 86.66, 86.07, 74.87]) # cov
+array.mean()
+array.std()
+
 
 ############### mapillary API
