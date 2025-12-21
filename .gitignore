@@ -13,3 +13,4 @@ error*
 aws*
 mapillary
 dict_api_key.json
+sandbox.py

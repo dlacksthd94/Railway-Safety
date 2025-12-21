@@ -38,6 +38,8 @@ def get_acc_table(list_answer_type_selected, cfg):
         'etc': ['8', '10', '27'],
     }
     dict_idx_answer_type = {k: {idx: dict_col_indexing[idx] for idx in v} for k, v in dict_idx_answer_type.items()}
+
+    list_idx_answer_type_selected = [idx for atype in list_answer_type_selected for idx in dict_idx_answer_type[atype]]
     # elif json_source == 'csv':
     # dict_idx_answer_type = {
     #     'digit': {'15': 'Month', '16': 'Day', '3': 'Incident Year', '17': 'Hour', '18': 'Minute',
@@ -80,7 +82,7 @@ def get_acc_table(list_answer_type_selected, cfg):
         list_score_temp = []
         for col_idx_form, col_idx_json in dict_idx_mapping_cleaned.items():
             col_name = dict_col_indexing[col_idx_form]
-            if col_idx_json not in row_match.index:
+            if col_idx_json not in row_match.index or col_idx_form not in list_idx_answer_type_selected:
                 acc_temp = np.nan
             else:
                 retrieval = row_match.loc[col_idx_json]
