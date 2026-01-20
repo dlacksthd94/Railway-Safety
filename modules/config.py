@@ -1,4 +1,4 @@
-from dataclasses import dataclass, asdict, astuple
+from dataclasses import dataclass, asdict, astuple, field
 from typing import Final
 import os
 import argparse
@@ -92,7 +92,7 @@ IMG_DETAIL_FIELDS: Final[tuple[str, ...]] = (
     # "detections", # object detection - can be fetched using other API: https://www.mapillary.com/developer/api-documentation#detection
 )
 BBOX_OFFSET: Final[float] = 0.0002 # 0.00001 ≒ 1.11 meters
-N_IMG: Final[int] = int((BBOX_OFFSET * 100000) ** 2 * 3) # 3 images per 1m²
+N_IMG_PER_SQM: Final[int] = 3 # 3 images per 1m²
 
 def parse_args() -> argparse.Namespace:
     """Create an argument parser for building configs from the CLI and parse CLI args."""
@@ -199,13 +199,14 @@ class ScrapingConfig:
     start_date: str
     news_crawlers: tuple[str, ...]
 
-    n_img: int
+    n_img_per_sqm: int
+    n_img: int = field(init=False)
     img_search_fields: tuple[str, ...]
     img_detail_fields: tuple[str, ...]
     bbox_offset: float
 
     def __post_init__(self):
-        """sanity check"""
+        ### sanity check
         for state in self.target_states:
             assert state in ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District Of Columbia', 
                                      'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 
@@ -214,6 +215,9 @@ class ScrapingConfig:
                                      'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 
                                      'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
         assert bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", self.start_date))
+
+        ### declare n_img
+        object.__setattr__(self, "n_img", int((self.bbox_offset / 1.11 * 100000) ** 2 * self.n_img_per_sqm))
 
 @dataclass(frozen=True)
 class TableConfig:
@@ -372,7 +376,7 @@ def build_config(args_dict=None) -> Config:
     retr_args['model'] = sanitize_model_path(retr_args['model'])
     scrp_cfg = ScrapingConfig(
         TARGET_STATES, START_DATE, NEWS_CRAWLERS,
-        N_IMG, IMG_SEARCH_FIELDS, IMG_DETAIL_FIELDS, BBOX_OFFSET
+        N_IMG_PER_SQM, IMG_SEARCH_FIELDS, IMG_DETAIL_FIELDS, BBOX_OFFSET
     )
     conv_cfg = ConversionConfig(**conv_args)
     retr_cfg  = RetrievalConfig(**retr_args)
