@@ -93,6 +93,7 @@ IMG_DETAIL_FIELDS: Final[tuple[str, ...]] = (
 )
 BBOX_OFFSET: Final[float] = 0.0002 # 0.00001 ≒ 1.11 meters
 N_IMG_PER_SQM: Final[int] = 3 # 3 images per 1m²
+DIST_THRESH_FROM_CROSSING: Final[float] = 0.00001 # 0.00001 ≒ 1.11 meters
 
 def parse_args() -> argparse.Namespace:
     """Create an argument parser for building configs from the CLI and parse CLI args."""
@@ -204,6 +205,7 @@ class ScrapingConfig:
     img_search_fields: tuple[str, ...]
     img_detail_fields: tuple[str, ...]
     bbox_offset: float
+    dist_thresh_from_crossing: float
 
     def __post_init__(self):
         ### sanity check
@@ -376,7 +378,7 @@ def build_config(args_dict=None) -> Config:
     retr_args['model'] = sanitize_model_path(retr_args['model'])
     scrp_cfg = ScrapingConfig(
         TARGET_STATES, START_DATE, NEWS_CRAWLERS,
-        N_IMG_PER_SQM, IMG_SEARCH_FIELDS, IMG_DETAIL_FIELDS, BBOX_OFFSET
+        N_IMG_PER_SQM, IMG_SEARCH_FIELDS, IMG_DETAIL_FIELDS, BBOX_OFFSET, DIST_THRESH_FROM_CROSSING
     )
     conv_cfg = ConversionConfig(**conv_args)
     retr_cfg  = RetrievalConfig(**retr_args)

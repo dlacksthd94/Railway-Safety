@@ -54,9 +54,9 @@ print('------------Merging DONE!!------------')
 ############### calculate the accuracy and coverage
 assert os.path.exists(cfg.path.dict_idx_mapping), "Must map index names shared accross the models with form transcription manually"
 
-list_answer_type_selected = ['digit', 'text', 'choice']
-df_acc, acc = get_acc_table(list_answer_type_selected, cfg)
-print(f'ACCURACY\n{" + ".join(list_answer_type_selected)}:\t', acc)
+# list_answer_type_selected = ['digit', 'text', 'choice']
+# df_acc, acc = get_acc_table(list_answer_type_selected, cfg)
+# print(f'ACCURACY\n{" + ".join(list_answer_type_selected)}:\t', acc)
 
 # list_answer_type_selected = ['choice']
 # df_acc, acc = get_acc_table(list_answer_type_selected, cfg)
@@ -70,19 +70,19 @@ print(f'ACCURACY\n{" + ".join(list_answer_type_selected)}:\t', acc)
 # df_acc, acc = get_acc_table(list_answer_type_selected, cfg)
 # print(f'ACCURACY\n{" + ".join(list_answer_type_selected)}:\t', acc)
 
-list_answer_type_selected = ['digit', 'text', 'choice']
-df_cov, cov = get_cov_table(list_answer_type_selected, cfg)
-print(f'COVERAGE\n{" + ".join(list_answer_type_selected)}:\t', cov)
+# list_answer_type_selected = ['digit', 'text', 'choice']
+# df_cov, cov = get_cov_table(list_answer_type_selected, cfg)
+# print(f'COVERAGE\n{" + ".join(list_answer_type_selected)}:\t', cov)
 
 # get_stats(df_acc, cfg)
 
 print('------------Metrics DONE!!------------')
 
 
-# ############### scrape crossing images from mapillary (ONLY ONE-TIME TASK FOR EVALUATION)
-# df_image = scrape_image(cfg)
-# df_image_seq = scrape_image_seq(cfg)
-# print('------------Scraping Images DONE!!------------')
+############### scrape crossing images from mapillary (ONLY ONE-TIME TASK FOR EVALUATION)
+df_image = scrape_image(cfg)
+df_image_seq = scrape_image_seq(cfg)
+print('------------Scraping Images DONE!!------------')
 
 
 # # ############### merge retrieval-record

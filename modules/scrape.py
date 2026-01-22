@@ -484,8 +484,8 @@ def scrape_image(cfg: Config) -> pd.DataFrame:
                 dist = ((lat - details['lat'])**2 + (lon - details['lon'])**2)**0.5
                 details['dist'] = dist
                 assert dist <= cfg.scrp.bbox_offset * 2**0.5
-                if dist > cfg.scrp.bbox_offset:
-                    continue
+                # if dist > cfg.scrp.bbox_offset:
+                #     continue
             if details.get('computed_geometry', None):
                 assert details['computed_geometry']['type'] == 'Point'
                 computed_geometry = details.pop('computed_geometry')
@@ -529,9 +529,9 @@ def scrape_image_seq(cfg: Config) -> pd.DataFrame:
     df_image_seq = scraper.load_df_image_seq()
     
     ############### using only actual GPS & highway-xing
-    df_crossing = df_crossing[df_crossing['CROSSING'].isin(df_image['crossing'])]
+    df_crossing = df_crossing[df_crossing['CROSSING'].isin(df_image[df_image['id'].notna()]['crossing'].unique())]
     df_crossing = df_crossing[df_crossing['LLSOURCE'].isin(['1'])] # ['1', '2', ' '];  ' ' mostly incorrect, '2' sometimes incorrect
-    df_crossing = df_crossing[df_crossing['XPURPOSE'] == 1]
+    df_crossing = df_crossing[df_crossing['XPURPOSE'] == 1] # 1: highway, 2: pedestrian pathway, 3: train station / [2,3] images are generally not available
     df_crossing = df_crossing.drop(['HIGHWAY', 'RRDIV', 'RRSUBDIV'], axis=1)
     # print(df_crossing[df_crossing['STREET'].str.lower().str.contains('wright')])
 
@@ -546,11 +546,9 @@ def scrape_image_seq(cfg: Config) -> pd.DataFrame:
     df_image = df_image.drop(columns=['CROSSING'])
     
     ############### using only images with distance over the threshold
-    select_xing_within = [0.00000, 0.00001]
-    select_img_within = [0.0001, 0.0002]
     # df_image = df_image[(df_image['dist'] <= threshold) | (df_image['computed_dist'] <= threshold)]
     df_min_dist = df_image.loc[df_image.groupby("crossing")["dist"].idxmin()][['crossing', 'id', 'compass_angle', 'computed_compass_angle', 'sequence', 'lat', 'lon', 'LATITUDE', 'LONGITUD', 'dist']].reset_index(drop=True)
-    df_min_dist = df_min_dist[(select_xing_within[0] <= df_min_dist['dist']) & (df_min_dist['dist'] <= select_xing_within[1])]
+    df_min_dist = df_min_dist[df_min_dist['dist'] <= cfg.scrp.dist_thresh_from_crossing] # it seems actual GPS location is more accurate than computed GPS location, so I only use `dist` here, not `computed_dist`.
     # print(df_min_dist)
     
     ############### get image seq
@@ -564,7 +562,8 @@ def scrape_image_seq(cfg: Config) -> pd.DataFrame:
         
         df_seq_temp = df_image[(df_image['crossing'] == crossing_id) & (df_image['sequence'] == seq_id)]
         df_seq_temp = df_seq_temp[(df_seq_temp['computed_compass_angle'].notna())]
-        df_seq_temp = df_seq_temp[(select_img_within[0] <= df_seq_temp['dist']) & (df_seq_temp['dist'] <= select_img_within[1])]
+        # select_img_within = [0.0001, 0.0002]
+        # df_seq_temp = df_seq_temp[(select_img_within[0] <= df_seq_temp['dist']) & (df_seq_temp['dist'] <= select_img_within[1])]
         
         if df_seq_temp.shape[0] <= 1:
             continue
@@ -620,10 +619,13 @@ def scrape_image_seq(cfg: Config) -> pd.DataFrame:
         
         if i % 10 == 0: # type: ignore
             df_image_seq.to_csv(cfg.path.df_image_seq, index=False)
-    
+
     df_image_seq.to_csv(cfg.path.df_image_seq, index=False)
+    return df_image_seq
+
+if __name__ == '__main__':
+    ### test
     
-    ###############
     # img_id = 2726828097607512
     # img_id = 1125481356095921
     # img_id = 375830210537976
@@ -631,10 +633,7 @@ def scrape_image_seq(cfg: Config) -> pd.DataFrame:
     # roll, pitch, yaw = df_image[df_image['id'] == img_id].iloc[0]['computed_rotation'] # x(tilt r/l), y(look u/d), z(compass) in 3D (default is east, down, north)
     # roll_deg, pitch_deg, yaw_deg = list(map(math.degrees, [roll, pitch, yaw]))
     # roll_deg, pitch_deg, yaw_deg
-    
-    return df_image_seq
 
-if __name__ == '__main__':
     # remove_dir(cfg.path.dir_scraped_images)
     # make_dir(cfg.path.dir_scraped_images)
     # df_crossing[df_crossing['STREET'].str.upper().str.contains('SPRUCE')]
