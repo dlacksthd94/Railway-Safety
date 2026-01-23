@@ -4,6 +4,7 @@ from .filter_news import filter_news
 from .convert_report_to_json import convert_to_json
 from .extract_keywords import extract_keywords
 from .merge import merge_record_retrieval, merge_news_image
+from .populate_form import populate_fields
 
 __all__ = [
     "build_config",
@@ -12,4 +13,5 @@ __all__ = [
     "convert_to_json",
     "extract_keywords",
     "merge_record_retrieval", "merge_news_image",
+    "populate_fields"
 ]

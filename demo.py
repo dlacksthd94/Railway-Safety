@@ -1,13 +1,19 @@
+import json
+from PIL import Image, ImageDraw, ImageFont
 from modules import utils, build_config, extract_keywords
 import streamlit as st
 import pandas as pd
-
+import base64
+import io
+import datetime
+from modules.populate_form import populate_fields
 
 args = {
-    "c_api": "OpenAI",
-    "c_model": "o4-mini",
+    "c_api": "Google",
+    "c_model": "gemini-2.5-flash",
     "c_n_generate": 4,
     "c_json_source": "img",
+    "c_seed": 1,
     "r_api": "Huggingface",
     "r_model": "microsoft/phi-4",
     "r_n_generate": 1,
@@ -112,40 +118,13 @@ if st.session_state.selected_news_id is not None:
 # -------------------------------
 # LOWER LEFT — Embedded Original Page
 # -------------------------------
-with lower_left:
-    st.subheader("Original Article Preview")
+
+# Yes, you can embed a PIL image in Streamlit using st.image()
+# Example:
+if selected is not None:
+    idx_content = selected.index.get_loc('content')
+    sr_retrieved_info = selected.iloc[idx_content + 1:] # type: ignore
+    draw = populate_fields(cfg, sr_retrieved_info)
     
-    if selected is not None:
-        st.components.v1.iframe(src=selected["url"], scrolling=True, height=800)
-
-        # st.markdown(f"### {selected['title']}")
-        # st.write(f"**Published:** {selected['pub_date']}")
-        # st.markdown("---")
-        # st.write(selected["content"])
-    else:
-        st.info("Select a news item to preview the webpage.")
-
-
-# -------------------------------
-# RIGHT PANEL — News Details
-# -------------------------------
-with right_panel:
-    st.subheader("News Report Details")
-
-    if selected is not None:
-        content_idx = selected.index.get_loc('content')
-        for group, field_cols in dict_group_field_cols.items():
-            st.markdown(f"#### {group}")
-            for field, cols in field_cols.items():
-                field_name = dict_form57[field]["name"]
-                if len(cols) == 1:
-                    retrieved_value = selected[cols[0]]
-                    st.markdown(f'**{field}. {field_name}**: {retrieved_value}')
-                else:
-                    st.markdown(f'**{field}. {field_name}**')
-                    for i, col in enumerate(cols):
-                        retrieved_value = selected[col]
-                        subfield_name = list(dict_form57[field]['answer_places'].keys())[i]
-                        st.markdown(f"- {subfield_name}: {retrieved_value}")
-    else:
-        st.info("Select a news item to view details.")
+    pil_image = draw._image
+    st.image(pil_image, caption="PIL Image", use_container_width=False)

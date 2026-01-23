@@ -555,8 +555,8 @@ def scrape_image_seq(cfg: Config) -> pd.DataFrame:
     (((df_image['lat'] - df_image['computed_lat'])**2 + (df_image['lon'] - df_image['computed_lon'])**2)**0.5).dropna().sort_values()
     for i, row in tqdm(df_min_dist.iterrows(), total=df_min_dist.shape[0]):
         crossing_id = row['crossing']
-        if crossing_id in df_image_seq['crossing_id'].values:
-            continue
+        # if crossing_id in df_image_seq['crossing_id'].values:
+        #     continue
         seq_id = row['sequence']
         xing_lat, xing_lon = row[['LATITUDE', 'LONGITUD']]
         

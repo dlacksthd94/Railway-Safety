@@ -46,6 +46,8 @@ FN_DF_MATCH: Final[str] = "df_match.csv"
 FN_DF_ANNOTATE: Final[str] = "df_annotate.csv"
 FN_DF_RECORD_RETRIEVAL: Final[str] = 'df_record_retrieval.csv'
 
+FN_DICT_BOUNDING_BOX: Final[str] = "dict_bounding_box.json"
+
 FN_DF_CROSSING: Final[str] = '251009 NTAD_Railroad_Grade_Crossings_1739202960140128164.csv'
 FN_DF_MSLS_META: Final[str] = 'df_msls_meta.csv'
 FN_DF_IMAGE: Final[str] = 'df_image.csv'
@@ -251,6 +253,7 @@ class PathConfig:
     dict_api_key: str
 
     df_record: str
+
     df_record_news: str
     df_news_articles: str
 
@@ -264,14 +267,16 @@ class PathConfig:
     form57_json_group: str
     form57_annotated: str
     
+    dict_answer_places: str
+    dict_idx_mapping: str
+    dict_col_indexing: str
+
+    dict_bounding_box: str
+    
     df_retrieval: str
     df_match: str
     df_annotate: str
     df_record_retrieval: str
-    
-    dict_answer_places: str
-    dict_idx_mapping: str
-    dict_col_indexing: str
     
     df_crossing: str
     df_msls_meta: str
@@ -354,6 +359,8 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
         df_match=os.path.join(DN_DATA_ROOT, FN_DF_MATCH),
         df_annotate=os.path.join(DN_DATA_ROOT, FN_DF_ANNOTATE),
         df_record_retrieval=os.path.join(dp_retrieval, FN_DF_RECORD_RETRIEVAL),
+
+        dict_bounding_box=os.path.join(DN_DATA_ROOT, FN_DICT_BOUNDING_BOX),
         
         df_crossing=os.path.join(DN_DATA_ROOT, FN_DF_CROSSING),
         df_msls_meta=os.path.join(dp_msls, FN_DF_MSLS_META),

@@ -227,3 +227,8 @@ def prepare_dict_form57_group(cfg):
     with open(cfg.path.form57_json_group, 'r') as f:
         dict_form57_group = json5.load(f)
     return dict_form57_group
+
+def prepare_dict_bounding_box(cfg):
+    with open(cfg.path.dict_bounding_box, "r") as f:
+        dict_bounding_box = json.load(f)
+    return dict_bounding_box
