@@ -114,10 +114,9 @@ class ScrapeNews:
         )
         return condition.any()
     
-    def get_RSS(self):
+    def get_RSS(self, query):
         # if self.private == 'Public':
             # query = f'{self.query1} {self.query2} {self.county} {self.city} {self.highway} after:{self.date_from} before:{self.date_to}'
-        query = f'{self.query1} {self.query2} {self.county} {self.city} after:{self.date_from} before:{self.date_to}'
         params_rss = {
             "q": query,
             'hl': 'en-US',
@@ -162,7 +161,8 @@ class ScrapeNews:
         self.driver.set_page_load_timeout(TIMEOUT) # if the page is not loaded in 10 seconds, an error occurs.
     
     def quit_driver(self):
-        self.driver.quit()
+        if 'driver' in self.__dict__:
+            self.driver.quit()
         subprocess.call("pkill chromedriver", shell=True)
         subprocess.call("pkill chrome", shell=True)
     
@@ -333,7 +333,8 @@ def scrape_news(cfg: Config) -> tuple[pd.DataFrame | None, ...]:
                     time.sleep(0.001)
                     continue
 
-                feed = scrape.get_RSS()
+                query = f'{query1} {query2} {county} {city} after:{params["date_from"]} before:{params["date_to"]}'
+                feed = scrape.get_RSS(query)
                 assert feed['bozo'] == False
                 
                 scrape.load_driver()

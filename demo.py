@@ -1,12 +1,17 @@
 import json
 from PIL import Image, ImageDraw, ImageFont
-from modules import utils, build_config, extract_keywords
 import streamlit as st
 import pandas as pd
 import base64
 import io
 import datetime
+import time
+from tqdm import tqdm
+
+from modules import build_config, extract_keywords
+from modules.scrape import TableConfig, ScrapeNews, scrape_news
 from modules.populate_form import populate_fields
+from modules.utils import prepare_df_record
 
 args = {
     "c_api": "Google",
@@ -20,8 +25,59 @@ args = {
     "r_question_batch": "group"
 }
 cfg = build_config(args)
+START_DATE = (datetime.datetime.today() - datetime.timedelta(days=2)).date().strftime("%Y-%m-%d")
+END_DATE = (datetime.datetime.today() + datetime.timedelta(days=1)).date().strftime("%Y-%m-%d")
+STATE = cfg.scrp.target_states[0]
 
 st.set_page_config(layout="wide")
+
+############### fetching recent news
+config_df_record_news = TableConfig(cfg.path.df_record_news_realtime, ['query1', 'query2', 'county', 'state', 'city', 'highway', 'report_key', 'news_id'])
+config_df_news_articles = TableConfig(cfg.path.df_news_articles_realtime, ['news_id', 'url', 'pub_date', 'title'] + list(cfg.scrp.news_crawlers))
+
+# df_record = prepare_df_record(cfg)
+# list_prior_info = ['Report Key', 'Railroad Name', 'Date', 'Nearest Station', 'County Name', 'State Name', 'City Name', 'Highway Name', 'Public/Private', 'Highway User', 'Equipment Type'] # keywords useful for searching
+# df_record = df_record.sort_values(['County Name', 'Date'], ascending=[True, False])
+
+scrape = ScrapeNews(config_df_record_news, config_df_news_articles)
+scrape.load_df_record_news()
+scrape.load_df_news_articles()
+
+# list_query1 = ["train", "amtrak", "locomotive"]
+# list_query2 = ["accident", "incident", "crash", "collide", "hit", "strike", "injure", "kill", "derail"]
+list_query1 = ["train"]
+list_query2 = ["accident"]
+
+pbar_query1 = tqdm(list_query1, leave=False)
+for query1 in pbar_query1:
+    pbar_query1.set_description(query1)
+    pbar_query2 = tqdm(list_query2, leave=False)
+    for query2 in pbar_query2:
+        pbar_query2.set_description(query2)
+        
+        if scrape.already_scraped():
+            time.sleep(0.001)
+            continue
+
+        query = f'{query1} {query2} {STATE} after:{START_DATE} before:{END_DATE}'
+        feed = scrape.get_RSS(query)
+        assert feed['bozo'] == False
+        
+        scrape.load_driver()
+        df_temp = scrape.get_article(feed)
+        scrape.df_news_articles
+        # scrape.append_df_record_news(df_temp)
+        # scrape.save_df_record_news()
+        scrape.quit_driver()
+
+        if df_temp.shape[0] <= 1:
+            time.sleep(7)
+
+
+############### filtering news
+df_news_articles_realtime = scrape.df_news_articles
+# filter: US STATE, keyword, date range, recent, 
+
 
 # -------------------------------
 # Load data

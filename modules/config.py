@@ -25,7 +25,6 @@ FN_DF_RECORD: Final[str] = "250821 Highway-Rail Grade Crossing Incident Data (Fo
 
 FN_DF_RECORD_NEWS: Final[str] = "df_record_news.csv"
 FN_DF_NEWS_ARTICLES: Final[str] = "df_news_articles.csv"
-
 FN_DF_NEWS_ARTICLES_SCORE: Final[str] = "df_news_articles_score.csv"
 FN_DF_NEWS_ARTICLES_FILTER: Final[str] = "df_news_articles_filter.csv"
 
@@ -46,6 +45,10 @@ FN_DF_MATCH: Final[str] = "df_match.csv"
 FN_DF_ANNOTATE: Final[str] = "df_annotate.csv"
 FN_DF_RECORD_RETRIEVAL: Final[str] = 'df_record_retrieval.csv'
 
+FN_DF_RECORD_NEWS_REALTIME: Final[str] = 'df_record_news_realtime.csv'
+FN_DF_NEWS_ARTICLES_REALTIME: Final[str] = 'df_news_articles_realtime.csv'
+FN_DF_NEWS_ARTICLES_REALTIME_SCORE: Final[str] = 'df_news_articles_realtime_score.csv'
+FN_DF_NEWS_ARTICLES_REALTIME_FILTER: Final[str] = 'df_news_articles_realtime_filter.csv'
 FN_DICT_BOUNDING_BOX: Final[str] = "dict_bounding_box.json"
 
 FN_DF_CROSSING: Final[str] = '251009 NTAD_Railroad_Grade_Crossings_1739202960140128164.csv'
@@ -256,7 +259,6 @@ class PathConfig:
 
     df_record_news: str
     df_news_articles: str
-
     df_news_articles_score: str
     df_news_articles_filter: str
     
@@ -271,6 +273,10 @@ class PathConfig:
     dict_idx_mapping: str
     dict_col_indexing: str
 
+    df_record_news_realtime: str
+    df_news_articles_realtime: str
+    df_news_articles_realtime_score: str
+    df_news_articles_realtime_filter: str
     dict_bounding_box: str
     
     df_retrieval: str
@@ -338,9 +344,9 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
         dict_api_key=os.path.join(DN_DATA_ROOT, FN_DICT_API_KEY),
 
         df_record=os.path.join(DN_DATA_ROOT, FN_DF_RECORD),
+
         df_record_news=os.path.join(DN_DATA_ROOT, FN_DF_RECORD_NEWS),
         df_news_articles=os.path.join(DN_DATA_ROOT, FN_DF_NEWS_ARTICLES),
-        
         df_news_articles_score=os.path.join(DN_DATA_ROOT, FN_DF_NEWS_ARTICLES_SCORE),
         df_news_articles_filter=os.path.join(DN_DATA_ROOT, FN_DF_NEWS_ARTICLES_FILTER),
         
@@ -360,6 +366,10 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
         df_annotate=os.path.join(DN_DATA_ROOT, FN_DF_ANNOTATE),
         df_record_retrieval=os.path.join(dp_retrieval, FN_DF_RECORD_RETRIEVAL),
 
+        df_record_news_realtime=os.path.join(DN_DATA_ROOT, FN_DF_RECORD_NEWS_REALTIME),
+        df_news_articles_realtime=os.path.join(DN_DATA_ROOT, FN_DF_NEWS_ARTICLES_REALTIME),
+        df_news_articles_realtime_score=os.path.join(DN_DATA_ROOT, FN_DF_NEWS_ARTICLES_REALTIME_SCORE),
+        df_news_articles_realtime_filter=os.path.join(DN_DATA_ROOT, FN_DF_NEWS_ARTICLES_REALTIME_FILTER),
         dict_bounding_box=os.path.join(DN_DATA_ROOT, FN_DICT_BOUNDING_BOX),
         
         df_crossing=os.path.join(DN_DATA_ROOT, FN_DF_CROSSING),
