@@ -11,9 +11,10 @@ import numpy as np
 from tqdm import tqdm
 
 from modules import build_config, extract_keywords
-from modules.scrape import TableConfig, ScrapeNews, scrape_news
-from modules.filter_news import check_article_realtime
+from modules.scrape import scrape_news_realtime
+from modules.filter_news import filter_news_realtime
 from modules.populate_form import populate_fields
+from modules.extract_keywords import extract_keywords_realtime
 from modules.utils import prepare_df_record
 
 args = {
@@ -22,8 +23,8 @@ args = {
     "c_n_generate": 4,
     "c_json_source": "img",
     "c_seed": 1,
-    "r_api": "Huggingface",
-    "r_model": "microsoft/phi-4",
+    "r_api": "Google",
+    "r_model": "gemini-2.5-flash",
     "r_n_generate": 1,
     "r_question_batch": "group"
 }
@@ -36,111 +37,16 @@ st.set_page_config(layout="wide")
 
 
 ############### fetching recent news
-config_df_record_news = TableConfig(cfg.path.df_record_news_realtime, ['query1', 'query2', 'county', 'state', 'city', 'highway', 'report_key', 'news_id'])
-config_df_news_articles = TableConfig(cfg.path.df_news_articles_realtime, ['news_id', 'url', 'pub_date', 'title'] + list(cfg.scrp.news_crawlers))
-
-# df_record = prepare_df_record(cfg)
-# list_prior_info = ['Report Key', 'Railroad Name', 'Date', 'Nearest Station', 'County Name', 'State Name', 'City Name', 'Highway Name', 'Public/Private', 'Highway User', 'Equipment Type'] # keywords useful for searching
-# df_record = df_record.sort_values(['County Name', 'Date'], ascending=[True, False])
-
-scrape = ScrapeNews(config_df_record_news, config_df_news_articles)
-scrape.load_df_record_news()
-scrape.load_df_news_articles()
-
-# list_query1 = ["train", "amtrak", "locomotive"]
-# list_query2 = ["accident", "incident", "crash", "collide", "hit", "strike", "injure", "kill", "derail"]
-list_query1 = ["train"]
-list_query2 = ["accident"]
-
-pbar_query1 = tqdm(list_query1, leave=False)
-for query1 in pbar_query1:
-    pbar_query1.set_description(query1)
-    pbar_query2 = tqdm(list_query2, leave=False)
-    for query2 in pbar_query2:
-        pbar_query2.set_description(query2)
-        
-        if scrape.already_scraped():
-            time.sleep(0.001)
-            continue
-
-        query = f'{query1} {query2} {STATE} after:{START_DATE} before:{END_DATE}'
-        feed = scrape.get_RSS(query)
-        assert feed['bozo'] == False
-        
-        scrape.load_driver()
-        df_temp = scrape.get_article(feed)
-        # scrape.append_df_record_news(df_temp)
-        # scrape.save_df_record_news()
-        scrape.quit_driver()
-
-        if df_temp.shape[0] <= 1:
-            time.sleep(7)
-
-scrape.df_news_articles
+df_record_news_realtime, df_news_articles_realtime = scrape_news_realtime(cfg, START_DATE, END_DATE, STATE)
 
 
 ############### filtering news
-df_news_articles_realtime = scrape.df_news_articles
-
-col_crawlers = list(cfg.scrp.news_crawlers)
-col_crawlers_recent = [crawler + '_recent' for crawler in col_crawlers]
-col_crawlers_state = [crawler + '_state' for crawler in col_crawlers]
-if os.path.exists(cfg.path.df_news_articles_realtime_score):
-    df_news_articles_score = pd.read_csv(cfg.path.df_news_articles_realtime_score)
-else:
-    df_news_articles = pd.read_csv(cfg.path.df_news_articles_realtime, parse_dates=['pub_date'])
-    df_news_articles_score = df_news_articles.copy(deep=True)
-    df_news_articles_score[col_crawlers_recent] = np.nan
-    df_news_articles_score[col_crawlers_state] = np.nan
-
-df_news_articles_score[col_crawlers] = df_news_articles_score[col_crawlers].apply(lambda col: col.str.strip())
-mask_not_empty = df_news_articles_score[col_crawlers] != ''
-df_news_articles_score[col_crawlers] = df_news_articles_score[col_crawlers].where(mask_not_empty)
-df_news_articles_score = df_news_articles_score[df_news_articles_score[col_crawlers].any(axis=1)]
-
-
-### remove articles not related to train accident
-dict_answer_choice = {'YES': 1, 'NO': 0}
-
-### remove articles out of recent date range
-list_skip_date = df_news_articles_score[df_news_articles_score['pub_date'] < START_DATE].index.tolist()
-
-### remove articles not related to recent train accident
-question = f"Is this article reporting a train accident that occured this/last week? Answer only {'/'.join(dict_answer_choice)}"
-df_news_articles_score = check_article_realtime(cfg, df_news_articles_score, list_skip_date, col_crawlers, col_crawlers_recent, dict_answer_choice, question, num_sim=1)
-
-df_news_articles_score.to_csv(cfg.path.df_news_articles_realtime_score, index=False)
-
-### remove articles not related to US STATE
-mask_recent = df_news_articles_score[col_crawlers_recent] == 1
-list_skip_recent = df_news_articles_score[~mask_recent.any(axis=1)].index.tolist()
-question = f"Did the train accident occur in US {STATE}? Answer only {'/'.join(dict_answer_choice)}"
-df_news_articles_score = check_article_realtime(cfg, df_news_articles_score, list_skip_recent, col_crawlers, col_crawlers_state, dict_answer_choice, question, num_sim=1)
-
-df_news_articles_score.to_csv(cfg.path.df_news_articles_realtime_score, index=False)
-
-mask_state = df_news_articles_score[col_crawlers_state] == 1
-
-### filter news articles
-df_news_articles_filter = df_news_articles_score.copy(deep=True)
-df_news_articles_filter[col_crawlers] = df_news_articles_filter[col_crawlers].where(mask_recent.values & mask_state.values)
-df_news_articles_filter = df_news_articles_filter[df_news_articles_filter[col_crawlers].any(axis=1)]
-
-df_news_articles_filter['content'] = np.nan
-
-### select the longest article among different crawlers
-for idx, row in df_news_articles_filter.iterrows():
-    content_max_len = max(row[col_crawlers].astype(str).values, key=len)
-    df_news_articles_filter.loc[idx, 'content'] = content_max_len
-df_news_articles_filter['content'].sample(1).values
-
-df_news_articles_filter = df_news_articles_filter.drop(col_crawlers + col_crawlers_recent + col_crawlers_state, axis=1)
-df_news_articles_filter.to_csv(cfg.path.df_news_articles_realtime_filter, index=False)
-
-df_news_articles_filter
+df_news_articles_realtime_filter = filter_news_realtime(cfg, START_DATE, STATE, END_DATE)
 
 
 ############### retrieval
+
+
 
 # -------------------------------
 # Load data

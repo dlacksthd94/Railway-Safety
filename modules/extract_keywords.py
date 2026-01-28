@@ -11,9 +11,11 @@ import re
 from PIL import Image
 import json5
 from openai import OpenAI
+from google import genai
 from .utils import (parse_json_from_output, desanitize_model_path, 
                     generate_openai, generate_hf, select_generate_func, 
                     prepare_df_match, prepare_dict_form57, prepare_dict_form57_group)
+
 
 def to_answer_places(dict_form57):
     dict_answer_places = {}
@@ -36,6 +38,7 @@ def to_answer_places(dict_form57):
             assert False, 'why # of answer places < 1?'
     return dict_answer_places, dict_idx_ap
 
+
 def extract_helper(api, news_content, question, generate_func, generator, model_path, generation_config=None):
     if api == 'Huggingface':
         # prompt = f"Context:\n{news_content}\n\nQuestion:\n{question}\n\nAnswer:\n({answer_start_idx}):"
@@ -57,6 +60,7 @@ def extract_helper(api, news_content, question, generate_func, generator, model_
     dict_answer = parse_json_from_output(answers)
 
     return dict_answer
+
 
 def extract_keywords(cfg):
     _, _, _, json_source, seed = cfg.conv.to_tuple()
@@ -132,6 +136,13 @@ def extract_keywords(cfg):
                 purpose="vision"
             )
         img_obj = img_file
+        generator = client
+
+    elif api == 'Google':
+        API_key = cfg.apikey.google
+        model_path = desanitize_model_path(model_path)
+        client = genai.Client(api_key=API_key)
+
         generator = client
     
     else:
@@ -267,6 +278,7 @@ def extract_keywords(cfg):
         torch.cuda.empty_cache()
 
     return df_retrieval
+
 
 # if __name__ == '__main__':
 #     df_retrieval = pd.read_csv(cfg.path.df_retrieval)

@@ -18,6 +18,7 @@ MODEL_PATH = 'Qwen/Qwen2.5-7B-Instruct-1M'
 # DEVICE = 'cuda:1'
 DEVICE = 'auto'
 
+
 def check_article(df_news_articles_score, list_skip, col_crawlers, col_crawlers_score, dict_answer_choice, question, num_sim=1):
     """
     classify each scraped article (per crawler) as reporting a train accident and store an averaged binary score.
@@ -51,6 +52,7 @@ def check_article(df_news_articles_score, list_skip, col_crawlers, col_crawlers_
     torch.cuda.empty_cache()
 
     return df_news_articles_score
+
 
 def check_article_realtime(cfg, df_news_articles_score, list_skip, col_crawlers, col_crawlers_score, dict_answer_choice, question, num_sim=1):
     """
@@ -90,6 +92,7 @@ def check_article_realtime(cfg, df_news_articles_score, list_skip, col_crawlers,
         df_news_articles_score.loc[idx, col_crawlers_score] = dict_column_score.values()
 
     return df_news_articles_score
+
 
 def filter_news(cfg) -> pd.DataFrame:
     col_crawlers = list(cfg.scrp.news_crawlers)
@@ -183,6 +186,66 @@ def filter_news(cfg) -> pd.DataFrame:
     df_news_articles_filter = df_news_articles_filter.drop(col_crawlers + col_crawlers_accd + col_crawlers_hwuser + col_crawlers_recent + col_crawlers_bp, axis=1)
     df_news_articles_filter.to_csv(cfg.path.df_news_articles_filter, index=False)
     return df_news_articles_filter
+
+
+def filter_news_realtime(cfg, start_date, state, end_date) -> pd.DataFrame:
+    col_crawlers = list(cfg.scrp.news_crawlers)
+    col_crawlers_recent = [crawler + '_recent' for crawler in col_crawlers]
+    col_crawlers_state = [crawler + '_state' for crawler in col_crawlers]
+    if os.path.exists(cfg.path.df_news_articles_realtime_score):
+        df_news_articles_score = pd.read_csv(cfg.path.df_news_articles_realtime_score)
+    else:
+        df_news_articles = pd.read_csv(cfg.path.df_news_articles_realtime, parse_dates=['pub_date'])
+        df_news_articles_score = df_news_articles.copy(deep=True)
+        df_news_articles_score[col_crawlers_recent] = np.nan
+        df_news_articles_score[col_crawlers_state] = np.nan
+
+    df_news_articles_score[col_crawlers] = df_news_articles_score[col_crawlers].apply(lambda col: col.str.strip())
+    mask_not_empty = df_news_articles_score[col_crawlers] != ''
+    df_news_articles_score[col_crawlers] = df_news_articles_score[col_crawlers].where(mask_not_empty)
+    df_news_articles_score = df_news_articles_score[df_news_articles_score[col_crawlers].any(axis=1)]
+
+
+    ### remove articles not related to train accident
+    dict_answer_choice = {'YES': 1, 'NO': 0}
+
+    ### remove articles out of recent date range
+    list_skip_date = df_news_articles_score[(df_news_articles_score['pub_date'] < start_date) & (df_news_articles_score['pub_date'] > end_date)].index.tolist()
+
+    ### remove articles not related to recent train accident
+    question = f"Is this article reporting a train accident that occured this/last week? Answer only {'/'.join(dict_answer_choice)}"
+    df_news_articles_score = check_article_realtime(cfg, df_news_articles_score, list_skip_date, col_crawlers, col_crawlers_recent, dict_answer_choice, question, num_sim=1)
+
+    df_news_articles_score.to_csv(cfg.path.df_news_articles_realtime_score, index=False)
+
+    ### remove articles not related to US STATE
+    mask_recent = df_news_articles_score[col_crawlers_recent] == 1
+    list_skip_recent = df_news_articles_score[~mask_recent.any(axis=1)].index.tolist()
+    question = f"Did the train accident occur in US {state}? Answer only {'/'.join(dict_answer_choice)}"
+    df_news_articles_score = check_article_realtime(cfg, df_news_articles_score, list_skip_recent, col_crawlers, col_crawlers_state, dict_answer_choice, question, num_sim=1)
+
+    df_news_articles_score.to_csv(cfg.path.df_news_articles_realtime_score, index=False)
+
+    mask_state = df_news_articles_score[col_crawlers_state] == 1
+
+    ### filter news articles
+    df_news_articles_filter = df_news_articles_score.copy(deep=True)
+    df_news_articles_filter[col_crawlers] = df_news_articles_filter[col_crawlers].where(mask_recent.values & mask_state.values)
+    df_news_articles_filter = df_news_articles_filter[df_news_articles_filter[col_crawlers].any(axis=1)]
+
+    df_news_articles_filter['content'] = np.nan
+
+    ### select the longest article among different crawlers
+    for idx, row in df_news_articles_filter.iterrows():
+        content_max_len = max(row[col_crawlers].astype(str).values, key=len)
+        df_news_articles_filter.loc[idx, 'content'] = content_max_len
+    df_news_articles_filter['content'].sample(1).values
+
+    df_news_articles_filter = df_news_articles_filter.drop(col_crawlers + col_crawlers_recent + col_crawlers_state, axis=1)
+    df_news_articles_filter.to_csv(cfg.path.df_news_articles_realtime_filter, index=False)
+
+    return df_news_articles_filter
+
 
 if __name__ == '__main__':
     pass
