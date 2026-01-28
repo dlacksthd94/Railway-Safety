@@ -7,7 +7,8 @@ import os
 import torch
 import gc
 from itertools import combinations
-from .utils import text_binary_classification, text_generation
+from google import genai
+from .utils import text_binary_classification, text_generation, select_generate_func, desanitize_model_path
 
 pd.set_option('display.max_colwidth', 30)
 
@@ -48,6 +49,45 @@ def check_article(df_news_articles_score, list_skip, col_crawlers, col_crawlers_
     del pipe
     gc.collect()
     torch.cuda.empty_cache()
+
+    return df_news_articles_score
+
+def check_article_realtime(cfg, df_news_articles_score, list_skip, col_crawlers, col_crawlers_score, dict_answer_choice, question, num_sim=1):
+    """
+    classify each scraped article (per crawler) as reporting a train accident and store an averaged binary score.
+    """
+    assert len(set(dict_answer_choice.values())) == len(dict_answer_choice.values())
+    
+    api, model_path = 'Google', 'gemini-2.5-flash'
+    model_path = desanitize_model_path(model_path)
+    client = genai.Client(api_key=cfg.apikey.google)
+
+    generate_func = select_generate_func(api)
+
+    for idx, row in tqdm(df_news_articles_score.iterrows(), total=df_news_articles_score.shape[0]):
+        if idx in list_skip:
+            continue
+        if row[col_crawlers_score].notna().any():
+            continue
+        sr_content = row[col_crawlers]
+        dict_column_score = {crawler_score: float('nan') for crawler_score in col_crawlers_score}
+        for col_crawler, col_crawler_score in tqdm(zip(col_crawlers, col_crawlers_score), total=len(col_crawlers), leave=False):
+            content = sr_content[col_crawler]
+            if pd.isna(content):
+                dict_column_score[col_crawler_score] = dict_answer_choice['NO']
+            else:
+                prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n"
+                content = [prompt]
+                output = generate_func(client, model_path, content, generation_config=None)
+
+                answer = output.upper() # type: ignore
+                if answer in dict_answer_choice:
+                    answer_map = dict_answer_choice[answer]
+                else:
+                    answer_map = float('nan')
+
+                dict_column_score[col_crawler_score] = answer_map
+        df_news_articles_score.loc[idx, col_crawlers_score] = dict_column_score.values()
 
     return df_news_articles_score
 

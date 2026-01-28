@@ -6,10 +6,13 @@ import base64
 import io
 import datetime
 import time
+import os
+import numpy as np
 from tqdm import tqdm
 
 from modules import build_config, extract_keywords
 from modules.scrape import TableConfig, ScrapeNews, scrape_news
+from modules.filter_news import check_article_realtime
 from modules.populate_form import populate_fields
 from modules.utils import prepare_df_record
 
@@ -30,6 +33,7 @@ END_DATE = (datetime.datetime.today() + datetime.timedelta(days=1)).date().strft
 STATE = cfg.scrp.target_states[0]
 
 st.set_page_config(layout="wide")
+
 
 ############### fetching recent news
 config_df_record_news = TableConfig(cfg.path.df_record_news_realtime, ['query1', 'query2', 'county', 'state', 'city', 'highway', 'report_key', 'news_id'])
@@ -65,7 +69,6 @@ for query1 in pbar_query1:
         
         scrape.load_driver()
         df_temp = scrape.get_article(feed)
-        scrape.df_news_articles
         # scrape.append_df_record_news(df_temp)
         # scrape.save_df_record_news()
         scrape.quit_driver()
@@ -73,11 +76,71 @@ for query1 in pbar_query1:
         if df_temp.shape[0] <= 1:
             time.sleep(7)
 
+scrape.df_news_articles
+
 
 ############### filtering news
 df_news_articles_realtime = scrape.df_news_articles
-# filter: US STATE, keyword, date range, recent, 
 
+col_crawlers = list(cfg.scrp.news_crawlers)
+col_crawlers_recent = [crawler + '_recent' for crawler in col_crawlers]
+col_crawlers_state = [crawler + '_state' for crawler in col_crawlers]
+if os.path.exists(cfg.path.df_news_articles_realtime_score):
+    df_news_articles_score = pd.read_csv(cfg.path.df_news_articles_realtime_score)
+else:
+    df_news_articles = pd.read_csv(cfg.path.df_news_articles_realtime, parse_dates=['pub_date'])
+    df_news_articles_score = df_news_articles.copy(deep=True)
+    df_news_articles_score[col_crawlers_recent] = np.nan
+    df_news_articles_score[col_crawlers_state] = np.nan
+
+df_news_articles_score[col_crawlers] = df_news_articles_score[col_crawlers].apply(lambda col: col.str.strip())
+mask_not_empty = df_news_articles_score[col_crawlers] != ''
+df_news_articles_score[col_crawlers] = df_news_articles_score[col_crawlers].where(mask_not_empty)
+df_news_articles_score = df_news_articles_score[df_news_articles_score[col_crawlers].any(axis=1)]
+
+
+### remove articles not related to train accident
+dict_answer_choice = {'YES': 1, 'NO': 0}
+
+### remove articles out of recent date range
+list_skip_date = df_news_articles_score[df_news_articles_score['pub_date'] < START_DATE].index.tolist()
+
+### remove articles not related to recent train accident
+question = f"Is this article reporting a train accident that occured this/last week? Answer only {'/'.join(dict_answer_choice)}"
+df_news_articles_score = check_article_realtime(cfg, df_news_articles_score, list_skip_date, col_crawlers, col_crawlers_recent, dict_answer_choice, question, num_sim=1)
+
+df_news_articles_score.to_csv(cfg.path.df_news_articles_realtime_score, index=False)
+
+### remove articles not related to US STATE
+mask_recent = df_news_articles_score[col_crawlers_recent] == 1
+list_skip_recent = df_news_articles_score[~mask_recent.any(axis=1)].index.tolist()
+question = f"Did the train accident occur in US {STATE}? Answer only {'/'.join(dict_answer_choice)}"
+df_news_articles_score = check_article_realtime(cfg, df_news_articles_score, list_skip_recent, col_crawlers, col_crawlers_state, dict_answer_choice, question, num_sim=1)
+
+df_news_articles_score.to_csv(cfg.path.df_news_articles_realtime_score, index=False)
+
+mask_state = df_news_articles_score[col_crawlers_state] == 1
+
+### filter news articles
+df_news_articles_filter = df_news_articles_score.copy(deep=True)
+df_news_articles_filter[col_crawlers] = df_news_articles_filter[col_crawlers].where(mask_recent.values & mask_state.values)
+df_news_articles_filter = df_news_articles_filter[df_news_articles_filter[col_crawlers].any(axis=1)]
+
+df_news_articles_filter['content'] = np.nan
+
+### select the longest article among different crawlers
+for idx, row in df_news_articles_filter.iterrows():
+    content_max_len = max(row[col_crawlers].astype(str).values, key=len)
+    df_news_articles_filter.loc[idx, 'content'] = content_max_len
+df_news_articles_filter['content'].sample(1).values
+
+df_news_articles_filter = df_news_articles_filter.drop(col_crawlers + col_crawlers_recent + col_crawlers_state, axis=1)
+df_news_articles_filter.to_csv(cfg.path.df_news_articles_realtime_filter, index=False)
+
+df_news_articles_filter
+
+
+############### retrieval
 
 # -------------------------------
 # Load data
