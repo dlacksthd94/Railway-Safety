@@ -49,6 +49,7 @@ FN_DF_RECORD_NEWS_REALTIME: Final[str] = 'df_record_news_realtime.csv'
 FN_DF_NEWS_ARTICLES_REALTIME: Final[str] = 'df_news_articles_realtime.csv'
 FN_DF_NEWS_ARTICLES_REALTIME_SCORE: Final[str] = 'df_news_articles_realtime_score.csv'
 FN_DF_NEWS_ARTICLES_REALTIME_FILTER: Final[str] = 'df_news_articles_realtime_filter.csv'
+FN_DF_RETRIEVAL_REALTIME: Final[str] = 'df_retrieval_realtime.csv'
 FN_DICT_BOUNDING_BOX: Final[str] = "dict_bounding_box.json"
 
 FN_DF_CROSSING: Final[str] = '251009 NTAD_Railroad_Grade_Crossings_1739202960140128164.csv'
@@ -273,16 +274,17 @@ class PathConfig:
     dict_idx_mapping: str
     dict_col_indexing: str
 
-    df_record_news_realtime: str
-    df_news_articles_realtime: str
-    df_news_articles_realtime_score: str
-    df_news_articles_realtime_filter: str
-    dict_bounding_box: str
-    
     df_retrieval: str
     df_match: str
     df_annotate: str
     df_record_retrieval: str
+    
+    df_record_news_realtime: str
+    df_news_articles_realtime: str
+    df_news_articles_realtime_score: str
+    df_news_articles_realtime_filter: str
+    df_retrieval_realtime: str
+    dict_bounding_box: str
     
     df_crossing: str
     df_msls_meta: str
@@ -370,6 +372,7 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
         df_news_articles_realtime=os.path.join(DN_DATA_ROOT, FN_DF_NEWS_ARTICLES_REALTIME),
         df_news_articles_realtime_score=os.path.join(DN_DATA_ROOT, FN_DF_NEWS_ARTICLES_REALTIME_SCORE),
         df_news_articles_realtime_filter=os.path.join(DN_DATA_ROOT, FN_DF_NEWS_ARTICLES_REALTIME_FILTER),
+        df_retrieval_realtime=os.path.join(DN_DATA_ROOT, FN_DF_RETRIEVAL_REALTIME),
         dict_bounding_box=os.path.join(DN_DATA_ROOT, FN_DICT_BOUNDING_BOX),
         
         df_crossing=os.path.join(DN_DATA_ROOT, FN_DF_CROSSING),

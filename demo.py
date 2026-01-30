@@ -45,14 +45,13 @@ df_news_articles_realtime_filter = filter_news_realtime(cfg, START_DATE, STATE, 
 
 
 ############### retrieval
-
+df_retrieval = extract_keywords_realtime(cfg)
 
 
 # -------------------------------
 # Load data
 # -------------------------------
 
-df_retrieval = utils.prepare_df_retrieval(cfg)
 dict_col_indexing = utils.prepare_dict_col_indexing(cfg)
 dict_idx_mapping, dict_idx_mapping_inverse = utils.prepare_dict_idx_mapping(cfg)
 dict_form57 = utils.prepare_dict_form57(cfg)
