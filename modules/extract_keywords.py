@@ -315,12 +315,12 @@ def extract_keywords_realtime(cfg):
         
         df_news_articles_filter = pd.read_csv(cfg.path.df_news_articles_realtime_filter)
         df_news_articles_new = df_news_articles_filter[~df_news_articles_filter['news_id'].isin(df_retrieval['news_id'])]
-        df_news_articles_new[list_answer_places] = ''
+        df_news_articles_new.loc[:, list_answer_places] = ''
         df_retrieval = pd.concat([df_retrieval, df_news_articles_new], ignore_index=True)
     else:
         df_news_articles_filter = pd.read_csv(cfg.path.df_news_articles_realtime_filter)
         df_retrieval = df_news_articles_filter.copy(deep=True)
-        df_retrieval[list_answer_places] = ''
+        df_retrieval.loc[:, list_answer_places] = ''
         df_retrieval.to_csv(cfg.path.df_retrieval_realtime, index=False)
     
     if api == 'Huggingface':
@@ -493,9 +493,9 @@ def extract_keywords_realtime(cfg):
                 pass
             
         if idx_content % 10 == 0: # type: ignore
-            df_retrieval.to_csv(cfg.path.df_retrieval, index=False)
+            df_retrieval.to_csv(cfg.path.df_retrieval_realtime, index=False)
 
-    df_retrieval.to_csv(cfg.path.df_retrieval, index=False)
+    df_retrieval.to_csv(cfg.path.df_retrieval_realtime, index=False)
 
     if api == 'Huggingface':
         del generator

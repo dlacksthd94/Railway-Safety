@@ -193,13 +193,19 @@ def filter_news_realtime(cfg, start_date, state, end_date) -> pd.DataFrame:
     col_crawlers_recent = [crawler + '_recent' for crawler in col_crawlers]
     col_crawlers_state = [crawler + '_state' for crawler in col_crawlers]
     if os.path.exists(cfg.path.df_news_articles_realtime_score):
-        df_news_articles_score = pd.read_csv(cfg.path.df_news_articles_realtime_score)
+        df_news_articles_score = pd.read_csv(cfg.path.df_news_articles_realtime_score, parse_dates=['pub_date'])
+        df_news_articles = pd.read_csv(cfg.path.df_news_articles_realtime, parse_dates=['pub_date'])
+        df_news_articles_new = df_news_articles[~df_news_articles['news_id'].isin(df_news_articles_score['news_id'])].copy(deep=True)
+        df_news_articles_new[col_crawlers_recent] = np.nan
+        df_news_articles_new[col_crawlers_state] = np.nan
+        df_news_articles_score = pd.concat([df_news_articles_score, df_news_articles_new], ignore_index=True)
     else:
         df_news_articles = pd.read_csv(cfg.path.df_news_articles_realtime, parse_dates=['pub_date'])
         df_news_articles_score = df_news_articles.copy(deep=True)
         df_news_articles_score[col_crawlers_recent] = np.nan
         df_news_articles_score[col_crawlers_state] = np.nan
 
+    ### remove empty articles
     df_news_articles_score[col_crawlers] = df_news_articles_score[col_crawlers].apply(lambda col: col.str.strip())
     mask_not_empty = df_news_articles_score[col_crawlers] != ''
     df_news_articles_score[col_crawlers] = df_news_articles_score[col_crawlers].where(mask_not_empty)
@@ -210,7 +216,7 @@ def filter_news_realtime(cfg, start_date, state, end_date) -> pd.DataFrame:
     dict_answer_choice = {'YES': 1, 'NO': 0}
 
     ### remove articles out of recent date range
-    list_skip_date = df_news_articles_score[(df_news_articles_score['pub_date'] < start_date) & (df_news_articles_score['pub_date'] > end_date)].index.tolist()
+    list_skip_date = df_news_articles_score[(df_news_articles_score['pub_date'] < start_date) | (df_news_articles_score['pub_date'] > end_date)].index.tolist()
 
     ### remove articles not related to recent train accident
     question = f"Is this article reporting a train accident that occured this/last week? Answer only {'/'.join(dict_answer_choice)}"
@@ -234,6 +240,7 @@ def filter_news_realtime(cfg, start_date, state, end_date) -> pd.DataFrame:
     df_news_articles_filter = df_news_articles_filter[df_news_articles_filter[col_crawlers].any(axis=1)]
 
     df_news_articles_filter['content'] = np.nan
+    df_news_articles_filter['content'] = df_news_articles_filter['content'].astype('object')
 
     ### select the longest article among different crawlers
     for idx, row in df_news_articles_filter.iterrows():
