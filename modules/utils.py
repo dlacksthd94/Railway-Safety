@@ -8,20 +8,25 @@ import shutil
 import pandas as pd
 from pprint import pprint
 
+
 def make_dir(path: str) -> None:
     os.makedirs(path, exist_ok=True)
+
 
 def remove_dir(path: str) -> None:
     if os.path.exists(path):
         shutil.rmtree(path)
 
+
 def sanitize_model_path(model_path: str) -> str:
     """Replace path separators so model_path names are safe in folder names."""
     return model_path.replace("/", "--")
 
+
 def desanitize_model_path(model_path: str) -> str:
     """Replace path separators so model_path names are safe in folder names."""
     return model_path.replace("--", "/")
+
 
 def generate_openai(client, model_path, content, generation_config=None):
     messages = [
@@ -33,6 +38,7 @@ def generate_openai(client, model_path, content, generation_config=None):
     response = client.responses.create(model=model_path, input=messages)
     output = response.output_text
     return output
+
 
 def generate_hf(pipe, model_path, content, generation_config={}):
     messages = [
@@ -46,6 +52,7 @@ def generate_hf(pipe, model_path, content, generation_config={}):
     output = response[0]['generated_text']
     return output
 
+
 def generate_google(client, model_path, content, generation_config=None):
     response = client.models.generate_content(
         model=model_path,
@@ -53,6 +60,7 @@ def generate_google(client, model_path, content, generation_config=None):
     )
     output = response.text
     return output
+
 
 def select_generate_func(api):
     if api == 'OpenAI':
@@ -84,11 +92,13 @@ class Timer:
         s = total_seconds % 60               # still a float now
         return f"{h:02d}:{m:02d}:{s:06.3f}"   # e.g. 00:01:02.357
 
+
 def as_float(val):
     try:
         return float(val)
     except:
         return val
+
 
 def as_int(val):
     try:
@@ -96,11 +106,13 @@ def as_int(val):
     except:
         return val
 
+
 def lower_str(val):
     if isinstance(val, str):
         return val.lower()
     else:
         return val
+
 
 def parse_json_from_output(output):
     """Parse JSON from the output text of OpenAI response.
@@ -124,6 +136,7 @@ def parse_json_from_output(output):
         dict_form57 = {}
     return dict_form57
 
+
 def text_binary_classification(pipe, prompt, dict_answer_choice, num_sim):
     list_output = pipe(prompt, max_new_tokens=1, num_return_sequences=num_sim, return_full_text=False)
     list_answer = list(map(lambda output: output['generated_text'].upper(), list_output))
@@ -131,10 +144,12 @@ def text_binary_classification(pipe, prompt, dict_answer_choice, num_sim):
     list_answer_map = list(map(lambda answer: dict_answer_choice[answer], list_answer_filter))
     return list_answer_map
 
+
 def text_generation(pipe, prompt, max_new_tokens=4096):
     output = pipe(prompt, max_new_tokens=max_new_tokens, return_full_text=False)
     answer = output[0]['generated_text']
     return answer
+
 
 def prepare_df_record(cfg):
     df_record = pd.read_csv(cfg.path.df_record, parse_dates=['Date'])
@@ -143,6 +158,7 @@ def prepare_df_record(cfg):
     df_record = df_record[df_record['Date'] >= cfg.scrp.start_date]
     assert df_record['Report Key'].is_unique
     return df_record
+
 
 def prepare_df_crossing(cfg):
     df_crossing = pd.read_csv(cfg.path.df_crossing)
@@ -172,8 +188,9 @@ def prepare_df_crossing(cfg):
 
     return df_crossing
 
+
 def prepare_df_image(cfg):
-    df_image = pd.read_csv(cfg.path.df_image)
+    df_image = pd.read_csv(cfg.path.df_image, parse_dates=['captured_at'])
     df_image = df_image.sort_values('crossing', ignore_index=True)
     df_image['computed_rotation'] = df_image['computed_rotation'].apply(lambda x: ast.literal_eval(x) if pd.notna(x) else x)
     df_image['mesh'] = df_image['mesh'].apply(lambda x: ast.literal_eval(x) if pd.notna(x) else x)
@@ -182,15 +199,18 @@ def prepare_df_image(cfg):
     
     return df_image
 
+
 def prepare_df_image_seq(cfg):
-    df_image_seq = pd.read_csv(cfg.path.df_image_seq)
+    df_image_seq = pd.read_csv(cfg.path.df_image_seq, parse_dates=['captured_at'])
     return df_image_seq
+
 
 def prepare_df_retrieval(cfg):
     df_retrieval = pd.read_csv(cfg.path.df_retrieval)
     df_retrieval['pub_date'] = pd.to_datetime(df_retrieval['pub_date'])
     assert df_retrieval['news_id'].is_unique, '==========Warning: News is not unique!!!==========='
     return df_retrieval
+
 
 def prepare_df_match(cfg):
     df_match = pd.read_csv(cfg.path.df_match)
@@ -200,10 +220,17 @@ def prepare_df_match(cfg):
     assert df_match['news_id'].is_unique, '==========Warning: News is not unique!!!==========='
     return df_match
 
+
+def prepare_df_3D(cfg):
+    df_3D = pd.read_csv(cfg.path.df_3D, parse_dates=['captured_at'])
+    return df_3D
+
+
 def prepare_dict_col_indexing(cfg):
     with open(cfg.path.dict_col_indexing, 'r') as f:
         dict_col_indexing = json5.load(f)
     return dict_col_indexing
+
 
 def prepare_dict_idx_mapping(cfg):
     with open(cfg.path.dict_idx_mapping, 'r') as f:
@@ -213,20 +240,24 @@ def prepare_dict_idx_mapping(cfg):
             dict_idx_mapping_inverse.pop('')
     return dict_idx_mapping, dict_idx_mapping_inverse
 
+
 def prepare_dict_answer_places(cfg):
     with open(cfg.path.dict_answer_places, 'r') as f:
         dict_answer_places = json5.load(f)
     return dict_answer_places
+
 
 def prepare_dict_form57(cfg):
     with open(cfg.path.form57_json, 'r') as f:
         dict_form57 = json.load(f)
     return dict_form57
 
+
 def prepare_dict_form57_group(cfg):
     with open(cfg.path.form57_json_group, 'r') as f:
         dict_form57_group = json5.load(f)
     return dict_form57_group
+
 
 def prepare_dict_bounding_box(cfg):
     with open(cfg.path.dict_bounding_box, "r") as f:

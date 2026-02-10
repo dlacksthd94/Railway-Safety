@@ -15,7 +15,7 @@ from modules.scrape import scrape_news_realtime
 from modules.filter_news import filter_news_realtime
 from modules.populate_form import populate_fields
 from modules.extract_keywords import extract_keywords_realtime
-from modules.utils import prepare_df_record
+from modules.utils import prepare_dict_col_indexing, prepare_dict_form57_group, prepare_dict_form57_group, prepare_dict_idx_mapping, prepare_dict_form57
 
 args = {
     "c_api": "Google",
@@ -52,10 +52,10 @@ df_retrieval = extract_keywords_realtime(cfg)
 # Load data
 # -------------------------------
 
-dict_col_indexing = utils.prepare_dict_col_indexing(cfg)
-dict_idx_mapping, dict_idx_mapping_inverse = utils.prepare_dict_idx_mapping(cfg)
-dict_form57 = utils.prepare_dict_form57(cfg)
-dict_form57_group = utils.prepare_dict_form57_group(cfg)
+dict_col_indexing = prepare_dict_col_indexing(cfg)
+dict_idx_mapping, dict_idx_mapping_inverse = prepare_dict_idx_mapping(cfg)
+dict_form57 = prepare_dict_form57(cfg)
+dict_form57_group = prepare_dict_form57_group(cfg)
 
 dict_group_field_cols = {}
 for name, group in dict_form57_group.items():

@@ -1,7 +1,7 @@
 import os
 from modules import (
     build_config, scrape_news, filter_news, convert_to_json, extract_keywords, 
-    merge_record_retrieval, scrape_image, scrape_image_seq, merge_news_image
+    merge_record_retrieval, scrape_image, scrape_image_seq, scrape_3D
 )
 from modules.metrics import get_acc_table, get_cov_table, get_stats
 
@@ -79,11 +79,17 @@ assert os.path.exists(cfg.path.dict_idx_mapping), "Must map index names shared a
 print('------------Metrics DONE!!------------')
 
 
-############### scrape crossing images from mapillary (ONLY ONE-TIME TASK FOR EVALUATION)
-df_image = scrape_image(cfg)
-df_image_seq = scrape_image_seq(cfg)
-print('------------Scraping Images DONE!!------------')
+# ############### scrape crossing images from mapillary (ONLY ONE-TIME TASK)
+# df_image = scrape_image(cfg)
+# df_image_seq = scrape_image_seq(cfg)
+# print('------------Scraping Images DONE!!------------')
 
+
+############### scrape 3D reconstruction from mapillary (ONLY ONE-TIME TASK)
+df_3D = scrape_3D(cfg)
+
+
+############### 
 
 # # ############### merge retrieval-record
 # df_rci = merge_news_image(cfg)

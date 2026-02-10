@@ -310,15 +310,15 @@ def extract_keywords_realtime(cfg):
         dict_form57_group = {}
 
     if os.path.exists(cfg.path.df_retrieval_realtime):
-        df_retrieval = pd.read_csv(cfg.path.df_retrieval_realtime)
+        df_retrieval = pd.read_csv(cfg.path.df_retrieval_realtime, parse_dates=['pub_date'])
         df_retrieval = df_retrieval.fillna('')
         
-        df_news_articles_filter = pd.read_csv(cfg.path.df_news_articles_realtime_filter)
+        df_news_articles_filter = pd.read_csv(cfg.path.df_news_articles_realtime_filter, parse_dates=['pub_date'])
         df_news_articles_new = df_news_articles_filter[~df_news_articles_filter['news_id'].isin(df_retrieval['news_id'])]
         df_news_articles_new.loc[:, list_answer_places] = ''
         df_retrieval = pd.concat([df_retrieval, df_news_articles_new], ignore_index=True)
     else:
-        df_news_articles_filter = pd.read_csv(cfg.path.df_news_articles_realtime_filter)
+        df_news_articles_filter = pd.read_csv(cfg.path.df_news_articles_realtime_filter, parse_dates=['pub_date'])
         df_retrieval = df_news_articles_filter.copy(deep=True)
         df_retrieval.loc[:, list_answer_places] = ''
         df_retrieval.to_csv(cfg.path.df_retrieval_realtime, index=False)

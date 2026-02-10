@@ -26,13 +26,14 @@ import copy
 import pathlib
 from .config import Config, TableConfig
 from .utils import (as_int, as_float, remove_dir, make_dir,
-                    prepare_df_record, prepare_df_crossing, prepare_df_image, prepare_df_image_seq)
+                    prepare_df_record, prepare_df_crossing, prepare_df_image, prepare_df_image_seq, prepare_df_3D)
 from pprint import pprint
 from scipy.spatial.distance import cdist
 import io
 from PIL import Image
 import py360convert
 import math
+from datetime import datetime
 
 TIMEOUT = 5
 CONFIG_NP = newspaper.Config()
@@ -458,11 +459,11 @@ class ScrapeImage:
         resp.raise_for_status()
         return resp.json()
 
-    def download_thumbnail(self, image_url: str, out_path: pathlib.Path):
+    def download_from_url(self, url: str, out_path: pathlib.Path):
         """
-        Download the thumbnail JPG and save it locally.
+        Download the content and save it locally.
         """
-        resp = requests.get(image_url)
+        resp = requests.get(url)
         resp.raise_for_status()
 
         out_path.write_bytes(resp.content)
@@ -565,7 +566,7 @@ def scrape_image(cfg: Config) -> pd.DataFrame:
             continue
         output_file = pathlib.Path(os.path.join(cfg.path.dir_scraped_images, f"{img_id}.jpg"))
         if not output_file.exists() and pd.notna(thumb_url):
-            scraper.download_thumbnail(thumb_url, output_file)
+            scraper.download_from_url(thumb_url, output_file)
 
     return df_image
 
@@ -670,6 +671,65 @@ def scrape_image_seq(cfg: Config) -> pd.DataFrame:
 
     df_image_seq.to_csv(cfg.path.df_image_seq, index=False)
     return df_image_seq
+
+
+def scrape_3D(cfg: Config) -> pd.DataFrame:
+    scraper = ScrapeImage(cfg)
+    columns_df_3D = ['crossing_id', 'seq_id', 'img_pos', 'img_id', 'bearing', 'captured_at', 'dist', 'atomic_scale', 'merge_cc']
+    columns_df_3D_add = ['sfm_id', 'sfm_url', 'mesh_id', 'mesh_url']
+
+    if os.path.exists(cfg.path.df_3D):
+        df_3D = prepare_df_3D(cfg)
+    else:
+        df_3D = pd.DataFrame(columns=columns_df_3D + columns_df_3D_add)
+    
+    df_image = prepare_df_image(cfg)
+    df_image = df_image.dropna(subset=['id'])
+    df_image_seq = prepare_df_image_seq(cfg)
+
+    df_merge_temp = df_image_seq.merge(df_image, left_on=['crossing_id', 'img_id'], right_on=['crossing', 'id'], how='left').drop(columns=['crossing', 'id', 'sequence']).copy(deep=True)
+    df_merge_temp = df_merge_temp[~df_merge_temp['img_id'].isin(df_3D['img_id'].values)]
+    df_merge_temp = df_merge_temp[columns_df_3D].copy(deep=True)
+    df_merge_temp[columns_df_3D_add] = None
+
+    df_3D = pd.concat([df_3D, df_merge_temp], ignore_index=True)
+
+    for i, row in tqdm(df_3D.iterrows(), total=len(df_3D)):
+        img_id = row['img_id']
+        sfm_url = row['sfm_url']
+        mesh_url = row['mesh_url']
+        if sfm_url and mesh_url:
+            continue
+        img_detail = scraper.get_image_details(img_id)
+        sfm_cluster = img_detail['sfm_cluster']
+        mesh = img_detail['mesh']
+        df_sfm_mesh.loc[i, 'sfm_id'] = sfm_cluster['id'] if 'id' in sfm_cluster else None # type: ignore
+        df_sfm_mesh.loc[i, 'sfm_url'] = sfm_cluster['url'] if 'url' in sfm_cluster else None # type: ignore
+        df_sfm_mesh.loc[i, 'mesh_id'] = mesh['id'] if 'id' in mesh else None # type: ignore
+        df_sfm_mesh.loc[i, 'mesh_url'] = mesh['url'] if 'url' in mesh else None # type: ignore
+    # df_sfm_mesh.columns
+    # df_sfm_mesh.describe()
+    # df_sfm_mesh.groupby('sfm_id')['seq_id'].nunique()
+    # df_sfm_mesh.groupby('seq_id')['sfm_id'].nunique()
+    
+    df_3D.to_csv(cfg.path.df_3D, index=False)
+    df_3D = df_3D.dropna(subset=['sfm_url', 'mesh_url'], how='any')
+
+    for _, row in tqdm(df_3D.iterrows(), total=len(df_3D)):
+        # img_id = row['img_id']
+        # seq_id = row['seq_id']
+        sfm_id = row['sfm_id']
+        sfm_url = row['sfm_url']
+        mesh_id = row['mesh_id']
+        mesh_url = row['mesh_url']
+        sfm_output_file = pathlib.Path(os.path.join(cfg.path.dir_sfm, sfm_id))
+        if not sfm_output_file.exists() and pd.notna(sfm_url):
+            scraper.download_from_url(sfm_url, sfm_output_file)
+        mesh_output_file = pathlib.Path(os.path.join(cfg.path.dir_mesh, mesh_id))
+        if not mesh_output_file.exists() and pd.notna(mesh_url):
+            scraper.download_from_url(mesh_url, mesh_output_file)
+    
+    return df_3D
 
 
 if __name__ == '__main__':

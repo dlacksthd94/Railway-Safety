@@ -17,6 +17,9 @@ DN_MSLS_META: Final[str] = 'msls_metadata'
 DN_MSLS_CROSSING: Final[str] = 'msls_crossing'
 DN_SCRAPED_IMAGES: Final[str] = 'scraped_image'
 DN_IMAGE_SEQ: Final[str] = 'image_seq'
+DN_3D: Final[str] = '3D'
+DN_sfm: Final[str] = 'sfm'
+DN_mesh: Final[str] = 'mesh'
 
 # files
 FN_DICT_API_KEY: Final[str] = 'dict_api_key.json'
@@ -56,6 +59,8 @@ FN_DF_CROSSING: Final[str] = '251009 NTAD_Railroad_Grade_Crossings_1739202960140
 FN_DF_MSLS_META: Final[str] = 'df_msls_meta.csv'
 FN_DF_IMAGE: Final[str] = 'df_image.csv'
 FN_DF_IMAGE_SEQ: Final[str] = 'df_image_seq.csv'
+
+FN_DF_3D: Final[str] = 'df_3d.csv'
 
 # configurations
 NEWS_CRAWLERS: Final[tuple[str, ...]] = ("np_url", "tf_url", "rd_url", "gs_url", "np_html", "tf_html", "rd_html", "gs_html")
@@ -252,6 +257,9 @@ class PathConfig:
     dir_msls_crossing: str
     dir_scraped_images: str
     dir_image_seq: str
+    dir_3D: str
+    dir_sfm: str
+    dir_mesh: str
     
     # files
     dict_api_key: str
@@ -291,6 +299,8 @@ class PathConfig:
     df_image: str
     df_image_seq: str
 
+    df_3D: str
+
 @dataclass()
 class APIkeyConfig:
     openai: str
@@ -329,9 +339,15 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
 
     dp_scraped_images = os.path.join(dp_mapillary, DN_SCRAPED_IMAGES)
     make_dir(dp_scraped_images)
-
     dp_image_seq = os.path.join(dp_mapillary, DN_IMAGE_SEQ)
     make_dir(dp_image_seq)
+
+    dp_3D = os.path.join(dp_mapillary, DN_3D)
+    make_dir(dp_3D)
+    dp_sfm = os.path.join(dp_3D, DN_sfm)
+    make_dir(dp_sfm)
+    dp_mesh = os.path.join(dp_3D, DN_mesh)
+    make_dir(dp_mesh)
 
     return PathConfig(
         dir_conversion=dp_conversion,
@@ -342,6 +358,9 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
         dir_msls_crossing=dp_msls_crossing,
         dir_scraped_images=dp_scraped_images,
         dir_image_seq=dp_image_seq,
+        dir_3D=dp_3D,
+        dir_sfm=dp_sfm,
+        dir_mesh=dp_mesh,
 
         dict_api_key=os.path.join(DN_DATA_ROOT, FN_DICT_API_KEY),
 
@@ -379,6 +398,8 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
         df_msls_meta=os.path.join(dp_msls, FN_DF_MSLS_META),
         df_image=os.path.join(dp_scraped_images, FN_DF_IMAGE),
         df_image_seq=os.path.join(dp_image_seq, FN_DF_IMAGE_SEQ),
+        
+        df_3D=os.path.join(dp_3D, FN_DF_3D),
     )
 
 def _load_api_key(path_cfg: PathConfig) -> APIkeyConfig:
