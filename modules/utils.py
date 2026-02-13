@@ -190,7 +190,8 @@ def prepare_df_crossing(cfg):
 
 
 def prepare_df_image(cfg):
-    df_image = pd.read_csv(cfg.path.df_image, parse_dates=['captured_at'])
+    df_image = pd.read_csv(cfg.path.df_image)
+    df_image['captured_at'] = pd.to_datetime(df_image['captured_at'], unit='ms')
     df_image = df_image.sort_values('crossing', ignore_index=True)
     df_image['computed_rotation'] = df_image['computed_rotation'].apply(lambda x: ast.literal_eval(x) if pd.notna(x) else x)
     df_image['mesh'] = df_image['mesh'].apply(lambda x: ast.literal_eval(x) if pd.notna(x) else x)
@@ -201,14 +202,18 @@ def prepare_df_image(cfg):
 
 
 def prepare_df_image_seq(cfg):
-    df_image_seq = pd.read_csv(cfg.path.df_image_seq, parse_dates=['captured_at'])
+    df_image_seq = pd.read_csv(cfg.path.df_image_seq)
     return df_image_seq
 
 
 def prepare_df_retrieval(cfg):
-    df_retrieval = pd.read_csv(cfg.path.df_retrieval)
-    df_retrieval['pub_date'] = pd.to_datetime(df_retrieval['pub_date'])
+    df_retrieval = pd.read_csv(cfg.path.df_retrieval, parse_dates=['pub_date'])
     assert df_retrieval['news_id'].is_unique, '==========Warning: News is not unique!!!==========='
+    return df_retrieval
+
+
+def prepare_df_retrieval_realtime(cfg):
+    df_retrieval = pd.read_csv(cfg.path.df_retrieval_realtime, parse_dates=['pub_date'])
     return df_retrieval
 
 

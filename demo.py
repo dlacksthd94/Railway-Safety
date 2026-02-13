@@ -15,7 +15,10 @@ from modules.scrape import scrape_news_realtime
 from modules.filter_news import filter_news_realtime
 from modules.populate_form import populate_fields
 from modules.extract_keywords import extract_keywords_realtime
-from modules.utils import prepare_dict_col_indexing, prepare_dict_form57_group, prepare_dict_form57_group, prepare_dict_idx_mapping, prepare_dict_form57
+from modules.utils import prepare_dict_col_indexing, prepare_dict_form57_group, prepare_dict_form57_group, prepare_dict_idx_mapping, prepare_dict_form57, prepare_df_retrieval_realtime
+
+
+st.set_page_config(layout="wide")
 
 args = {
     "c_api": "Google",
@@ -29,29 +32,12 @@ args = {
     "r_question_batch": "group"
 }
 cfg = build_config(args)
-START_DATE = (datetime.datetime.today() - datetime.timedelta(days=2)).date().strftime("%Y-%m-%d")
-END_DATE = (datetime.datetime.today() + datetime.timedelta(days=1)).date().strftime("%Y-%m-%d")
-STATE = cfg.scrp.target_states[0]
-
-st.set_page_config(layout="wide")
-
-
-############### fetching recent news
-df_record_news_realtime, df_news_articles_realtime = scrape_news_realtime(cfg, START_DATE, END_DATE, STATE)
-
-
-############### filtering news
-df_news_articles_realtime_filter = filter_news_realtime(cfg, START_DATE, STATE, END_DATE)
-
-
-############### retrieval
-df_retrieval = extract_keywords_realtime(cfg)
 
 
 # -------------------------------
 # Load data
 # -------------------------------
-
+df_retrieval_realtime = prepare_df_retrieval_realtime(cfg)
 dict_col_indexing = prepare_dict_col_indexing(cfg)
 dict_idx_mapping, dict_idx_mapping_inverse = prepare_dict_idx_mapping(cfg)
 dict_form57 = prepare_dict_form57(cfg)
@@ -60,16 +46,16 @@ dict_form57_group = prepare_dict_form57_group(cfg)
 dict_group_field_cols = {}
 for name, group in dict_form57_group.items():
     dict_field_cols_temp = {}
-    content_idx = df_retrieval.columns.get_loc('content')
+    content_idx = df_retrieval_realtime.columns.get_loc('content')
     for field in group:
         cols_temp = []
-        for col in df_retrieval.columns[content_idx + 1:]: # type: ignore
+        for col in df_retrieval_realtime.columns[content_idx + 1:]: # type: ignore
             if field == col.split('_')[0]:
                 cols_temp.append(col)
         dict_field_cols_temp[field] = cols_temp
     dict_group_field_cols[name] = dict_field_cols_temp
 
-st.session_state["news_df"] = df_retrieval
+st.session_state["news_df"] = df_retrieval_realtime
 
 df = st.session_state.get("news_df", None)
 if df is None:
