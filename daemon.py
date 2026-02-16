@@ -45,6 +45,6 @@ df_news_articles_realtime_filter = filter_news_realtime(cfg, START_DATE, STATE, 
 print(f"############### Filtered news articles!! ###############")
 
 
-# ############### retrieval
-# df_retrieval_realtime = extract_keywords_realtime(cfg)
-# print(f"############### Extracted keywords!! ###############")
+############### retrieval
+df_retrieval_realtime = extract_keywords_realtime(cfg)
+print(f"############### Extracted keywords!! ###############")

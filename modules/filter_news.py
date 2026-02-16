@@ -6,7 +6,7 @@ from tqdm import tqdm
 import os
 import torch
 import gc
-from itertools import combinations
+from itertools import combinations, chain
 from google import genai
 from .utils import text_binary_classification, text_generation, select_generate_func, desanitize_model_path
 
@@ -60,7 +60,7 @@ def check_article_realtime(cfg, df_news_articles_score, mask_skip, col_crawlers,
     """
     assert len(set(dict_answer_choice.values())) == len(dict_answer_choice.values())
 
-    api, model_path = 'Google', 'gemini-2.5-flash-lite'
+    api, model_path, _, _ = cfg.retr.to_tuple()
     model_path = desanitize_model_path(model_path)
     client = genai.Client(api_key=cfg.apikey.google)
 
@@ -98,6 +98,33 @@ def check_article_realtime(cfg, df_news_articles_score, mask_skip, col_crawlers,
     return df_news_articles_score
 
 
+def pick_complete_article(cfg, content, question, dict_answer_choice, num_sim):
+    api, model_path = 'Google', 'gemini-2.5-flash-lite'
+    # api, model_path, _, _ = cfg.retr.to_tuple()
+    model_path = desanitize_model_path(model_path)
+    client = genai.Client(api_key=cfg.apikey.google)
+
+    generate_func = select_generate_func(api)
+
+    prompt = f"Context:\n{content}\n\nQuestion:\n{question}\n\nAnswer:\n"
+    content = [prompt]
+
+    dict_output = {str(idx_crawler): 0 for idx_crawler in dict_answer_choice}
+    for _ in range(num_sim):
+        output = generate_func(client, model_path, content, generation_config=None)
+        if output in dict_answer_choice.keys():
+            dict_output[output] += 1 # type: ignore
+        else:
+            output_sub = re.sub(r'\D', '', output) # type: ignore
+            if output_sub in dict_answer_choice.keys():
+                dict_output[output_sub] += 1
+            else:
+                pass
+    
+    selected_article_idx = max(dict_output, key=dict_output.get) # type: ignore
+    return selected_article_idx
+
+
 def get_accident_date(cfg, content, question, dict_answer_choice):
     assert len(set(dict_answer_choice.values())) == len(dict_answer_choice.values())
 
@@ -113,6 +140,7 @@ def get_accident_date(cfg, content, question, dict_answer_choice):
     output = generate_func(client, model_path, content, generation_config=None)
 
     return output
+
 
 def filter_news(cfg) -> pd.DataFrame:
     col_crawlers = list(cfg.scrp.news_crawlers)
@@ -213,13 +241,18 @@ def filter_news_realtime(cfg, start_date, state, end_date) -> pd.DataFrame:
     # col_crawlers_clean = [crawler + '_clean' for crawler in col_crawlers]
     col_crawlers_train = [crawler + '_train' for crawler in col_crawlers]
     col_crawlers_state = [crawler + '_state' for crawler in col_crawlers]
+    col_crawlers_bp = [crawler + '_bp' for crawler in col_crawlers]
     if os.path.exists(cfg.path.df_news_articles_realtime_score):
-        df_news_articles_score = pd.read_csv(cfg.path.df_news_articles_realtime_score, parse_dates=['pub_date'])
+        df_news_articles_score = pd.read_csv(cfg.path.df_news_articles_realtime_score, parse_dates=['pub_date', 'accident_date'])
         df_news_articles = pd.read_csv(cfg.path.df_news_articles_realtime, parse_dates=['pub_date'])
         df_news_articles_new = df_news_articles[~df_news_articles['news_id'].isin(df_news_articles_score['news_id'])].copy(deep=True)
         # df_news_articles_new[col_crawlers_clean] = np.nan
         df_news_articles_new[col_crawlers_train] = np.nan
         df_news_articles_new[col_crawlers_state] = np.nan
+        df_news_articles_new[col_crawlers_bp] = np.nan
+        df_news_articles_new['selected_crawler'] = np.nan
+        df_news_articles_new['selected_crawler'] = df_news_articles_new['selected_crawler'].astype('object')
+        df_news_articles_new['accident_date'] = pd.NaT
         df_news_articles_score = pd.concat([df_news_articles_score, df_news_articles_new], ignore_index=True)
     else:
         df_news_articles = pd.read_csv(cfg.path.df_news_articles_realtime, parse_dates=['pub_date'])
@@ -227,6 +260,10 @@ def filter_news_realtime(cfg, start_date, state, end_date) -> pd.DataFrame:
         # df_news_articles_score[col_crawlers_clean] = np.nan
         df_news_articles_score[col_crawlers_train] = np.nan
         df_news_articles_score[col_crawlers_state] = np.nan
+        df_news_articles_score[col_crawlers_bp] = np.nan
+        df_news_articles_score['selected_crawler'] = np.nan
+        df_news_articles_score['selected_crawler'] = df_news_articles_score['selected_crawler'].astype('object')
+        df_news_articles_score['accident_date'] = pd.NaT
 
     ### remove empty articles
     df_news_articles_score[col_crawlers] = df_news_articles_score[col_crawlers].apply(lambda col: col.str.strip())
@@ -234,32 +271,38 @@ def filter_news_realtime(cfg, start_date, state, end_date) -> pd.DataFrame:
     df_news_articles_score[col_crawlers] = df_news_articles_score[col_crawlers].where(mask_not_empty)
     df_news_articles_score = df_news_articles_score[df_news_articles_score[col_crawlers].any(axis=1)]
 
+    ### remove duplicate articles
+    for idx, row in df_news_articles_score.iterrows():
+        sr_col_crawler = row[col_crawlers]
+        eq = sr_col_crawler.to_numpy()[:, None] == sr_col_crawler.to_numpy()[None, :]
+        eq_triu = np.triu(eq, k=1)
+        eq_df = pd.DataFrame(eq_triu, index=sr_col_crawler.index, columns=sr_col_crawler.index)
+        duplicate_pairs = eq_df.stack()[lambda x: x].index.tolist()
+        for crawler1, crawler2 in duplicate_pairs:
+            content1 = row[crawler1]
+            content2 = row[crawler2]
+            if pd.isna(content1) or pd.isna(content2):
+                continue
+            if content1 == content2:
+                df_news_articles_score.loc[idx, crawler1] = crawler2 # type: ignore
 
-    ### remove articles not related to train accident
     dict_answer_choice = {'YES': 1, 'NO': 0}
 
-    ### remove articles out of recent date range
+    ### pass duplicate articles
+    mask_skip_duplicate = df_news_articles_score[col_crawlers].apply(lambda col: col.isin(col_crawlers)).values
+
+    ### pass articles out of recent date range
     # mask_skip_date = (df_news_articles_score['pub_date'] < start_date) | (df_news_articles_score['pub_date'] > end_date)
     # mask_skip_date = np.broadcast_to(mask_skip_date.values[:, np.newaxis], (mask_skip_date.shape[0], len(col_crawlers)))
     # df_news_articles_score = df_news_articles_score.loc[[2, 93, 101, 116, 138]]
     mask_skip_date = np.zeros((df_news_articles_score.shape[0], len(col_crawlers)), dtype=bool)
-
-    # ### remove articles with boilerplate text
-    # mask_clean_done = df_news_articles_score[col_crawlers_clean].notna()
-    # mask_clean_done = np.broadcast_to(mask_clean_done.any(axis=1).values[:, np.newaxis], (mask_clean_done.shape[0], len(col_crawlers))) # type: ignore
-    # mask_skip = mask_skip_date | mask_clean_done
-    # question = f"Is this a mainly clean news article without any unrelated text such as privacy policy, cookie consent, advertising preferences, advertisements, UI elements, etc.? Answer only {'/'.join(dict_answer_choice)}"
-    # df_news_articles_score = check_article_realtime(cfg, df_news_articles_score, mask_skip, col_crawlers, col_crawlers_clean, dict_answer_choice, question, num_sim=1)
-    # df_news_articles_score[col_crawlers].where(df_news_articles_score[col_crawlers_clean].values == 1)
-
-    # df_news_articles_score.to_csv(cfg.path.df_news_articles_realtime_score, index=False)
 
     ### remove articles not related to train accident
     mask_train_done = df_news_articles_score[col_crawlers_train].notna()
     mask_train_done = np.broadcast_to(mask_train_done.any(axis=1).values[:, np.newaxis], (mask_train_done.shape[0], len(col_crawlers))) # type: ignore
     # mask_skip_not_clean = (df_news_articles_score[col_crawlers_clean] != 1).values
     # mask_skip = mask_skip_date | mask_train_done | mask_skip_not_clean
-    mask_skip = mask_skip_date | mask_train_done
+    mask_skip = mask_skip_duplicate | mask_skip_date | mask_train_done
     question = f"Does this article report a train accident? Answer only {'/'.join(dict_answer_choice)}"
     df_news_articles_score = check_article_realtime(cfg, df_news_articles_score, mask_skip, col_crawlers, col_crawlers_train, dict_answer_choice, question, num_sim=3)
     df_news_articles_score[col_crawlers].where(df_news_articles_score[col_crawlers_train].values == 1)
@@ -270,53 +313,82 @@ def filter_news_realtime(cfg, start_date, state, end_date) -> pd.DataFrame:
     mask_state_done = df_news_articles_score[col_crawlers_state].notna()
     mask_state_done = np.broadcast_to(mask_state_done.any(axis=1).values[:, np.newaxis], (mask_state_done.shape[0], len(col_crawlers))) # type: ignore
     mask_skip_is_train = (df_news_articles_score[col_crawlers_train] > 0).values
-    mask_skip = mask_skip_date | mask_state_done | ~mask_skip_is_train
+    mask_skip = mask_skip_duplicate | mask_skip_date | mask_state_done | ~mask_skip_is_train
     question = f"Did the train accident occur in US {state}? Answer only {'/'.join(dict_answer_choice)}"
     df_news_articles_score = check_article_realtime(cfg, df_news_articles_score, mask_skip, col_crawlers, col_crawlers_state, dict_answer_choice, question, num_sim=3)
     df_news_articles_score[col_crawlers].where(df_news_articles_score[col_crawlers_state].values == 1)
 
     df_news_articles_score.to_csv(cfg.path.df_news_articles_realtime_score, index=False)
 
-    mask_valid_final = (df_news_articles_score[col_crawlers_state] == 1).values
+    ### remove articles full of boilerplate text
+    mask_bp_done = df_news_articles_score[col_crawlers_bp].notna()
+    mask_bp_done = np.broadcast_to(mask_bp_done.any(axis=1).values[:, np.newaxis], (mask_bp_done.shape[0], len(col_crawlers))) # type: ignore
+    mask_skip_is_state = (df_news_articles_score[col_crawlers_state] > 0).values
+    mask_skip = mask_skip_duplicate | mask_skip_date | mask_bp_done | ~mask_skip_is_state
+    question = f"Is this article mostly text unrelated to the train accident? Answer only {'/'.join(dict_answer_choice)}" # , such as boilerplate content, UI elements, advertising, or other meaningless text
+    df_news_articles_score = check_article_realtime(cfg, df_news_articles_score, mask_skip, col_crawlers, col_crawlers_bp, dict_answer_choice, question, num_sim=3)
+    df_news_articles_score[col_crawlers].where(df_news_articles_score[col_crawlers_bp].values == 0)
+    
+    df_news_articles_score.to_csv(cfg.path.df_news_articles_realtime_score, index=False)
 
-    ### filter news articles
-    df_news_articles_filter = df_news_articles_score.copy(deep=True)
-    df_news_articles_filter[col_crawlers] = df_news_articles_filter[col_crawlers].where(mask_valid_final)
-    df_news_articles_filter = df_news_articles_filter[df_news_articles_filter[col_crawlers].any(axis=1)].copy(deep=True)
+    ### select the complete article among crawlers
+    mask_select_done = df_news_articles_score['selected_crawler'].notna()
+    mask_select_done = np.broadcast_to(mask_select_done.values[:, np.newaxis], (mask_select_done.shape[0], len(col_crawlers))) # type: ignore
+    mask_skip_not_bp = (df_news_articles_score[col_crawlers_bp] == 0).values
+    mask_skip = mask_skip_duplicate | mask_skip_date | mask_select_done | ~mask_skip_not_bp
+
+    dict_answer_choice = {str(i + 1): crawler for i, crawler in enumerate(col_crawlers)}
+    for idx, row in tqdm(df_news_articles_score.iterrows(), total=df_news_articles_score.shape[0]):
+        if mask_skip[idx].all():
+            continue
+        if (mask_skip[idx] == False).sum() == 1:
+            selected_article = str(np.where(mask_skip[idx] == False)[0][0] + 1)
+            df_news_articles_score.loc[idx, 'selected_crawler'] = dict_answer_choice[selected_article]
+        else:
+            content = '\n\n'.join([f"<NEWS ARTICLE {i+1}>\n{row[crawler]}" for i, crawler in enumerate(col_crawlers) if not pd.isna(row[crawler])])
+            question = "Which is the full news article without irrelevant content? Answer with the article number only."
+            selected_article = pick_complete_article(cfg, content, question, dict_answer_choice, num_sim=10)
+            df_news_articles_score.loc[idx, 'selected_crawler'] = dict_answer_choice[selected_article]
+
+    df_news_articles_score.to_csv(cfg.path.df_news_articles_realtime_score, index=False)
+    
+    ### identify the date of train accident
+    mask_recent_done = df_news_articles_score['accident_date'].notna()
+    mask_skip_not_selected = df_news_articles_score['selected_crawler'].isna().values
+    mask_skip = mask_skip_duplicate.all(axis=1) | mask_skip_date.all(axis=1) | mask_recent_done | mask_skip_not_selected
+    for idx, row in tqdm(df_news_articles_score.iterrows(), total=df_news_articles_score.shape[0]):
+        if mask_skip[idx]:
+            continue
+        selected_article = row['selected_crawler']
+        content = row[selected_article]
+        pub_date = row['pub_date']
+        question = f"The article was published on {pub_date} {pub_date.day_name()}. When is the date of the train accident? Answer in YYYY-MM-DD format. If the date cannot be identified, answer 'unknown'."
+        accident_date = get_accident_date(cfg, content, question, dict_answer_choice)
+        accident_date_parsed = pd.to_datetime(accident_date, errors='coerce') # type: ignore
+        if accident_date_parsed is pd.NaT:
+            df_news_articles_score.loc[idx, 'accident_date'] = pd.to_datetime('1800-01-01') # placeholder for unknown date
+        else:
+            df_news_articles_score.loc[idx, 'accident_date'] = accident_date_parsed
+        # print('==============================')
+        # print(pub_date, pub_date.day_name())
+        # print(content)
+        # print(accident_date, pd.to_datetime(accident_date, errors='coerce').day_name())
+        # print('==============================')
+    
+    df_news_articles_score.to_csv(cfg.path.df_news_articles_realtime_score, index=False)
+    
+    mask_valid_final = ~mask_skip_date.all(axis=1) & df_news_articles_score['accident_date'].notna().values
+
+    ############### filter news articles
+    df_news_articles_filter = df_news_articles_score[mask_valid_final].copy(deep=True)
     df_news_articles_filter['content'] = np.nan
     df_news_articles_filter['content'] = df_news_articles_filter['content'].astype('object')
+    df_news_articles_filter['content'] = df_news_articles_filter.apply(lambda row: row[row['selected_crawler']] if not pd.isna(row['selected_crawler']) else np.nan, axis=1)
+    df_news_articles_filter = df_news_articles_filter.drop(col_crawlers + col_crawlers_train + col_crawlers_state + col_crawlers_bp, axis=1)
 
-    ### select the longest article among different crawlers
-    df_news_articles_filter['selected_crawler'] = np.nan
-    df_news_articles_filter['selected_crawler'] = df_news_articles_filter['selected_crawler'].astype('object')
-    for idx, row in df_news_articles_filter.iterrows():
-        selected_crawler = row[col_crawlers].str.len().idxmax()
-        content_max_len = row[selected_crawler]
-        df_news_articles_filter.loc[idx, 'selected_crawler'] = selected_crawler
-        df_news_articles_filter.loc[idx, 'content'] = content_max_len
-    df_news_articles_filter['content'].sample(1).values
-    df_news_articles_score[col_crawlers_train]
-    df_news_articles_score[col_crawlers_state]
-    df_news_articles_score.loc[138, 'tf_html'] # 2, 93, 101, 116, 138
-
-    # df_news_articles_filter = df_news_articles_filter.drop(col_crawlers + col_crawlers_clean + col_crawlers_train + col_crawlers_state, axis=1)
-    df_news_articles_filter = df_news_articles_filter.drop(col_crawlers + col_crawlers_train + col_crawlers_state, axis=1)
-
-    ### identify the accident date and time
-    df_news_articles_filter['accident_date'] = np.nan
-    df_news_articles_filter['accident_date'] = df_news_articles_filter['accident_date'].astype('object')
-    for idx, row in tqdm(df_news_articles_filter.iterrows()):
-        content = row['content']
-        pub_date = row['pub_date']
-        question = f"The article was published on {pub_date}. When is the date of the train accident? Answer in YYYY-MM-DD format. If the date cannot be identified, answer 'unknown'."
-        accident_date = get_accident_date(cfg, content, question, dict_answer_choice)
-        df_news_articles_filter.loc[idx, 'accident_date'] = accident_date
-        print()
-        print(pub_date, pub_date.day_name())
-        print(content)
-        print(accident_date)
-        print()
-
+    date_diff = df_news_articles_filter['pub_date'] - df_news_articles_filter['accident_date']
+    df_news_articles_filter = df_news_articles_filter[(date_diff <= pd.Timedelta(days=10)) & (date_diff >= pd.Timedelta(days=0))]
+    
     df_news_articles_filter.to_csv(cfg.path.df_news_articles_realtime_filter, index=False)
 
     return df_news_articles_filter
@@ -333,41 +405,3 @@ if __name__ == '__main__':
     # df_news_record_filter[df_news_record_filter[col_crawlers].isna().any(axis=1)][col_crawlers].sample(1).values # sample a random article to see if there is anything non-article
 
     # df_news_record_filter[col_crawlers].isna().sum()
-
-    # no_article_patterns = [
-    #     '^\s+$',
-    #     'Press & Hold to confirm you',
-    #     'You are not authorized to access',
-    #     'Edge: Too Many Requests',
-    #     '403 Forbidden',
-    #     'These cookies are necessary for our services to function',
-    #     'Selling, Sharing, Targeted Advertising',
-    #     'Please enable JS and disable any ad blocker',
-    #     'We may use personal information to support',
-    #     'Access to this site has been denied.',
-    #     'This website is using a security service to protect itself from online attacks',
-    #     'we provide online advertising services that use cookies and similar technologies to collect information',
-    #     "We won't sell or share your personal information to inform the ads you see.",
-    #     'we process personal information to inform which ads you see on our services',
-    #     'Enable JavaScript and cookies to continue',
-    #     "We won't sell your personal information to inform the ads you see.",
-    #     'When you visit our website, we store cookies on your browser to collect information.',
-    #     'Get the facts every day.',
-    #     'Close Get email notifications',
-
-    #     'Click here if you wish to opt out and view the full site.',
-    #     'This website uses cookies and other tracking technologies',
-    #     'Attackers might be trying to steal your information',
-    #     'We use cookies to help you navigate efficiently and perform certain functions',
-    #     'We sell and/or share your personal information/data',
-    #     'you have the right to opt-out of Targeted Advertising',
-    #     'This website utilizes technologies such as cookies to enable essential site functionality',
-    #     'we and our ad partners collect certain information from our visitors through cookies and similar technologies',
-    #     'State Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington Washington D.C. West Virginia Wisconsin Wyoming',
-    #     'remaining of\n\nThank you for reading! On your next view you will be asked to log in to your subscriber account',
-    #     'Attackers can see and change information you send or receive from the site.\n\ninformation you send or receive from the site.',
-    #     "Not at all. It just seems like a lot of back-and-forth talk.\n\nYes. I'm growing very worried over what might happen.",
-    #     'Fate of OC Judge who shot and killed his wife once again in the hands of a jury',
-    #     'Please email your obituary to obituary@chicoer.com',
-    # ]
-    # pattern = '|'.join(no_article_patterns)
