@@ -291,12 +291,6 @@ def extract_keywords_realtime(cfg):
 
     set_seed(seed)
 
-    # if json_source == 'None':
-    #     # list_answer_places = ["1", "2", "3", "4", "5_month", "5_day", "5_year", "6", "6_ampm", "7", "8", "9", "10", "11", "12", "12_ownership", 
-    #     #                       "13", "14", "15", "16", "17", "18", "19", "20a", "20b", "20c", 
-    #     #                       "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "30_record", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", 
-    #     #                       "44", "45", "46_killed", "46_injured", "47", "48", "49_killed", "49_injured", "50", "51", "52_killed", "52_injured", "53a", "53b", "54", "55", "56", "57"]
-    # else:
     dict_form57 = prepare_dict_form57(cfg)
     dict_answer_places, dict_idx_ap = to_answer_places(dict_form57)
     list_answer_places = list(dict_answer_places.keys())
@@ -310,15 +304,15 @@ def extract_keywords_realtime(cfg):
         dict_form57_group = {}
 
     if os.path.exists(cfg.path.df_retrieval_realtime):
-        df_retrieval = pd.read_csv(cfg.path.df_retrieval_realtime, parse_dates=['pub_date'])
+        df_retrieval = pd.read_csv(cfg.path.df_retrieval_realtime, parse_dates=['pub_date', 'accident_date'])
         df_retrieval = df_retrieval.fillna('')
         
-        df_news_articles_filter = pd.read_csv(cfg.path.df_news_articles_realtime_filter, parse_dates=['pub_date'])
+        df_news_articles_filter = pd.read_csv(cfg.path.df_news_articles_realtime_filter, parse_dates=['pub_date', 'accident_date'])
         df_news_articles_new = df_news_articles_filter[~df_news_articles_filter['news_id'].isin(df_retrieval['news_id'])]
         df_news_articles_new.loc[:, list_answer_places] = ''
         df_retrieval = pd.concat([df_retrieval, df_news_articles_new], ignore_index=True)
     else:
-        df_news_articles_filter = pd.read_csv(cfg.path.df_news_articles_realtime_filter, parse_dates=['pub_date'])
+        df_news_articles_filter = pd.read_csv(cfg.path.df_news_articles_realtime_filter, parse_dates=['pub_date', 'accident_date'])
         df_retrieval = df_news_articles_filter.copy(deep=True)
         df_retrieval.loc[:, list_answer_places] = ''
         df_retrieval.to_csv(cfg.path.df_retrieval_realtime, index=False)
@@ -395,37 +389,7 @@ def extract_keywords_realtime(cfg):
         news_content = row['content']
         
         if question_batch == 'single':
-            for entry_idx in tqdm(dict_form57.keys(), leave=False):
-                if entry_idx in ['105']:
-                    continue
-                entry = dict_form57[entry_idx]
-                entry_name = entry['name']
-                for entry_idx_suffix in dict_idx_ap[entry_idx]:
-                    question = question_base + '\n'
-                    answer_place = dict_answer_places[entry_idx_suffix]
-                    description = f"({answer_place['answer_place_name']})" if len(dict_idx_ap[entry_idx]) > 1 else ''
-                    answer_place_info = answer_place['answer_place_info']
-                    # question += f'({entry_idx_suffix}): ' + entry_name + description + f' {str(answer_place_info)}' + '\n'
-                    question += f'{entry_idx_suffix}: ' + entry_name + description + f' {str(answer_place_info)}' + '\n'
-                    question += answer_format
-                    answer_start_idx = dict_idx_ap[entry_idx][0]
-                
-                    try:
-                        generation_config = {'max_new_tokens': 30} # will be used only for Huggingface
-                        dict_answer = extract_helper(api, news_content, question, generate_func, generator, model_path, generation_config)
-
-                        # print(question)
-                        # print()
-                        # print(answers)
-                        # print()
-                        # pprint(dict_answer)
-                        # print()
-
-                        answer = dict_answer.get(entry_idx_suffix, '')
-                        df_retrieval.loc[idx_content, entry_idx_suffix] = answer # type: ignore
-                            
-                    except:
-                        pass
+            raise NotImplementedError("Single question batch is not supported in realtime extraction.")
                     
         elif question_batch == 'group':
             for group_name, group in tqdm(dict_form57_group.items(), leave=False):
@@ -437,7 +401,10 @@ def extract_keywords_realtime(cfg):
                     entry_name = entry['name']
                     for entry_idx_suffix in dict_idx_ap[entry_idx]:
                         answer_place = dict_answer_places[entry_idx_suffix]
-                        description = f"({answer_place['answer_place_name']})" if len(dict_idx_ap[entry_idx]) > 1 else ''
+                        if entry_idx_suffix == '54':
+                            description = f"(summary of the train accident in two sentences)"
+                        else:
+                            description = f"({answer_place['answer_place_name']})" if len(dict_idx_ap[entry_idx]) > 1 else ''
                         answer_place_info = answer_place['answer_place_info']
                         # question += f'({entry_idx_suffix}): ' + entry_name + description + f' {str(answer_place_info)}' + '\n'
                         question += f'{entry_idx_suffix}: ' + entry_name + description + f' {str(answer_place_info)}' + '\n'
@@ -473,7 +440,10 @@ def extract_keywords_realtime(cfg):
                 entry_name = entry['name']
                 for entry_idx_suffix in dict_idx_ap[entry_idx]:
                     answer_place = dict_answer_places[entry_idx_suffix]
-                    description = f"({answer_place['answer_place_name']})" if len(dict_idx_ap[entry_idx]) > 1 else ''
+                    if entry_idx_suffix == '54':
+                        description = f"(summary of the train accident in two sentences)"
+                    else:
+                        description = f"({answer_place['answer_place_name']})" if len(dict_idx_ap[entry_idx]) > 1 else ''
                     answer_place_info = answer_place['answer_place_info']
                     # question += f'({entry_idx_suffix}): ' + entry_name + description + f' {str(answer_place_info)}' + '\n'
                     question += f'{entry_idx_suffix}: ' + entry_name + description + f' {str(answer_place_info)}' + '\n'

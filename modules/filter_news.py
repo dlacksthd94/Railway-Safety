@@ -129,6 +129,7 @@ def get_accident_date(cfg, content, question, dict_answer_choice):
     assert len(set(dict_answer_choice.values())) == len(dict_answer_choice.values())
 
     api, model_path = 'Google', 'gemini-2.5-flash-lite'
+    # api, model_path, _, _ = cfg.retr.to_tuple()
     model_path = desanitize_model_path(model_path)
     client = genai.Client(api_key=cfg.apikey.google)
 
@@ -292,10 +293,10 @@ def filter_news_realtime(cfg, start_date, state, end_date) -> pd.DataFrame:
     mask_skip_duplicate = df_news_articles_score[col_crawlers].apply(lambda col: col.isin(col_crawlers)).values
 
     ### pass articles out of recent date range
-    # mask_skip_date = (df_news_articles_score['pub_date'] < start_date) | (df_news_articles_score['pub_date'] > end_date)
-    # mask_skip_date = np.broadcast_to(mask_skip_date.values[:, np.newaxis], (mask_skip_date.shape[0], len(col_crawlers)))
+    mask_skip_date = (df_news_articles_score['pub_date'] < start_date) | (df_news_articles_score['pub_date'] > end_date)
+    mask_skip_date = np.broadcast_to(mask_skip_date.values[:, np.newaxis], (mask_skip_date.shape[0], len(col_crawlers)))
     # df_news_articles_score = df_news_articles_score.loc[[2, 93, 101, 116, 138]]
-    mask_skip_date = np.zeros((df_news_articles_score.shape[0], len(col_crawlers)), dtype=bool)
+    # mask_skip_date = np.zeros((df_news_articles_score.shape[0], len(col_crawlers)), dtype=bool)
 
     ### remove articles not related to train accident
     mask_train_done = df_news_articles_score[col_crawlers_train].notna()
