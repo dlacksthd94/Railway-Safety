@@ -56,12 +56,36 @@ def draw_bounding_box(draw, bounding_box, outline, line_width):
     draw.rectangle([x, y, x + width, y + height], outline=outline, width=line_width)
 
 
+def split_text(text, max_length=150):
+    words = text.split()
+    chunks = []
+    current = ""
+
+    for word in words:
+        # If adding the next word exceeds max_length
+        if len(current) + len(word) + (1 if current else 0) > max_length:
+            chunks.append(current)
+            current = word
+        else:
+            if current:
+                current += " " + word
+            else:
+                current = word
+
+    if current:
+        chunks.append(current)
+
+    return chunks
+
+
 def populate_fields(cfg, sr_retrieved_info):
     form57_img = Image.open(cfg.path.form57_img).convert("RGB")
     draw = ImageDraw.Draw(form57_img)
 
     dict_bounding_box = prepare_dict_bounding_box(cfg)
     dict_idx_mapping, dict_idx_mapping_inverse = prepare_dict_idx_mapping(cfg)
+
+    dict_idx_mapping['54'] = '54' # add 54(Narrative) field
 
     for col_idx_form, col_idx_json in dict_idx_mapping.items():
         if col_idx_json == '':
@@ -98,12 +122,27 @@ def populate_fields(cfg, sr_retrieved_info):
             raise NotImplementedError("Multiple bounding boxes for one field is not implemented yet.")
 
         position = (bounding_box["x"], bounding_box["y"])
-        color = (0, 50, 360)      # black
-        font = ImageFont.truetype(
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-            size=25   # 👈 change this number
-        )
-        draw.text(position, text, fill=color, font=font)
+        text_color = (0, 50, 360)
+        if col_idx_form == '54':
+            draw.rectangle([(bounding_box["x"], bounding_box["y"]), (bounding_box["x"] + bounding_box["width"], bounding_box["y"] + bounding_box["height"] + 5)], fill="white")
+            
+            split_step = 150
+            text_splits = split_text(text, max_length=split_step)
+            for text_split in text_splits:
+                font_size = 15
+                font = ImageFont.truetype(
+                    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                    size=font_size
+                )
+                draw.text(position, text_split, fill=text_color, font=font)
+                position = (position[0], position[1] + font_size + 2)
+        else:
+            font_size = 25
+            font = ImageFont.truetype(
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                size=font_size
+            )
+            draw.text(position, text, fill=text_color, font=font)
 
     # form57_img.save(FP_BOUNDING_BOX_IMG)
     return draw

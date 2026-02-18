@@ -363,7 +363,13 @@ def filter_news_realtime(cfg, start_date, state, end_date) -> pd.DataFrame:
         selected_article = row['selected_crawler']
         content = row[selected_article]
         pub_date = row['pub_date']
-        question = f"The article was published on {pub_date} {pub_date.day_name()}. When is the date of the train accident? Answer in YYYY-MM-DD format. If the date cannot be identified, answer 'unknown'."
+        question = (
+            f"The article was published on {pub_date} {pub_date.day_name()}. "
+            "When is the date and time of the train accident? Answer in YYYY-MM-DD HH:MM format. "
+            "If the time is not specified, approximate to the closest hour. "
+            "If the time is not mentioned at all, answer in YYYY-MM-DD format. "
+            "If the date cannot be identified, answer with 'Unknown'."
+        )
         accident_date = get_accident_date(cfg, content, question, dict_answer_choice)
         accident_date_parsed = pd.to_datetime(accident_date, errors='coerce') # type: ignore
         if accident_date_parsed is pd.NaT:
