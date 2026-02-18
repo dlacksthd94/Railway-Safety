@@ -462,10 +462,7 @@ def extract_keywords_realtime(cfg):
             except:
                 pass
             
-        if idx_content % 10 == 0: # type: ignore
-            df_retrieval.to_csv(cfg.path.df_retrieval_realtime, index=False)
-
-    df_retrieval.to_csv(cfg.path.df_retrieval_realtime, index=False)
+        df_retrieval.to_csv(cfg.path.df_retrieval_realtime, index=False)
 
     if api == 'Huggingface':
         del generator

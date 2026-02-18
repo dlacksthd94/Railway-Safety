@@ -824,10 +824,10 @@
         "name": "Narrative Description",
         "bounding_boxes": [
             {
-                "x": 455,
+                "x": 200,
                 "y": 880,
                 "height": 15,
-                "width": 480
+                "width": 740
             }
         ]
     },

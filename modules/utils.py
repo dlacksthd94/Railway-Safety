@@ -213,7 +213,7 @@ def prepare_df_retrieval(cfg):
 
 
 def prepare_df_retrieval_realtime(cfg):
-    df_retrieval = pd.read_csv(cfg.path.df_retrieval_realtime, parse_dates=['pub_date'])
+    df_retrieval = pd.read_csv(cfg.path.df_retrieval_realtime, parse_dates=['pub_date', 'accident_date'])
     return df_retrieval
 
 

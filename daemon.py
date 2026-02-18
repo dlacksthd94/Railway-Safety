@@ -30,7 +30,7 @@ args = {
 }
 cfg = build_config(args)
 
-START_DATE = (datetime.datetime.today() - datetime.timedelta(days=10)).date().strftime("%Y-%m-%d")
+START_DATE = (datetime.datetime.today() - datetime.timedelta(days=7)).date().strftime("%Y-%m-%d")
 END_DATE = (datetime.datetime.today() + datetime.timedelta(days=1)).date().strftime("%Y-%m-%d")
 STATE = cfg.scrp.target_states[0]
 
