@@ -38,7 +38,7 @@ cfg = build_config(args)
 # Load data
 # -------------------------------
 df_retrieval_realtime = prepare_df_retrieval_realtime(cfg)
-df_retrieval_realtime = df_retrieval_realtime.sort_values(by='accident_date', ascending=True)
+df_retrieval_realtime = df_retrieval_realtime.sort_values(by=['accident_date', 'pub_date'], ascending=[True, False])
 
 st.session_state["news_df"] = df_retrieval_realtime
 
@@ -53,18 +53,18 @@ if df is None:
 st.sidebar.header("Filters")
 
 today = datetime.datetime.today()
-min_date = df['pub_date'].min().date()
+min_date = df['accident_date'].min().date()
 max_date = today + pd.Timedelta(days=1)
 
 date_range = st.sidebar.date_input(
-    "News Date Range",
-    value=(today - datetime.timedelta(days=7), today),
+    "Accident Date Range",
+    value=(today - datetime.timedelta(days=10), today),
     min_value=min_date,
     max_value=max_date,
 )
 
 start_date, end_date = date_range if isinstance(date_range, tuple) else (min_date, max_date) # type: ignore
-filtered_df = df[(df['pub_date'] >= pd.Timestamp(start_date)) & (df['pub_date'] <= pd.Timestamp(end_date))]
+filtered_df = df[(df['accident_date'] >= pd.Timestamp(start_date)) & (df['accident_date'] <= pd.Timestamp(end_date))]
 
 
 ############### cleanse information
@@ -80,6 +80,76 @@ filtered_df.loc[:, '6_2'] = filtered_df['accident_date'].dt.strftime('%p')
 filtered_df['9'] = filtered_df['9'].str.replace('county', '', case=False).str.strip()
 filtered_df['11'] = filtered_df['11'].str.replace('city', '', case=False).str.strip()
 
+############### check same accident reports
+filtered_df['same_accident'] = float('nan')
+time_threshold_min = 60
+same_accident_groups_id = 0
+for _, date_group in filtered_df.groupby(filtered_df['accident_date'].dt.date):
+    if len(date_group) == 1:
+        filtered_df.loc[date_group.index, 'same_accident'] = same_accident_groups_id
+        same_accident_groups_id += 1
+    elif len(date_group) > 1:
+        g = date_group.sort_values('accident_date').copy()
+
+        county = g['9'].astype(str).str.strip().str.lower().to_numpy()
+        city = g['11'].astype(str).str.strip().str.lower().to_numpy()
+
+        t = g['accident_date'].astype('int64').to_numpy()  # ns
+        dt_min = np.abs(t[:, None] - t[None, :]) / (60 * 1e9)
+        same_place = (city[:, None] == city[None, :]) | (county[:, None] == county[None, :])
+        close_in_time = dt_min <= time_threshold_min
+
+        adj = same_place & close_in_time
+
+        n_date_group = len(g)
+        visited = np.zeros(n_date_group, dtype=bool)
+
+        for i in range(n_date_group):
+            if visited[i]:
+                continue
+
+            stack = [i]
+            visited[i] = True
+            component = []
+
+            while stack:
+                u = stack.pop()
+                component.append(u)
+                nbrs = np.where(adj[u] & ~visited)[0]
+                visited[nbrs] = True
+                stack.extend(nbrs.tolist())
+
+            comp_idx = g.index[component]
+            filtered_df.loc[comp_idx, 'same_accident'] = same_accident_groups_id
+            same_accident_groups_id += 1
+    else:
+        raise NotImplementedError
+
+
+grouped_df = filtered_df.copy(deep=True)
+############### merge same accident reports into one news item
+for _, group in list(grouped_df.groupby('same_accident')):
+    if len(group) == 1:
+        pass
+    elif len(group) > 1:
+        latest_report = group.sort_values('accident_date', ascending=False).iloc[0]
+        latest_report_idx = latest_report.name
+        other_report_idxs = group.index.difference([latest_report_idx])
+        other_reports = grouped_df.loc[other_report_idxs]
+        grouped_df = grouped_df.drop(index=other_report_idxs)
+        for _, other_report in other_reports.iterrows():
+            start_idx = other_report.index.get_loc('content') + 1
+            end_idx = other_report.index.get_loc('same_accident')
+            other_report_info = other_report.iloc[start_idx:end_idx]
+            for col_idx, col in other_report_info.items():
+                if col.lower() == 'unknown':
+                    pass
+                else:
+                    if grouped_df.at[latest_report_idx, col_idx].lower() in ['unknown', 'nan', '']:
+                        grouped_df.at[latest_report_idx, col_idx] = col
+    else:
+        raise NotImplementedError
+
 
 # -------------------------------
 # PAGE LAYOUT
@@ -94,8 +164,8 @@ with col_right:
     right_panel = st.container()
 
 # Remember selection
-if "selected_news_id" not in st.session_state:
-    st.session_state.selected_news_id = None
+if "selected_news_group" not in st.session_state:
+    st.session_state.selected_news_group = None
 
 
 # -------------------------------
@@ -103,8 +173,8 @@ if "selected_news_id" not in st.session_state:
 # -------------------------------
 with upper_left:
     options = {
-        f"{row['accident_date'].date()} — {row.title[:80]}...": row.news_id
-        for _, row in filtered_df.iterrows()
+        f"{row['accident_date'].date()} — {row.title[:80]}...": row['same_accident']
+        for _, row in grouped_df.iterrows()
     }
 
     if options:
@@ -113,7 +183,7 @@ with upper_left:
             list(options.keys()),
             index=0
         )
-        st.session_state.selected_news_id = options[selected_label]
+        st.session_state.selected_news_group = options[selected_label]
     else:
         st.info("No news found in selected date range.")
 
@@ -122,32 +192,37 @@ with upper_left:
 # Get selected news item
 # -------------------------------
 selected = None
-if st.session_state.selected_news_id is not None:
-    selected = filtered_df[filtered_df["news_id"] == st.session_state.selected_news_id].iloc[0]
+if st.session_state.selected_news_group is not None:
+    selected = grouped_df[grouped_df["same_accident"] == st.session_state.selected_news_group].iloc[0]
 
 
 # -------------------------------
 # LOWER LEFT — Populate form and show image
 # -------------------------------
 
-with lower_left:
-    if selected is not None:
-        idx_content = selected.index.get_loc('content')
-        sr_retrieved_info = selected.iloc[idx_content + 1:] # type: ignore
-        draw = populate_fields(cfg, sr_retrieved_info)
-        
-        pil_image = draw._image
-        st.image(pil_image, caption="Populated Form Image", use_container_width=False)
+# with lower_left:
+if selected is not None:
+    # link to the news article
+    titles_urls = filtered_df[filtered_df['same_accident'] == st.session_state.selected_news_group][['title', 'url']]
+    for _, (title, url) in titles_urls.iterrows():
+        st.markdown(f"### [{title}]({url})")
+    
+    idx_content = selected.index.get_loc('content')
+    sr_retrieved_info = selected.iloc[idx_content + 1:] # type: ignore
+    draw = populate_fields(cfg, sr_retrieved_info)
+    
+    pil_image = draw._image
+    st.image(pil_image, caption="Populated Form Image", use_container_width=False)
 
-        # download button for the image
-        img_byte_arr = io.BytesIO()
-        pil_image.save(img_byte_arr, format='PNG')
-        img_byte_arr.seek(0)
-        st.download_button(
-            label="Download Populated Form Image",
-            data=img_byte_arr,
-            file_name=f"populated_form_{selected.news_id}.png",
-            mime="image/png"
-        )
-    else:
-        st.info("Please select a news article to see the populated form.")
+    # download button for the image
+    img_byte_arr = io.BytesIO()
+    pil_image.save(img_byte_arr, format='PNG')
+    img_byte_arr.seek(0)
+    st.download_button(
+        label="Download Populated Form Image",
+        data=img_byte_arr,
+        file_name=f"populated_form_{selected.news_id}.png",
+        mime="image/png"
+    )
+else:
+    st.info("Please select a news article to see the populated form.")
