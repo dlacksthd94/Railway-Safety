@@ -1,7 +1,8 @@
 import os
 from modules import (
-    build_config, scrape_news, filter_news, convert_to_json, extract_keywords, 
-    merge_record_retrieval, scrape_image, scrape_image_seq, scrape_3D
+    build_config, scrape_news, filter_news, convert_to_json, extract_keywords, merge_record_retrieval,
+    scrape_image, scrape_image_seq, preprocess_image,
+    scrape_3D
 )
 from modules.metrics import get_acc_table, get_cov_table, get_stats
 
@@ -85,8 +86,19 @@ print('------------Metrics DONE!!------------')
 # print('------------Scraping Images DONE!!------------')
 
 
-############### scrape 3D reconstruction from mapillary (ONLY ONE-TIME TASK)
-df_3D = scrape_3D(cfg)
+############### preprocess images (ONLY ONE-TIME TASK)
+# yolov8x-world, yoloe-11l-seg, yoloe-v8l-seg, yoloe-26x-seg, IDEA-Research/grounding-dino-tiny
+# preprocess_image(cfg, model_name='yolov8x-world', confidence_threshold=0.5)
+# preprocess_image(cfg, model_name='yoloe-11l-seg', confidence_threshold=0.5)
+# preprocess_image(cfg, model_name='yoloe-v8l-seg', confidence_threshold=0.5)
+preprocess_image(cfg, model_name='yoloe-26x-seg', confidence_threshold=0.5)
+# preprocess_image(cfg, model_name='IDEA-Research/grounding-dino-tiny', confidence_threshold=0.3)
+# preprocess_image(cfg, model_name='IDEA-Research/grounding-dino-base', confidence_threshold=0.3)
+
+print('------------Preprocessing Images DONE!!------------')
+
+# ############### scrape 3D reconstruction from mapillary (ONLY ONE-TIME TASK)
+# df_3D = scrape_3D(cfg)
 
 
 ############### 

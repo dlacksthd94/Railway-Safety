@@ -586,7 +586,7 @@ def scrape_image_seq(cfg: Config) -> pd.DataFrame:
 
     ############### using only pano
     df_image = df_image.dropna(subset=['id'])
-    df_image['id'] = df_image['id'].astype(int)
+    df_image.loc[:, 'id'] = df_image['id'].astype(int)
     df_image = df_image[df_image['is_pano'] == 1]
     df_image = df_image[df_image['camera_type'] == 'spherical'] # [spherical, equirectangular] equirectangular images require diff view extraction mechanism
     
@@ -596,16 +596,17 @@ def scrape_image_seq(cfg: Config) -> pd.DataFrame:
     
     ############### using only images with distance over the threshold
     # df_image = df_image[(df_image['dist'] <= threshold) | (df_image['computed_dist'] <= threshold)]
-    df_min_dist = df_image.loc[df_image.groupby("crossing")["dist"].idxmin()][['crossing', 'id', 'compass_angle', 'computed_compass_angle', 'sequence', 'lat', 'lon', 'LATITUDE', 'LONGITUD', 'dist']].reset_index(drop=True)
-    df_min_dist = df_min_dist[df_min_dist['dist'] <= cfg.scrp.dist_thresh_from_crossing] # it seems actual GPS location is more accurate than computed GPS location, so I only use `dist` here, not `computed_dist`.
-    # print(df_min_dist)
+    cols_df_min_dist = ['crossing', 'id', 'captured_at', 'compass_angle', 'computed_compass_angle', 'sequence', 'lat', 'lon', 'LATITUDE', 'LONGITUD', 'dist']
+    df_min_dist = df_image.loc[df_image.groupby("crossing")["dist"].idxmin()][cols_df_min_dist].reset_index(drop=True)
+    df_min_dist = df_min_dist[df_min_dist['dist'] <= cfg.scrp.dist_thres_filter_img] # it seems actual GPS location is more accurate than computed GPS location, so I only use `dist` here, not `computed_dist`.
+    # df_min_dist[(df_min_dist['captured_at'].dt.hour >= 20) | (df_min_dist['captured_at'].dt.hour <= 6)]['sequence'].unique()
     
     ############### get image seq
     (((df_image['lat'] - df_image['computed_lat'])**2 + (df_image['lon'] - df_image['computed_lon'])**2)**0.5).dropna().sort_values()
     for i, row in tqdm(df_min_dist.iterrows(), total=df_min_dist.shape[0]):
         crossing_id = row['crossing']
-        # if crossing_id in df_image_seq['crossing_id'].values:
-        #     continue
+        if crossing_id in df_image_seq['crossing_id'].values:
+            continue
         seq_id = row['sequence']
         xing_lat, xing_lon = row[['LATITUDE', 'LONGITUD']]
         
@@ -633,8 +634,8 @@ def scrape_image_seq(cfg: Config) -> pd.DataFrame:
         # print(df_seq_temp)
         df_image_seq_temp = pd.DataFrame(columns=df_image_seq.columns)
         for _, seq_row in df_seq_temp.iterrows():
-            img_id = seq_row['id']
-            if str(img_id) not in images or pd.isna(seq_row['computed_compass_angle']):
+            img_id = str(int(seq_row['id']))
+            if img_id not in images or pd.isna(seq_row['computed_compass_angle']):
                 continue
             img_pos = str(images.index(str(img_id))).zfill(4)
             lat, lon = seq_row[['lat', 'lon']]
@@ -655,7 +656,7 @@ def scrape_image_seq(cfg: Config) -> pd.DataFrame:
             img = np.array(Image.open(fp_img).convert("RGB"))
             view = scraper.extract_view(img, h_fov=90, yaw_deg=bearing, pitch_deg=0, out_hw=(720, 960))
             out_img = Image.fromarray(view)
-            dp_crossing_seq = os.path.join(cfg.path.dir_image_seq, seq_id)
+            dp_crossing_seq = os.path.join(cfg.path.dir_image_seq, crossing_id, seq_id)
             make_dir(dp_crossing_seq)
             fp_img_seq = os.path.join(dp_crossing_seq, f'{img_pos}_{img_id}.jpg')
             if not os.path.exists(fp_img_seq):
@@ -722,12 +723,12 @@ def scrape_3D(cfg: Config) -> pd.DataFrame:
         sfm_url = row['sfm_url']
         mesh_id = row['mesh_id']
         mesh_url = row['mesh_url']
-        sfm_output_file = pathlib.Path(os.path.join(cfg.path.dir_sfm, sfm_id))
-        if not sfm_output_file.exists() and pd.notna(sfm_url):
-            scraper.download_from_url(sfm_url, sfm_output_file)
-        mesh_output_file = pathlib.Path(os.path.join(cfg.path.dir_mesh, mesh_id))
-        if not mesh_output_file.exists() and pd.notna(mesh_url):
-            scraper.download_from_url(mesh_url, mesh_output_file)
+        fp_sfm = pathlib.Path(os.path.join(cfg.path.dir_sfm, str(sfm_id)))
+        if not fp_sfm.exists() and pd.notna(sfm_url):
+            scraper.download_from_url(sfm_url, fp_sfm)
+        fp_mesh = pathlib.Path(os.path.join(cfg.path.dir_mesh, str(mesh_id)))
+        if not fp_mesh.exists() and pd.notna(mesh_url):
+            scraper.download_from_url(mesh_url, fp_mesh)
     
     return df_3D
 

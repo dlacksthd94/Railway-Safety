@@ -17,9 +17,10 @@ DN_MSLS_META: Final[str] = 'msls_metadata'
 DN_MSLS_CROSSING: Final[str] = 'msls_crossing'
 DN_SCRAPED_IMAGES: Final[str] = 'scraped_image'
 DN_IMAGE_SEQ: Final[str] = 'image_seq'
+DN_IMAGE_PREPROCESSED: Final[str] = 'image_preprocessed'
 DN_3D: Final[str] = '3D'
-DN_sfm: Final[str] = 'sfm'
-DN_mesh: Final[str] = 'mesh'
+DN_SFM: Final[str] = 'sfm'
+DN_MESH: Final[str] = 'mesh'
 
 # files
 FN_DICT_API_KEY: Final[str] = 'dict_api_key.json'
@@ -59,6 +60,7 @@ FN_DF_CROSSING: Final[str] = '251009 NTAD_Railroad_Grade_Crossings_1739202960140
 FN_DF_MSLS_META: Final[str] = 'df_msls_meta.csv'
 FN_DF_IMAGE: Final[str] = 'df_image.csv'
 FN_DF_IMAGE_SEQ: Final[str] = 'df_image_seq.csv'
+FN_DF_IMAGE_PREPROCESSED: Final[str] = 'df_image_preprocessed.csv'
 
 FN_DF_3D: Final[str] = 'df_3d.csv'
 
@@ -104,7 +106,8 @@ IMG_DETAIL_FIELDS: Final[tuple[str, ...]] = (
 )
 BBOX_OFFSET: Final[float] = 0.0002 # 0.00001 ≒ 1.11 meters
 N_IMG_PER_SQM: Final[int] = 3 # 3 images per 1m²
-DIST_THRESH_FROM_CROSSING: Final[float] = 0.00001 # 0.00001 ≒ 1.11 meters
+DIST_THRES_FILTER_IMG: Final[float] = 0.00001 # 0.00001 ≒ 1.11 meters
+DIST_THRES_FILTER_IMG_SEQ: Final[float] = 0.0005 # 0.00001 ≒ 1.11 meters
 
 def parse_args() -> argparse.Namespace:
     """Create an argument parser for building configs from the CLI and parse CLI args."""
@@ -216,7 +219,8 @@ class ScrapingConfig:
     img_search_fields: tuple[str, ...]
     img_detail_fields: tuple[str, ...]
     bbox_offset: float
-    dist_thresh_from_crossing: float
+    dist_thres_filter_img: float
+    dist_thres_filter_img_seq: float
 
     def __post_init__(self):
         ### sanity check
@@ -257,6 +261,7 @@ class PathConfig:
     dir_msls_crossing: str
     dir_scraped_images: str
     dir_image_seq: str
+    dir_image_preprocessed: str
     dir_3D: str
     dir_sfm: str
     dir_mesh: str
@@ -298,6 +303,7 @@ class PathConfig:
     df_msls_meta: str
     df_image: str
     df_image_seq: str
+    df_image_preprocessed: str
 
     df_3D: str
 
@@ -341,12 +347,14 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
     make_dir(dp_scraped_images)
     dp_image_seq = os.path.join(dp_mapillary, DN_IMAGE_SEQ)
     make_dir(dp_image_seq)
+    dp_image_preprocessed = os.path.join(dp_mapillary, DN_IMAGE_PREPROCESSED)
+    make_dir(dp_image_preprocessed)
 
     dp_3D = os.path.join(dp_mapillary, DN_3D)
     make_dir(dp_3D)
-    dp_sfm = os.path.join(dp_3D, DN_sfm)
+    dp_sfm = os.path.join(dp_3D, DN_SFM)
     make_dir(dp_sfm)
-    dp_mesh = os.path.join(dp_3D, DN_mesh)
+    dp_mesh = os.path.join(dp_3D, DN_MESH)
     make_dir(dp_mesh)
 
     return PathConfig(
@@ -358,6 +366,7 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
         dir_msls_crossing=dp_msls_crossing,
         dir_scraped_images=dp_scraped_images,
         dir_image_seq=dp_image_seq,
+        dir_image_preprocessed=dp_image_preprocessed,
         dir_3D=dp_3D,
         dir_sfm=dp_sfm,
         dir_mesh=dp_mesh,
@@ -398,6 +407,7 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
         df_msls_meta=os.path.join(dp_msls, FN_DF_MSLS_META),
         df_image=os.path.join(dp_scraped_images, FN_DF_IMAGE),
         df_image_seq=os.path.join(dp_image_seq, FN_DF_IMAGE_SEQ),
+        df_image_preprocessed=os.path.join(dp_image_preprocessed, FN_DF_IMAGE_PREPROCESSED),
         
         df_3D=os.path.join(dp_3D, FN_DF_3D),
     )
@@ -419,7 +429,8 @@ def build_config(args_dict=None) -> Config:
     retr_args['model'] = sanitize_model_path(retr_args['model'])
     scrp_cfg = ScrapingConfig(
         TARGET_STATES, START_DATE, NEWS_CRAWLERS,
-        N_IMG_PER_SQM, IMG_SEARCH_FIELDS, IMG_DETAIL_FIELDS, BBOX_OFFSET, DIST_THRESH_FROM_CROSSING
+        N_IMG_PER_SQM, IMG_SEARCH_FIELDS, IMG_DETAIL_FIELDS,
+        BBOX_OFFSET, DIST_THRES_FILTER_IMG, DIST_THRES_FILTER_IMG_SEQ
     )
     conv_cfg = ConversionConfig(**conv_args)
     retr_cfg  = RetrievalConfig(**retr_args)
