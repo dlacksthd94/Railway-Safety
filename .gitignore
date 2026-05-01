@@ -15,3 +15,5 @@ mapillary
 dict_api_key.json
 sandbox.py
 *(old)*
+*.pt
+*.ts
