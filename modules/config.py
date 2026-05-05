@@ -18,6 +18,7 @@ DN_MSLS_CROSSING: Final[str] = 'msls_crossing'
 DN_SCRAPED_IMAGES: Final[str] = 'scraped_image'
 DN_IMAGE_SEQ: Final[str] = 'image_seq'
 DN_IMAGE_PREPROCESSED: Final[str] = 'image_preprocessed'
+DN_REFERENCE_IMAGE: Final[str] = 'reference_image'
 DN_3D: Final[str] = '3D'
 DN_SFM: Final[str] = 'sfm'
 DN_MESH: Final[str] = 'mesh'
@@ -262,6 +263,7 @@ class PathConfig:
     dir_scraped_images: str
     dir_image_seq: str
     dir_image_preprocessed: str
+    dir_reference_image: str
     dir_3D: str
     dir_sfm: str
     dir_mesh: str
@@ -349,6 +351,8 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
     make_dir(dp_image_seq)
     dp_image_preprocessed = os.path.join(dp_mapillary, DN_IMAGE_PREPROCESSED)
     make_dir(dp_image_preprocessed)
+    dp_reference_image = os.path.join(dp_image_preprocessed, DN_REFERENCE_IMAGE)
+    make_dir(dp_reference_image)
 
     dp_3D = os.path.join(dp_mapillary, DN_3D)
     make_dir(dp_3D)
@@ -367,6 +371,7 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
         dir_scraped_images=dp_scraped_images,
         dir_image_seq=dp_image_seq,
         dir_image_preprocessed=dp_image_preprocessed,
+        dir_reference_image=dp_reference_image,
         dir_3D=dp_3D,
         dir_sfm=dp_sfm,
         dir_mesh=dp_mesh,

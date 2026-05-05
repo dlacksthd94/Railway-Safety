@@ -35,25 +35,25 @@ print('------------Configuration DONE!!------------')
 # print('------------Retrieval DONE!!------------')
 
 
-############### match samples manually by running following command in terminal (ONLY ONE-TIME TASK FOR EVALUATION)
-# streamlit run match_record_news.py
-assert os.path.exists(cfg.path.df_match)
-print('------------Matching DONE!!------------')
+# ############### match samples manually by running following command in terminal (ONLY ONE-TIME TASK FOR EVALUATION)
+# # streamlit run match_record_news.py
+# assert os.path.exists(cfg.path.df_match)
+# print('------------Matching DONE!!------------')
 
 
-############### annotate samples manually by running following command in terminal (ONLY ONE-TIME TASK FOR EVALUATION)
-# streamlit run annotate_news.py
-assert os.path.exists(cfg.path.df_annotate)
-print('------------Annotating DONE!!------------')
+# ############### annotate samples manually by running following command in terminal (ONLY ONE-TIME TASK FOR EVALUATION)
+# # streamlit run annotate_news.py
+# assert os.path.exists(cfg.path.df_annotate)
+# print('------------Annotating DONE!!------------')
 
 
-############### merge news-record pair and retrieval results
-df_record_retrieval = merge_record_retrieval(cfg)
-print('------------Merging DONE!!------------')
+# ############### merge news-record pair and retrieval results
+# df_record_retrieval = merge_record_retrieval(cfg)
+# print('------------Merging DONE!!------------')
 
 
-############### calculate the accuracy and coverage
-assert os.path.exists(cfg.path.dict_idx_mapping), "Must map index names shared accross the models with form transcription manually"
+# ############### calculate the accuracy and coverage
+# assert os.path.exists(cfg.path.dict_idx_mapping), "Must map index names shared accross the models with form transcription manually"
 
 # list_answer_type_selected = ['digit', 'text', 'choice']
 # df_acc, acc = get_acc_table(list_answer_type_selected, cfg)
@@ -77,7 +77,7 @@ assert os.path.exists(cfg.path.dict_idx_mapping), "Must map index names shared a
 
 # get_stats(df_acc, cfg)
 
-print('------------Metrics DONE!!------------')
+# print('------------Metrics DONE!!------------')
 
 
 # ############### scrape crossing images from mapillary (ONLY ONE-TIME TASK)
@@ -87,13 +87,19 @@ print('------------Metrics DONE!!------------')
 
 
 ############### preprocess images (ONLY ONE-TIME TASK)
-# yolov8x-world, yoloe-11l-seg, yoloe-v8l-seg, yoloe-26x-seg, IDEA-Research/grounding-dino-tiny
-# preprocess_image(cfg, model_name='yolov8x-world', confidence_threshold=0.5)
-# preprocess_image(cfg, model_name='yoloe-11l-seg', confidence_threshold=0.5)
-# preprocess_image(cfg, model_name='yoloe-v8l-seg', confidence_threshold=0.5)
-preprocess_image(cfg, model_name='yoloe-26x-seg', confidence_threshold=0.5)
-# preprocess_image(cfg, model_name='IDEA-Research/grounding-dino-tiny', confidence_threshold=0.3)
-# preprocess_image(cfg, model_name='IDEA-Research/grounding-dino-base', confidence_threshold=0.3)
+# yoloe-11l-seg, yoloe-v8l-seg, yoloe-26x-seg, IDEA-Research/grounding-dino-tiny, IDEA-Research/grounding-dino-base
+# preprocess_image(cfg, model_name='yoloe-26x-seg', confidence_threshold=0.5, prompt_type='text', text_class=['traffic sign', 'traffic light'])
+
+# preprocess_image(cfg, model_name='yoloe-26x-seg', confidence_threshold=0.1, prompt_type='text', text_class=["X-shaped white traffic sign with black text", "Two white rectangular boards crossed in an X-shape", "X-shaped railroad crossing sign on a metal pole", "White wooden or metal planks forming a cross with 'RAILROAD CROSSING' text", "X-shaped sign with small red reflectors on the edges"]) # not bad, but not good enough
+# preprocess_image(cfg, model_name='yoloe-26x-seg', confidence_threshold=0.1, prompt_type='text', text_class=["Long horizontal pole with red and white diagonal stripes", "Long slender barrier arm positioned across the road", "Retractable safety gate arm at a railroad crossing", "Gate arm with small red warning lights attached", "Reflective striped wooden or fiberglass barrier pole", "Lowered railroad crossing gate blocking the lane"]) # very bad
+
+# preprocess_image(cfg, model_name='yoloe-26x-seg', confidence_threshold=0.1, prompt_type='visual', visual_class='crossbuck_4.jpg')
+
+# preprocess_image(cfg, model_name='IDEA-Research/grounding-dino-base', confidence_threshold=0.3, prompt_type='text', text_class=["traffic sign", "traffic light"]) # grounding dino preprocesses text inputs as '. '.join(list_of_labels), not treating each label as an individual token.
+# preprocess_image(cfg, model_name='IDEA-Research/grounding-dino-base', confidence_threshold=0.3, prompt_type='text', text_class=["gate arm", "barrier arm", "lifted gate arm", "lifted barrier arm"])
+
+preprocess_image(cfg, model_name='facebook/sam-vit-huge', confidence_threshold=0.5, prompt_type='visual', visual_class='crossbuck_4.jpg')
+# preprocess_image(cfg, model_name='facebook/sam-vit-huge', confidence_threshold=0.5, prompt_type='visual', visual_class=['crossbuck_1.jpg', 'crossbuck_2.jpg', 'crossbuck_3.jpg', 'crossbuck_4.jpg'])
 
 print('------------Preprocessing Images DONE!!------------')
 

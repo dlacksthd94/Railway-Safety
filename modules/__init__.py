@@ -5,7 +5,6 @@ from .convert_report_to_json import convert_to_json
 from .extract_keywords import extract_keywords
 from .merge import merge_record_retrieval, merge_news_image
 from .populate_form import populate_fields
-from .simulate import reconstruct_3D
 from .preprocess_image import preprocess_image
 
 __all__ = [
@@ -16,6 +15,5 @@ __all__ = [
     "extract_keywords",
     "merge_record_retrieval", "merge_news_image",
     "populate_fields",
-    "reconstruct_3D",
     "preprocess_image",
 ]

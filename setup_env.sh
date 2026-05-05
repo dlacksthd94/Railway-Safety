@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 #################### create miniconda env
-ENV_NAME="rw_safety"
+ENV_NAME="rail"
 
 set -e
 source ~/miniconda3/etc/profile.d/conda.sh
@@ -26,7 +26,7 @@ pip install streamlit
 pip install openai pytesseract google-genai # for transcribing report form in json format
 pip install transformers accelerate bitsandbytes torchvision # for labeling news & populating the report form
 pip install sentencepiece # for running VLMs from Hugging Face
-pip install py360convert ultralytics # for image preprocessing
+pip install py360convert ultralytics datasets # for image preprocessing
 pip install open3d # for 3d reconstruction
 
 ############ Modify code in `def postprocess` in `class ImageTextToTextPipeline` in transformers/pipelines/image_text_to_text.py
