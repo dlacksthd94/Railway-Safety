@@ -83,23 +83,21 @@ print('------------Configuration DONE!!------------')
 # ############### scrape crossing images from mapillary (ONLY ONE-TIME TASK)
 # df_image = scrape_image(cfg)
 # df_image_seq = scrape_image_seq(cfg)
+
 # print('------------Scraping Images DONE!!------------')
 
 
 ############### preprocess images (ONLY ONE-TIME TASK)
-# yoloe-11l-seg, yoloe-v8l-seg, yoloe-26x-seg, IDEA-Research/grounding-dino-tiny, IDEA-Research/grounding-dino-base
-# preprocess_image(cfg, model_name='yoloe-26x-seg', confidence_threshold=0.5, prompt_type='text', text_class=['traffic sign', 'traffic light'])
+# preprocess_image(cfg, model_name='yoloe-26x-seg', confidence_threshold=0.5, text_input=['traffic sign', 'traffic light'])
+# preprocess_image(cfg, model_name='yoloe-26x-seg', confidence_threshold=0.1, text_input=["X-shaped white traffic sign with black text", "Two white rectangular boards crossed in an X-shape", "X-shaped railroad crossing sign on a metal pole", "White wooden or metal planks forming a cross with 'RAILROAD CROSSING' text", "X-shaped sign with small red reflectors on the edges"]) # not bad, but not good enough
+# preprocess_image(cfg, model_name='yoloe-26x-seg', confidence_threshold=0.1, visual_input='crossbuck_4.jpg')
 
-# preprocess_image(cfg, model_name='yoloe-26x-seg', confidence_threshold=0.1, prompt_type='text', text_class=["X-shaped white traffic sign with black text", "Two white rectangular boards crossed in an X-shape", "X-shaped railroad crossing sign on a metal pole", "White wooden or metal planks forming a cross with 'RAILROAD CROSSING' text", "X-shaped sign with small red reflectors on the edges"]) # not bad, but not good enough
-# preprocess_image(cfg, model_name='yoloe-26x-seg', confidence_threshold=0.1, prompt_type='text', text_class=["Long horizontal pole with red and white diagonal stripes", "Long slender barrier arm positioned across the road", "Retractable safety gate arm at a railroad crossing", "Gate arm with small red warning lights attached", "Reflective striped wooden or fiberglass barrier pole", "Lowered railroad crossing gate blocking the lane"]) # very bad
+# preprocess_image(cfg, model_name='IDEA-Research/grounding-dino-base', confidence_threshold=0.3, text_input=["traffic sign", "traffic light"]) # grounding dino preprocesses text inputs as '. '.join(list_of_labels), not treating each label as an individual token.
+# preprocess_image(cfg, model_name='IDEA-Research/grounding-dino-base', confidence_threshold=0.3, text_input=["gate arm", "barrier arm", "lifted gate arm", "lifted barrier arm"])
 
-# preprocess_image(cfg, model_name='yoloe-26x-seg', confidence_threshold=0.1, prompt_type='visual', visual_class='crossbuck_4.jpg')
+# preprocess_image(cfg, model_name='facebook/sam-vit-huge', confidence_threshold=0.3, visual_input='crossbuck_4.jpg')
 
-# preprocess_image(cfg, model_name='IDEA-Research/grounding-dino-base', confidence_threshold=0.3, prompt_type='text', text_class=["traffic sign", "traffic light"]) # grounding dino preprocesses text inputs as '. '.join(list_of_labels), not treating each label as an individual token.
-# preprocess_image(cfg, model_name='IDEA-Research/grounding-dino-base', confidence_threshold=0.3, prompt_type='text', text_class=["gate arm", "barrier arm", "lifted gate arm", "lifted barrier arm"])
-
-preprocess_image(cfg, model_name='facebook/sam-vit-huge', confidence_threshold=0.5, prompt_type='visual', visual_class='crossbuck_4.jpg')
-# preprocess_image(cfg, model_name='facebook/sam-vit-huge', confidence_threshold=0.5, prompt_type='visual', visual_class=['crossbuck_1.jpg', 'crossbuck_2.jpg', 'crossbuck_3.jpg', 'crossbuck_4.jpg'])
+preprocess_image(cfg, model_name='facebook/sam3', confidence_threshold=0.5, visual_input='crossbuck_4.jpg')
 
 print('------------Preprocessing Images DONE!!------------')
 

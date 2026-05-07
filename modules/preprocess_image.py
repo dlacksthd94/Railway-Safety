@@ -24,16 +24,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
-@dataclass
-class DetectionResult:
-    """Standardized detection result format."""
-    image_path: str
-    image_name: str
-    model_name: str
-    width: int
-    height: int
-    detections: List[Dict[str, Any]]  # List of {class, confidence, x1, y1, x2, y2}
-
 
 # ============================================================================
 # Abstract Base Class
@@ -72,14 +62,12 @@ class ObjectDetector(ABC):
         pass
 
     @abstractmethod
-    def detect(self, image: np.ndarray|Image.Image, prompt_type: str) -> Dict[str, Any]:
+    def detect(self, image: Image.Image) -> Dict[str, Any]:
         """
         Perform detection on image.
 
         Args:
-            image: Input image as numpy array (H, W, C) in BGR format or PIL Image
-
-            prompt_type: Type of prompt ('text' or 'visual') for detection
+            image: Input image as PIL Image
 
         Returns:
             Dict with keys: 'boxes', 'confidences', 'classes'
@@ -111,10 +99,10 @@ class ObjectDetector(ABC):
             x1, y1, x2, y2 = box
 
             if isinstance(cls, (int, np.integer)):
-                if hasattr(self, 'text_class') and self.text_class:
-                    class_name = self.text_class[cls]
-                elif hasattr(self, 'visual_class') and self.visual_class:
-                    class_name = self.visual_class.split('.')[0]  # Use filename without extension
+                if hasattr(self, 'text_input') and self.text_input:
+                    class_name = self.text_input[cls]
+                elif hasattr(self, 'visual_input') and self.visual_input:
+                    class_name = self.visual_input.split('.')[0]  # Use filename without extension
                 else:
                     class_name = f"class_{cls}"
             else:
@@ -160,9 +148,8 @@ class YOLOEDetector(ObjectDetector):
         cfg: Any,
         model_name: str,
         confidence_threshold: float,
-        prompt_type: str,
-        text_class: Optional[List[str]] = None,
-        visual_class: Optional[str] = None,
+        text_input: Optional[List[str]] = None,
+        visual_input: Optional[str] = None,
     ):
         """
         Initialize YOLOE detector.
@@ -170,16 +157,14 @@ class YOLOEDetector(ObjectDetector):
         Args:
             model_name: Model name (e.g., 'yoloe-26n-seg')
             confidence_threshold: Confidence threshold
-            prompt_type: Type of prompt ('text' or 'visual') for detection
-            text_class: List of class text labels to detect (optional, used for text prompts)
-            visual_class: Reference image filename for visual prompts (optional, used for visual prompts)
+            text_input: List of class text labels to detect (optional, used for text prompts)
+            visual_input: Reference image filename for visual prompts (optional, used for visual prompts)
         """
         super().__init__(cfg, model_name, confidence_threshold)
         self.model_path = model_name + ".pt"
-        self.prompt_type = prompt_type
-        self.text_class = text_class
-        self.visual_class = visual_class
-        self.fp_ref_image = None
+        self.text_input = text_input
+        self.visual_input = visual_input
+        self.fp_visual_input = None
         self.visual_prompts = None
         self.load_model()
 
@@ -190,14 +175,14 @@ class YOLOEDetector(ObjectDetector):
         logger.info(f"Loaded YOLOE model: {self.model_name} on {self.device}")
 
         # Set user-defined classes from TextClass
-        if self.prompt_type == "text":
-            assert isinstance(self.text_class, list) and all(isinstance(cls, str) for cls in self.text_class), "text_class must be a list of strings"
-            self.model.set_classes(self.text_class)  # type: ignore
-        elif self.prompt_type == "visual":
-            assert isinstance(self.visual_class, str), "visual_class must be a string representing the reference image filename for visual prompts"
-            fp_ref_image = os.path.join(self.cfg.path.dir_reference_image, self.visual_class) # type: ignore
-            self.fp_ref_image = fp_ref_image
-            ref_image = cv2.imread(fp_ref_image)
+        if self.text_input is not None:
+            assert isinstance(self.text_input, list) and all(isinstance(cls, str) for cls in self.text_input), "text_input must be a list of strings"
+            self.model.set_classes(self.text_input)  # type: ignore
+        if self.visual_input is not None:
+            assert isinstance(self.visual_input, str), "visual_input must be a string representing the reference image filename for visual prompts"
+            fp_visual_input = os.path.join(self.cfg.path.dir_reference_image, self.visual_input) # type: ignore
+            self.fp_visual_input = fp_visual_input
+            ref_image = cv2.imread(fp_visual_input)
             h, w, c = ref_image.shape
             visual_prompts = dict(
                 bboxes=np.array([[0, 0, w, h]]),
@@ -206,23 +191,25 @@ class YOLOEDetector(ObjectDetector):
             self.visual_prompts = visual_prompts
         logger.info(f"Set custom classes: {self.model.names}")  # type: ignore
 
-    def detect(self, image: np.ndarray|Image.Image, prompt_type: str) -> Dict[str, Any]:
+    def detect(self, image: Image.Image) -> Dict[str, Any]:
         """
         Detect objects in image using YOLOE.
 
         Args:
-            image: Input image (H, W, C) in BGR format
-            prompt_type: Type of prompt ('text' or 'visual') for detection
+            image: Input image as PIL Image
 
         Returns:
             Standardized detection dict
         """
-        if prompt_type == 'text':
-            results = self.model.predict(image, conf=self.confidence_threshold, verbose=False)
-        elif prompt_type == "visual":
-            results = self.model.predict(image, refer_image=self.fp_ref_image, visual_prompts=self.visual_prompts, predictor=YOLOEVPSegPredictor, verbose=False)
+        if self.visual_input is not None:
+            results = self.model.predict(
+                image, 
+                conf=self.confidence_threshold, 
+                refer_image=self.fp_visual_input, 
+                visual_prompts=self.visual_prompts, predictor=YOLOEVPSegPredictor, verbose=False
+            )
         else:
-            raise ValueError(f"Unknown prompt_type: {prompt_type}")
+            results = self.model.predict(image, conf=self.confidence_threshold, verbose=False)
         
         result = results[0]
 
@@ -265,8 +252,7 @@ class GroundingDINODetector(ObjectDetector):
         cfg,
         model_name: str,
         confidence_threshold: float,
-        prompt_type: str,
-        text_class: Optional[List[str]],
+        text_input: Optional[List[str]],
     ):
         """
         Initialize Grounding DINO detector using HuggingFace.
@@ -275,12 +261,10 @@ class GroundingDINODetector(ObjectDetector):
             model_name: Model ID from HuggingFace (e.g., 'IDEA-Research/grounding-dino-tiny')
             text_prompt: List of class labels for detection
             confidence_threshold: Confidence threshold
-            prompt_type: Type of prompt ('text' or 'visual') for detection
-            text_class: List of class text labels to detect (used for text prompts)
+            text_input: List of class text labels to detect (used for text prompts)
         """
         super().__init__(cfg, model_name, confidence_threshold)
-        self.prompt_type = prompt_type
-        self.text_class = text_class
+        self.text_input = text_input
         self.processor = None
         self.load_model()
 
@@ -292,33 +276,22 @@ class GroundingDINODetector(ObjectDetector):
             
         logger.info(f"Loaded Grounding DINO model: {self.model_name} on {self.device}")
         
-    def detect(self, image: np.ndarray|Image.Image, prompt_type: str) -> Dict[str, Any]:
+    def detect(self, image: Image.Image) -> Dict[str, Any]:
         """
         Detect objects in image using Grounding DINO.
 
         Args:
-            image: Input image (H, W, C) in BGR format
-            prompt_type: Type of prompt ('text' or 'visual') for detection
+            image: Input image as PIL Image
         Returns:
             Standardized detection dict
         """
         if self.model is None or self.processor is None:
             raise RuntimeError("Model not loaded. Call load_model() first.")
-
-        if isinstance(image, np.ndarray):
-            # Convert BGR to RGB for processing
-            # image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            # pil_image = Image.fromarray(image_rgb)
-            h, w = image.shape[:2]
-        elif isinstance(image, Image.Image):
-            w, h = image.size
-        else:
-            raise TypeError("Unsupported image type. Must be np.ndarray or PIL.Image.Image.")
-
+        
         # Process inputs
         inputs = self.processor(
             images=image,
-            text=self.text_class,
+            text=self.text_input,
             return_tensors="pt"
         ).to(self.device)
 
@@ -368,8 +341,8 @@ class FeatureMatchingDetector(ObjectDetector):
     SUPPORTED_MODELS = [
         "facebook/sam-vit-base",
         "facebook/sam-vit-large",
-        "openai/clip-vit-base-patch32",
-        "openai/clip-vit-large-patch14",
+        "facebook/sam-vit-huge",
+        "facebook/sam3",
     ]
 
     def __init__(
@@ -377,8 +350,8 @@ class FeatureMatchingDetector(ObjectDetector):
         cfg,
         model_name: str,
         confidence_threshold: float,
-        prompt_type: str,
-        visual_class: str,
+        text_input: Optional[List[str]],
+        visual_input: Optional[str],
     ):
         """
         Initialize Feature Matching Detector.
@@ -387,17 +360,15 @@ class FeatureMatchingDetector(ObjectDetector):
             cfg: Configuration object
             model_name: Model name (ignored, uses SAM + CLIP internally)
             confidence_threshold: Similarity threshold for feature matching
-            prompt_type: Must be 'visual' for feature matching
-            visual_class: Reference image
+            text_input: List of class text labels to detect (not used for feature matching)
+            visual_input: Reference image
         """
         super().__init__(cfg, model_name, confidence_threshold)
         
-        if prompt_type != "visual":
-            raise ValueError("FeatureMatchingDetector only supports prompt_type='visual'")
-        
-        self.prompt_type = prompt_type
-        self.reference_embedding = None
-        self.reference_image_path = visual_class
+        self.text_input = text_input
+        self.visual_input = visual_input
+        self.visual_input_embedding = None
+        self.fp_visual_input = None
         
         self.sam_model_name = model_name
         self.sam_processor = None
@@ -410,22 +381,18 @@ class FeatureMatchingDetector(ObjectDetector):
 
     def load_model(self) -> None:
         """Load SAM and embedding models."""
-        from transformers import pipeline
-        try:
+        if 'sam3' in self.sam_model_name:
+            raise NotImplementedError("SAM3 model loading not implemented yet. Please implement loading logic for SAM3 or use a supported SAM model.")
+        elif 'sam' in self.sam_model_name:
+            from transformers import pipeline
             self.sam_model = pipeline(
                 "mask-generation",
                 model=self.sam_model_name,
                 device=self.device
             )
-        except Exception as e:
-            logger.warning(f"Could not load SAM as pipeline: {e}. Attempting alternative loading.")
-            # Alternative: Load model directly if pipeline fails
-            from transformers import AutoModelForMaskGeneration
-            sam_processor = AutoProcessor.from_pretrained(self.sam_model_name)
-            self.sam_model = AutoModelForMaskGeneration.from_pretrained(self.sam_model_name).to(self.device)
-            self.sam_model.eval()
-            self.sam_processor = sam_processor
-        
+        else:
+            raise ValueError(f"Unsupported SAM model: {self.sam_model_name}. Supported models: {self.SUPPORTED_MODELS}")
+            
         logger.info(f"Loaded SAM model: {self.sam_model_name} on {self.device}")
 
         # Load DINOv2 for embeddings
@@ -435,13 +402,13 @@ class FeatureMatchingDetector(ObjectDetector):
         logger.info(f"Loaded embedding model: {self.embedding_model_name} on {self.device}")
 
         # Load and precompute reference image embedding
-        if self.reference_image_path:
-            ref_image_path = os.path.join(self.cfg.path.dir_reference_image, self.reference_image_path)
-            self.reference_image_path = ref_image_path
+        if self.visual_input:
+            ref_image_path = os.path.join(self.cfg.path.dir_reference_image, self.visual_input)
+            self.fp_visual_input = ref_image_path
             ref_image = Image.open(ref_image_path)
-            self.reference_embedding = self._get_image_embedding(ref_image)
+            self.visual_input_embedding = self._get_image_embedding(ref_image)
 
-    def _segment_objects_with_sam(self, image: Image.Image, points_per_batch: int = 64) -> List[torch.Tensor]:
+    def _segment_objects_with_sam(self, image: Image.Image, points_per_batch: int, dp_sam_checkpoint: str) -> List[torch.Tensor]:
         """
         Segment all objects in image using SAM.
 
@@ -451,11 +418,29 @@ class FeatureMatchingDetector(ObjectDetector):
         Returns:
             List of masks
         """
-        outputs = self.sam_model(image, points_per_batch=points_per_batch)
-        masks = outputs["masks"]
+        fp_masks = os.path.join(dp_sam_checkpoint, *image.filename.split('/')[3:]).replace('.jpg', '_masks.pt') # type: ignore
+        if os.path.exists(fp_masks):
+            masks = torch.load(fp_masks)
+        else:
+            if 'sam3' in self.sam_model_name:
+                raise NotImplementedError("SAM3 inference not implemented yet. Please implement inference logic for SAM3 or use a supported SAM model.")
+            elif 'sam' in self.sam_model_name:
+                outputs = self.sam_model(image, points_per_batch=points_per_batch) # type: ignore
+                masks = outputs["masks"]
+            else:
+                raise ValueError(f"Unsupported SAM model: {self.sam_model_name}. Supported models: {self.SUPPORTED_MODELS}")
+            os.makedirs(os.path.dirname(fp_masks), exist_ok=True)
+            torch.save(masks, fp_masks)
+            
+            visualizer = DetectionVisualizer(font_size=12, line_thickness=2, visual_input=self.fp_visual_input) # Visualize masks to check segmentation quality
+            image_mask = visualizer.draw_masks(image, masks, alpha=1)
+            fp_image_mask = os.path.join(dp_sam_checkpoint, *image.filename.split('/')[3:]) # type: ignore
+            os.makedirs(os.path.dirname(fp_image_mask), exist_ok=True)
+            cv2.imwrite(fp_image_mask, image_mask)
+
         return masks
     
-    def _convert_masks_to_bboxes(self, masks: List[torch.Tensor], padding: float) -> List[float]:
+    def _convert_masks_to_bboxes(self, masks: List[torch.Tensor], padding: float) -> List[List[int]]:
         """
         Convert SAM masks to bounding boxes.
 
@@ -476,16 +461,16 @@ class FeatureMatchingDetector(ObjectDetector):
                 x2, y2 = np.max(x_indices), np.max(y_indices)
                 width, height = x2 - x1, y2 - y1
                 # Apply padding
-                x1 = max(0, x1 - int(padding * width))
-                y1 = max(0, y1 - int(padding * height))
-                x2 = min(mask_array.shape[1], x2 + int(padding * width))
-                y2 = min(mask_array.shape[0], y2 + int(padding * height))
+                x1 = int(max(0, x1 - int(padding * width)))
+                y1 = int(max(0, y1 - int(padding * height)))
+                x2 = int(min(mask_array.shape[1], x2 + int(padding * width)))
+                y2 = int(min(mask_array.shape[0], y2 + int(padding * height)))
                 bboxes.append([x1, y1, x2, y2])
         assert len(bboxes) == len(masks), "Number of bounding boxes should match number of masks"
 
         return bboxes
     
-    def _filter_masks_and_bboxes(self, masks: List[torch.Tensor], bboxes: List[List[float]], image: Image.Image) -> Tuple[List[torch.Tensor], List[List[float]]]:
+    def _filter_masks_and_bboxes(self, masks: List[torch.Tensor], bboxes: List[List[int]], image: Image.Image) -> Tuple[List[torch.Tensor], List[List[int]]]:
         """
         Filter bounding boxes based on size and aspect ratio.
 
@@ -513,7 +498,7 @@ class FeatureMatchingDetector(ObjectDetector):
 
         return filtered_masks, filtered_bboxes
         
-    def _crop_bboxes(self, image: Image.Image, bboxes: List[List[float]]) -> List[Image.Image]:
+    def _crop_bboxes(self, image: Image.Image, bboxes: List[List[int]]) -> List[Image.Image]:
         """
         Crop image using bounding boxes.
 
@@ -547,10 +532,10 @@ class FeatureMatchingDetector(ObjectDetector):
             Image embedding (feature vector)
         """
         # Prepare image using processor
-        inputs = self.embedding_processor(images=image, return_tensors="pt").to(self.device)
+        inputs = self.embedding_processor(images=image, return_tensors="pt").to(self.device) # type: ignore
 
         with torch.no_grad():
-            outputs = self.embedding_model(**inputs)
+            outputs = self.embedding_model(**inputs) # type: ignore
             image_embedding = outputs.pooler_output if hasattr(outputs, 'pooler_output') else outputs.last_hidden_state[:, 0, :]
             
             # Normalize embedding
@@ -558,7 +543,7 @@ class FeatureMatchingDetector(ObjectDetector):
 
         return image_embedding.cpu()
     
-    def _get_image_embeddings(self, images: List[Image.Image]) -> torch.Tensor:
+    def _get_image_embeddings(self, images: List[Image.Image], image: Image.Image, dp_sam_checkpoint: str) -> torch.Tensor:
         """
         Get image embeddings for a list of images.
 
@@ -567,12 +552,24 @@ class FeatureMatchingDetector(ObjectDetector):
         Returns:
             Image embeddings (feature vectors) as torch tensor of shape (N, D)
         """
-        embeddings = []
-        for image in images:
-            embedding = self._get_image_embedding(image)
-            embeddings.append(embedding)
-        return torch.vstack(embeddings)
+        fp_crop_embeddings = os.path.join(dp_sam_checkpoint, *image.filename.split('/')[3:]).replace('.jpg', '_crop_embeddings.pt') # type: ignore
+        if os.path.exists(fp_crop_embeddings):
+            crop_embeddings = torch.load(fp_crop_embeddings)
+        else:
+            embeddings = []
+            for image in images:
+                embedding = self._get_image_embedding(image)
+                embeddings.append(embedding)
+            if len(embeddings) > 0:
+                crop_embeddings = torch.vstack(embeddings)
+            else:
+                crop_embeddings = torch.empty((0, self.visual_input_embedding.shape[1])) # type: ignore
 
+            os.makedirs(os.path.dirname(fp_crop_embeddings), exist_ok=True)
+            torch.save(crop_embeddings, fp_crop_embeddings)
+            
+        return crop_embeddings
+    
     def _get_cosine_similarity(self, embedding1: torch.Tensor, embedding2: torch.Tensor) -> float:
         """
         Calculate cosine similarity between two embeddings.
@@ -587,13 +584,12 @@ class FeatureMatchingDetector(ObjectDetector):
         similarity = F.cosine_similarity(embedding1, embedding2).item()
         return float(similarity)
 
-    def detect(self, image: np.ndarray|Image.Image, prompt_type: str) -> Dict[str, Any]:
+    def detect(self, image: np.ndarray|Image.Image) -> Dict[str, Any]:
         """
         Detect matching objects using SAM segmentation and feature matching.
 
         Args:
             image: PIL Image or numpy array
-            prompt_type: Type of prompt (must be 'visual')
 
         Returns:
             Standardized detection dict
@@ -603,36 +599,19 @@ class FeatureMatchingDetector(ObjectDetector):
             image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             image = Image.fromarray(image_rgb)
         
-        if self.reference_embedding is None:
-            raise RuntimeError("Reference image embedding not loaded. Check visual_class.")
+        if self.visual_input_embedding is None:
+            raise RuntimeError("Reference image embedding not loaded. Check visual_input.")
 
         dp_sam_checkpoint = os.path.join(self.cfg.path.dir_image_preprocessed, '.checkpoint', self.sam_model_name)
-        fp_masks = os.path.join(dp_sam_checkpoint, *image.filename.split('/')[3:]).replace('.jpg', '_masks.pt')
-        if os.path.exists(fp_masks):
-            masks = torch.load(fp_masks)
-        else:
-            masks = self._segment_objects_with_sam(image)
-            os.makedirs(os.path.dirname(fp_masks), exist_ok=True)
-            torch.save(masks, fp_masks)
-            
-            visualizer = DetectionVisualizer(font_size=12, line_thickness=2, visual_class=self.reference_image_path) # Visualize masks to check segmentation quality
-            image_mask = visualizer.draw_masks(image, masks, alpha=1)
-            fp_image_mask = os.path.join(dp_sam_checkpoint, *image.filename.split('/')[3:])
-            os.makedirs(os.path.dirname(fp_image_mask), exist_ok=True)
-            cv2.imwrite(fp_image_mask, image_mask)
-
+        
+        masks = self._segment_objects_with_sam(image, points_per_batch=64, dp_sam_checkpoint=dp_sam_checkpoint)
+        
         bboxes = self._convert_masks_to_bboxes(masks, padding=0.1)
         masks, bboxes = self._filter_masks_and_bboxes(masks, bboxes, image)
         assert len(masks) == len(bboxes), "Number of masks and bounding boxes should match after filtering"
     
-        fp_crop_embeddings = os.path.join(dp_sam_checkpoint, *image.filename.split('/')[3:]).replace('.jpg', '_crop_embeddings.pt')
-        if os.path.exists(fp_crop_embeddings):
-            crop_embeddings = torch.load(fp_crop_embeddings)
-        else:
-            cropped_images = self._crop_bboxes(image, bboxes)
-            crop_embeddings = self._get_image_embeddings(cropped_images)
-            os.makedirs(os.path.dirname(fp_crop_embeddings), exist_ok=True)
-            torch.save(crop_embeddings, fp_crop_embeddings)
+        cropped_images = self._crop_bboxes(image, bboxes)
+        crop_embeddings = self._get_image_embeddings(cropped_images, image, dp_sam_checkpoint=dp_sam_checkpoint)
         assert len(crop_embeddings) == len(bboxes), "Number of crop embeddings should match number of bounding boxes"
 
         result_masks = []
@@ -640,7 +619,7 @@ class FeatureMatchingDetector(ObjectDetector):
         confidences = []
         classes = []
         for mask, bbox, crop_embedding in zip(masks, bboxes, crop_embeddings):
-            similarity = self._get_cosine_similarity(self.reference_embedding, crop_embedding)
+            similarity = self._get_cosine_similarity(self.visual_input_embedding, crop_embedding)
 
             if similarity >= self.confidence_threshold:
                 result_masks.append(mask)
@@ -663,7 +642,7 @@ class FeatureMatchingDetector(ObjectDetector):
 class DetectionVisualizer:
     """Draws bounding boxes on images with class-specific colors."""
 
-    def __init__(self, font_size: int, line_thickness: int, text_class: Optional[List[str]] = None, visual_class: Optional[str] = None):
+    def __init__(self, font_size: int, line_thickness: int, text_input: Optional[List[str]] = None, visual_input: Optional[str] = None):
         """
         Initialize visualizer.
 
@@ -673,21 +652,17 @@ class DetectionVisualizer:
         """
         self.font_size = font_size
         self.line_thickness = line_thickness
-        self.text_class = text_class
-        self.visual_class = visual_class
+        self.text_input = text_input
+        self.visual_input = visual_input
 
     def _get_color(self, class_name: str) -> Tuple[int, int, int]:
         """Get color for a given class name."""
-        if self.text_class:
-            try:
-                idx = self.text_class.index(class_name)
-                cmap = cm.get_cmap("tab20", len(self.text_class))
-                rgba = cmap(idx)[:3]
-                return tuple(int(c * 255) for c in rgba)  # type: ignore
-            except ValueError:
-                # Class not found, use default
-                return (0, 255, 0)
-        elif self.visual_class:
+        if self.text_input:
+            idx = self.text_input.index(class_name)
+            cmap = cm.get_cmap("tab20", len(self.text_input))
+            rgba = cmap(idx)[:3]
+            return tuple(int(c * 255) for c in rgba)  # type: ignore
+        elif self.visual_input:
             # For visual prompts, use a fixed color
             return (0, 255, 0)  # Green for visual prompt detections
         else:
@@ -785,9 +760,8 @@ def create_detector(
     cfg: Any,
     model_name: str,
     confidence_threshold: float,
-    prompt_type: str,
-    text_class: Optional[List[str]] = None,
-    visual_class: Optional[str] = None,
+    text_input: Optional[List[str]] = None,
+    visual_input: Optional[str] = None,
 ) -> ObjectDetector:
     """
     Factory function to create appropriate detector.
@@ -795,38 +769,35 @@ def create_detector(
     Args:
         model_name: Name of the model
         confidence_threshold: Confidence threshold
-        prompt_type: whether prompt is 'text' or 'visual' (for visual prompt-based detection)
-        text_class: List of class text labels to detect (optional)
-        visual_class: Reference image for visual prompts (optional)
+        text_input: List of class text labels to detect (optional)
+        visual_input: Reference image for visual prompts (optional)
 
     Returns:
         Initialized ObjectDetector instance
     """
     if "dino" in model_name.lower():
-        assert prompt_type == "text", "Grounding DINO currently only supports text prompts. Please set prompt_type='text'."
+        assert visual_input is None, "Grounding DINO does not support additional visual prompts. Please set visual_input to None."
         return GroundingDINODetector(
             cfg=cfg,
             model_name=model_name,
             confidence_threshold=confidence_threshold,
-            prompt_type=prompt_type,
-            text_class=text_class,
+            text_input=text_input,
         )
     elif "yoloe" in model_name.lower():
         return YOLOEDetector(
             cfg=cfg,
             model_name=model_name,
             confidence_threshold=confidence_threshold,
-            prompt_type=prompt_type,
-            text_class=text_class,
-            visual_class=visual_class,
+            text_input=text_input,
+            visual_input=visual_input,
         )
     elif "sam" in model_name.lower():
         return FeatureMatchingDetector(
             cfg=cfg,
             model_name=model_name,
             confidence_threshold=confidence_threshold,
-            prompt_type=prompt_type,
-            visual_class=visual_class,
+            text_input=text_input,
+            visual_input=visual_input, # type: ignore
         )
     else:
         raise ValueError(f"Unknown model: {model_name}")
@@ -836,9 +807,8 @@ def preprocess_image(
     cfg,
     model_name: str,
     confidence_threshold: float,
-    prompt_type: str,
-    text_class: Optional[List[str]] = None,
-    visual_class: Optional[str] = None,
+    text_input: Optional[List[str]] = None,
+    visual_input: Optional[str] = None,
 ) -> pd.DataFrame:
     """
     Main preprocessing pipeline for object detection.
@@ -847,9 +817,8 @@ def preprocess_image(
         cfg: Configuration object with path information
         model_name: Name of detection model
         confidence_threshold: Minimum confidence to keep detections
-        prompt_type: whether prompt is 'text' or 'visual' (for visual prompt-based detection)
-        text_class: List of class text labels to detect (optional, used for text prompts)
-        visual_class: Reference image filename for visual prompts (optional, used for visual prompts)
+        text_input: List of class text labels to detect (optional, used for text prompts)
+        visual_input: Reference image filename for visual prompts (optional, used for visual prompts)
 
     Returns:
         DataFrame with detection results
@@ -859,11 +828,10 @@ def preprocess_image(
         cfg=cfg,
         model_name=model_name,
         confidence_threshold=confidence_threshold,
-        prompt_type=prompt_type,
-        text_class=text_class,
-        visual_class=visual_class,
+        text_input=text_input,
+        visual_input=visual_input,
     )
-    visualizer = DetectionVisualizer(font_size=12, line_thickness=2, text_class=text_class, visual_class=visual_class)
+    visualizer = DetectionVisualizer(font_size=12, line_thickness=2, text_input=text_input, visual_input=visual_input)
 
     # Load image sequence dataframe
     df_image_seq = pd.read_csv(cfg.path.df_image_seq)
@@ -890,11 +858,10 @@ def preprocess_image(
 
         image_stats["total_images"] += 1
 
-        # image = cv2.imread(image_path)
         image = Image.open(image_path)
 
         # Run detection with visual class if specified
-        detection_result = detector.detect(image, prompt_type=prompt_type)
+        detection_result = detector.detect(image)
         
         # Normalize detections
         detections = detector.standardize_detections(detection_result)
@@ -987,4 +954,4 @@ def get_supported_models() -> Dict[str, List[str]]:
 
 if __name__ == "__main__":
     # Example usage
-    print("Module imported successfully. Use preprocess_images() to start pipeline.")
+    preprocess_image(cfg, model_name='facebook/sam3', confidence_threshold=0.5, visual_input='crossbuck_4.jpg') # cfg is config file the contains input/output dir path
