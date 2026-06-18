@@ -170,8 +170,8 @@ def prepare_df_crossing(cfg):
     df_crossing = df_crossing[df_crossing['POSXING'] == 1]
     # df_crossing = df_crossing[df_crossing['XPURPOSE'] == 1]
     df_crossing['EFFDATE'] = df_crossing['EFFDATE'].astype(str).str.zfill(6)
-    df_crossing.loc[:, 'EFFDATE'] = pd.to_datetime(df_crossing['EFFDATE'], format='%y%m%d')
-    df_crossing.loc[:, ['REVISIONDA', 'LASTUPDATE']] = df_crossing[['REVISIONDA', 'LASTUPDATE']].apply(pd.to_datetime)
+    df_crossing['EFFDATE'] = pd.to_datetime(df_crossing['EFFDATE'], format='%y%m%d')
+    df_crossing[['REVISIONDA', 'LASTUPDATE']] = df_crossing[['REVISIONDA', 'LASTUPDATE']].apply(pd.to_datetime)
     
     ### EDA
     # pprint(df_crossing[df_crossing['TYPEXING'] == '3'][df_crossing['CITYNAME'] == 'RIVERSIDE']
@@ -192,15 +192,13 @@ def prepare_df_crossing(cfg):
 
 def prepare_df_image(cfg):
     df_image = pd.read_csv(cfg.path.df_image)
-    try:
-        df_image['captured_at'] = pd.to_datetime(df_image['captured_at'], unit='ms')
-    except:
-        df_image['captured_at'] = pd.to_datetime(df_image['captured_at'], errors='coerce')
-    df_image = df_image.sort_values('crossing', ignore_index=True)
+    df_image = df_image.sort_values('crossing_id', ignore_index=True)
     df_image['computed_rotation'] = df_image['computed_rotation'].apply(lambda x: ast.literal_eval(x) if pd.notna(x) else x)
     df_image['mesh'] = df_image['mesh'].apply(lambda x: ast.literal_eval(x) if pd.notna(x) else x)
     df_image['sfm_cluster'] = df_image['sfm_cluster'].apply(lambda x: ast.literal_eval(x) if pd.notna(x) else x)
     # df_image['detections'] = df_image['detections'].apply(lambda x: ast.literal_eval(x) if pd.notna(x) else x)
+    df_image['creator'] = df_image['creator'].apply(lambda x: ast.literal_eval(x) if pd.notna(x) else x)
+    df_image['camera_parameters'] = df_image['camera_parameters'].apply(lambda x: ast.literal_eval(x) if pd.notna(x) else x)
     
     return df_image
 

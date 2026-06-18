@@ -1,7 +1,7 @@
 import os
 from modules import (
     build_config, scrape_news, filter_news, convert_to_json, extract_keywords, merge_record_retrieval,
-    scrape_image, scrape_image_seq, preprocess_image,
+    scrape_image, scrape_image_seq, preprocess_image, augment_image,
     scrape_3D
 )
 from modules.metrics import get_acc_table, get_cov_table, get_stats
@@ -81,7 +81,7 @@ print('------------Configuration DONE!!------------')
 
 
 # ############### scrape crossing images from mapillary (ONLY ONE-TIME TASK)
-# df_image = scrape_image(cfg)
+df_image = scrape_image(cfg)
 # df_image_seq = scrape_image_seq(cfg)
 
 # print('------------Scraping Images DONE!!------------')
@@ -97,9 +97,14 @@ print('------------Configuration DONE!!------------')
 
 # preprocess_image(cfg, model_name='facebook/sam-vit-huge', confidence_threshold=0.3, visual_input='crossbuck_4.jpg')
 
-preprocess_image(cfg, model_name='facebook/sam3', confidence_threshold=0.5, visual_input='crossbuck_4.jpg')
+# preprocess_image(cfg, model_name='facebook/sam3', confidence_threshold=0.5, visual_input='crossbuck_4.jpg')
 
-print('------------Preprocessing Images DONE!!------------')
+# print('------------Preprocessing Images DONE!!------------')
+
+# ############### image augmentation (ONLY ONE-TIME TASK)
+# augment_image(cfg)
+
+# print('------------Augmenting Images DONE!!------------')
 
 # ############### scrape 3D reconstruction from mapillary (ONLY ONE-TIME TASK)
 # df_3D = scrape_3D(cfg)

@@ -11,7 +11,7 @@ if conda info --envs | grep -q "^$ENV_NAME\s"; then
     conda deactivate
     conda env remove -n $ENV_NAME -y
 fi
-conda create -n $ENV_NAME python=3.10 -y
+conda create -n $ENV_NAME python=3.12 -y
 
 conda activate $ENV_NAME
 
@@ -24,9 +24,10 @@ pip install feedparser requests # for Google RSS
 pip install selenium newspaper3k lxml_html_clean trafilatura readability-lxml goose3 # for scraping news articles
 pip install streamlit
 pip install openai pytesseract google-genai # for transcribing report form in json format
-pip install transformers accelerate bitsandbytes torchvision # for labeling news & populating the report form
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu126 # torch for cuda 12.6
+pip install transformers accelerate bitsandbytes # for labeling news & populating the report form
 pip install sentencepiece # for running VLMs from Hugging Face
-pip install py360convert ultralytics datasets # for image preprocessing
+pip install py360convert ultralytics diffusers peft # for image preprocessing
 pip install open3d # for 3d reconstruction
 
 ############ Modify code in `def postprocess` in `class ImageTextToTextPipeline` in transformers/pipelines/image_text_to_text.py

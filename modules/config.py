@@ -17,8 +17,9 @@ DN_MSLS_META: Final[str] = 'msls_metadata'
 DN_MSLS_CROSSING: Final[str] = 'msls_crossing'
 DN_SCRAPED_IMAGES: Final[str] = 'scraped_image'
 DN_IMAGE_SEQ: Final[str] = 'image_seq'
-DN_IMAGE_PREPROCESSED: Final[str] = 'image_preprocessed'
 DN_REFERENCE_IMAGE: Final[str] = 'reference_image'
+DN_IMAGE_PREPROCESSED: Final[str] = 'image_preprocessed'
+DN_IMAGE_AUGMENTED: Final[str] = 'image_augmented'
 DN_3D: Final[str] = '3D'
 DN_SFM: Final[str] = 'sfm'
 DN_MESH: Final[str] = 'mesh'
@@ -62,6 +63,7 @@ FN_DF_MSLS_META: Final[str] = 'df_msls_meta.csv'
 FN_DF_IMAGE: Final[str] = 'df_image.csv'
 FN_DF_IMAGE_SEQ: Final[str] = 'df_image_seq.csv'
 FN_DF_IMAGE_PREPROCESSED: Final[str] = 'df_image_preprocessed.csv'
+FN_DF_IMAGE_AUGMENTED: Final[str] = 'df_image_augmented.csv'
 
 FN_DF_3D: Final[str] = 'df_3d.csv'
 
@@ -101,11 +103,12 @@ IMG_DETAIL_FIELDS: Final[tuple[str, ...]] = (
     "compass_angle", "computed_compass_angle", "computed_rotation", "exif_orientation", # orientation info
     "camera_type", "is_pano", "make", "model",  # camera info
     "sequence",  # sequence info
-    "atomic_scale", "merge_cc", "mesh", "sfm_cluster", # SfM info
-    "creator",  # uploader info
+    "camera_parameters", "atomic_scale", "merge_cc", "mesh", "sfm_cluster", # SfM info
+    "creator", "organization",  # uploader info
+    "quality_score", # image quality info
     # "detections", # object detection - can be fetched using other API: https://www.mapillary.com/developer/api-documentation#detection
 )
-BBOX_OFFSET: Final[float] = 0.0002 # 0.00001 ≒ 1.11 meters
+BBOX_OFFSET: Final[float] = 0.0001 # 0.00001 ≒ 1.11 meters
 N_IMG_PER_SQM: Final[int] = 3 # 3 images per 1m²
 DIST_THRES_FILTER_IMG: Final[float] = 0.00001 # 0.00001 ≒ 1.11 meters
 DIST_THRES_FILTER_IMG_SEQ: Final[float] = 0.0005 # 0.00001 ≒ 1.11 meters
@@ -262,8 +265,9 @@ class PathConfig:
     dir_msls_crossing: str
     dir_scraped_images: str
     dir_image_seq: str
-    dir_image_preprocessed: str
     dir_reference_image: str
+    dir_image_preprocessed: str
+    dir_image_augmented: str
     dir_3D: str
     dir_sfm: str
     dir_mesh: str
@@ -349,10 +353,12 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
     make_dir(dp_scraped_images)
     dp_image_seq = os.path.join(dp_mapillary, DN_IMAGE_SEQ)
     make_dir(dp_image_seq)
+    dp_reference_image = os.path.join(dp_mapillary, DN_REFERENCE_IMAGE)
+    make_dir(dp_reference_image)
     dp_image_preprocessed = os.path.join(dp_mapillary, DN_IMAGE_PREPROCESSED)
     make_dir(dp_image_preprocessed)
-    dp_reference_image = os.path.join(dp_image_preprocessed, DN_REFERENCE_IMAGE)
-    make_dir(dp_reference_image)
+    dp_image_augmented = os.path.join(dp_mapillary, DN_IMAGE_AUGMENTED)
+    make_dir(dp_image_augmented)
 
     dp_3D = os.path.join(dp_mapillary, DN_3D)
     make_dir(dp_3D)
@@ -370,8 +376,9 @@ def _compute_paths(conv_cfg: ConversionConfig, retr_cfg: RetrievalConfig) -> Pat
         dir_msls_crossing=dp_msls_crossing,
         dir_scraped_images=dp_scraped_images,
         dir_image_seq=dp_image_seq,
-        dir_image_preprocessed=dp_image_preprocessed,
         dir_reference_image=dp_reference_image,
+        dir_image_preprocessed=dp_image_preprocessed,
+        dir_image_augmented=dp_image_augmented,
         dir_3D=dp_3D,
         dir_sfm=dp_sfm,
         dir_mesh=dp_mesh,

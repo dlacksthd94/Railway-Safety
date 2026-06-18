@@ -34,6 +34,7 @@ from PIL import Image
 import py360convert
 import math
 from datetime import datetime
+import ast
 
 TIMEOUT = 5
 CONFIG_NP = newspaper.Config()
@@ -407,11 +408,14 @@ class ScrapeImage:
             df_image = prepare_df_image(self.cfg)
         else:
             cols = list(self.cfg.scrp.img_detail_fields)
+            # cols.remove('camera_parameters')
+            # cols.extend(['focal_length', 'k1', 'k2'])
             cols.remove('geometry')
             cols.remove('computed_geometry')
             cols.extend(['lon', 'lat', 'computed_lon', 'computed_lat', 'dist', 'computed_dist'])
-            cols = ['crossing'] + cols
+            cols = ['crossing_id'] + cols
             df_image = pd.DataFrame(columns=cols)
+            df_image = df_image.rename(columns={'id': 'img_id', 'sequence': 'seq_id'})
             df_image.to_csv(self.cfg.path.df_image, index=False)
         return df_image
     
@@ -455,8 +459,13 @@ class ScrapeImage:
             f"&fields={self.img_detail_fields}"
         )
 
-        resp = requests.get(url)
-        resp.raise_for_status()
+        try:
+            resp = requests.get(url)
+            resp.raise_for_status()
+        except:
+            url = url.replace(',sfm_cluster', '')
+            resp = requests.get(url)
+            resp.raise_for_status()
         return resp.json()
 
     def download_from_url(self, url: str, out_path: pathlib.Path):
@@ -513,17 +522,22 @@ def scrape_image(cfg: Config) -> pd.DataFrame:
     df_image = scraper.load_df_image()
     for i, row in tqdm(df_crossing[['CROSSING', 'LATITUDE', 'LONGITUD']].iterrows(), total=df_crossing.shape[0]):
         crossing, lat, lon = row
-        if crossing in df_image['crossing'].values:
+        if crossing in df_image['crossing_id'].values:
             continue
         bbox_exact_match = f"{lon - cfg.scrp.bbox_offset},{lat - cfg.scrp.bbox_offset},{lon + cfg.scrp.bbox_offset},{lat + cfg.scrp.bbox_offset}"
         imgs = scraper.search_images(bbox_exact_match, limit=cfg.scrp.n_img)
 
-        details_concat = [{'crossing': crossing}]
+        details_concat = [{'crossing_id': crossing}]
         for img in imgs:
             img_id = img["id"]
-            if img_id in df_image['id'].values:
+            if img_id in df_image['img_id'].values:
                 continue
             details = scraper.get_image_details(img_id)
+            details['crossing_id'] = crossing
+            img_id = details.pop('id')
+            details['img_id'] = img_id
+            seq_id = details.pop('sequence')
+            details['seq_id'] = seq_id
             if details.get('geometry', None):
                 assert details['geometry']['type'] == 'Point'
                 geometry = details.pop('geometry')
@@ -541,32 +555,57 @@ def scrape_image(cfg: Config) -> pd.DataFrame:
                 details['computed_lat'] = computed_geometry['coordinates'][1]
                 computed_dist = ((lon - details['computed_lon'])**2 + (lat - details['computed_lat'])**2)**0.5
                 details['computed_dist'] = computed_dist
+                # assert computed_dist <= cfg.scrp.bbox_offset * 2**0.5
             if details.get('computed_rotation', None):
                 assert isinstance(details['computed_rotation'], list)
+            if details.get('captured_at', None):
+                captured_at = details.pop('captured_at')
+                details['captured_at'] = pd.to_datetime(captured_at, unit='ms')
+            # if details.get('camera_parameters', None):
+            #     camera_parameters = details.pop('camera_parameters')
+            #     assert len(camera_parameters) == 3
+            #     details['focal_length'] = camera_parameters[0]
+            #     details['k1'] = camera_parameters[1]
+            #     details['k2'] = camera_parameters[2]
+            # else:
+            #     details['focal_length'] = None
+            #     details['k1'] = None
+            #     details['k2'] = None
             # print(f"computed:\t{computed_dist :.6f}")
             # print(f"actual:\t{dist :.6f}")
             # pprint(details, sort_dicts=False)
 
-            details['crossing'] = crossing
             details_concat.append(details)
         
         df_image_temp = pd.DataFrame(details_concat, columns=df_image.columns)
-        if not df_image_temp.empty:
-            df_image = pd.concat([df_image, df_image_temp], ignore_index=True)
+        df_image = pd.concat([df_image, df_image_temp], ignore_index=True)
         
         if i % 10 == 0: # type: ignore
             df_image.to_csv(cfg.path.df_image, index=False)
         
     df_image.to_csv(cfg.path.df_image, index=False)
 
-    for i, row in tqdm(df_image.iterrows(), total=df_image.shape[0]):
-        img_id = as_int(row['id'])
-        thumb_url = row["thumb_original_url"]
-        if pd.isna(img_id):
-            continue
-        output_file = pathlib.Path(os.path.join(cfg.path.dir_scraped_images, f"{img_id}.jpg"))
-        if not output_file.exists() and pd.notna(thumb_url):
-            scraper.download_from_url(thumb_url, output_file)
+    # df_image_dir_name = df_image.drop_duplicates(subset=['crossing_id', 'seq_id'], keep='first')
+    # for i, row in tqdm(df_image_dir_name.iterrows(), total=df_image_dir_name.shape[0]):
+    #     crossing_id = row['crossing_id']
+    #     seq_id = row['seq_id']
+    #     img_id = as_int(row['img_id'])
+    #     if pd.isna(img_id):
+    #         continue
+    #     dp_output = pathlib.Path(os.path.join(cfg.path.dir_scraped_images, crossing_id, seq_id))
+    #     if not dp_output.exists():
+    #         make_dir(dp_output)
+    
+    # for i, row in tqdm(df_image.iterrows(), total=df_image.shape[0]):
+    #     crossing_id = row['crossing_id']
+    #     seq_id = row['seq_id']
+    #     img_id = as_int(row['img_id'])
+    #     thumb_url = row["thumb_original_url"]
+    #     if pd.isna(img_id):
+    #         continue
+    #     fp_output = pathlib.Path(os.path.join(cfg.path.dir_scraped_images, crossing_id, seq_id, f"{img_id}.jpg"))
+    #     if not fp_output.exists() and pd.notna(thumb_url):
+    #         scraper.download_from_url(thumb_url, fp_output)
 
     return df_image
 
